@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering.Universal;
 
-public class Player : MonoBehaviour
+public class PrtPlayer : MonoBehaviour
 {
     float Xdir;
     float Ydir;
