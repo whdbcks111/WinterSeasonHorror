@@ -17,6 +17,8 @@ public class Player : MonoBehaviour
     [SerializeField] private float _moveSpeed = 5;
     [SerializeField] private float _jumpForce = 10;
     [SerializeField] private int _maxJumpCount = 1;
+    public float MaxLightEnerge = 100;
+    [HideInInspector] public float LightEnerge;
 
     private Rigidbody2D _rigid;
     private Animator _animator;
@@ -26,11 +28,13 @@ public class Player : MonoBehaviour
     private bool _isLeftDir = false;
     private float _handLightDefaultAngleX;
 
+    public bool IsLightOn { get => _handLight.gameObject.activeSelf; }
     public bool IsOnGround { get => _steppingGrounds.Count > 0; }
 
     private void Awake()
     {
         Instance = this;
+        LightEnerge = MaxLightEnerge;
         _handLightDefaultAngleX = _handLight.transform.eulerAngles.z;
         _rigid = GetComponent<Rigidbody2D>();
         _animator = GetComponent<Animator>();
@@ -67,6 +71,14 @@ public class Player : MonoBehaviour
 
     private void LightUpdate()
     {
+
+        if(Input.GetKeyDown(KeyCode.W))
+        {
+            _handLight.gameObject.SetActive(!_handLight.gameObject.activeSelf);
+        }
+
+        if (IsLightOn) LightEnerge -= Time.deltaTime;
+
         int dir = _isLeftDir ? -1 : 1;
         _handLight.transform.localPosition = new(dir * _lightOffsetX, _handLight.transform.localPosition.y);
         _surroundLight.transform.localPosition = new(dir * _surroundLightOffsetX, _surroundLight.transform.localPosition.y);

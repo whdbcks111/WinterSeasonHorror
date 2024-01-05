@@ -21,7 +21,7 @@ public class ZoomArea : MonoBehaviour
     {
         if (collision.TryGetComponent(out Player _) && _beforeZoom > 0)
         {
-            CameraController.Instance.Zoom(_beforeZoom, ZoomTime);
+            CameraController.Instance.Zoom(_beforeZoom, ZoomTime); 
             _beforeZoom = -1;
         }
     }
