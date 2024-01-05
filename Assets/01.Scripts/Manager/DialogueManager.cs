@@ -9,90 +9,120 @@ using UnityEngine.Rendering;
 public class DialougManager : MonoBehaviour
 {
     
-    [Header("Player")]
-    public ChatScript currentPlayerChatScript;
+    
+    private TextAnimatorPlayer curTextPlayer;
+    public Canvas curTextBox;
+    public ChatScript chatScript;
+    [Header("Player")] 
+    public Transform playerFooter;
     public TextMeshProUGUI playerText;
     public int playerChatCount = 0;
     [SerializeField]
     private TextAnimatorPlayer playerTextPlayer;
     
     [Header("NPC")]
-    public ChatScript currentNpcChatScript;
+    public Transform npcFooter;
     public TextMeshProUGUI npcText;
     public int entityChatCount = 0;
     [SerializeField]
     private TextAnimatorPlayer npcTextPlayer;
 
-  
+    
     public int chatCount = 0;
-    public Button btn;
     
-    
-    // Start is called before the first frame update
-    void Start()
+    private bool isTalking = false;
+    private bool isSkipable = false;
+    private bool flipFlag = false;
+
+    public void Update()
     {
-        
-        
-            playerChatCount = currentPlayerChatScript.textList.Count;
-            entityChatCount = currentNpcChatScript.textList.Count;
-   
-    
-            btn.onClick.AddListener(NextProgress);
-
-            // 먼저 대화를 시작하는 캐릭터 결정
-            if (currentNpcChatScript.isStartConv)
-            {
-                npcText.text = currentNpcChatScript.textList[0];
-                npcTextPlayer.ShowText(npcText.text);
-            }
-            else
-            {
-                playerText.text = currentPlayerChatScript.textList[0];
-                playerTextPlayer.ShowText(playerText.text);
-            }
-        
-
-    }
-
-    public void StartDialouge()
-    {
-        
-    }
-    public void NextProgress()
-    {
-        Debug.Log("clickButton");
-        chatCount++;
-
-        if (chatCount < playerChatCount + entityChatCount)
+        if(Input.GetKeyDown(KeyCode.LeftArrow)) 
         {
-            Debug.Log("대화 시작");
-            // 현재 대화 순서에 따라 캐릭터의 대화를 표시
-            if ((currentNpcChatScript.isStartConv && chatCount % 2 == 0) ||
-                (!currentNpcChatScript.isStartConv && chatCount % 2 != 0))
+            if (!flipFlag)
             {
-                // NPC의 차례
-                Debug.Log("npc차례");
-                if (chatCount / 2 < currentNpcChatScript.textList.Count)
-                {
-                    npcText.text = currentNpcChatScript.textList[chatCount / 2];
-                    npcTextPlayer.ShowText(npcText.text);
-                }
+                FooterFlip(180);
+            }
+            flipFlag = true;
+        }
+        if (Input.GetKeyDown(KeyCode.RightArrow))
+        {
+            if (flipFlag)
+            {
+                FooterFlip(-180);
+            }
+            flipFlag = false;
+        }
+        if(Input.GetKeyDown(KeyCode.Return))
+        {
+            if (isTalking)
+            {
+                SkipDialouge();
             }
             else
             {
-                Debug.Log("플레이어 차례");
-                // 플레이어의 차례
-                if (chatCount / 2 < currentPlayerChatScript.textList.Count)
-                {
-                    playerText.text = currentPlayerChatScript.textList[chatCount / 2];
-                    playerTextPlayer.ShowText(playerText.text);
-                }
+                NextProgress();
             }
         }
     }
-    // Update is called once per frame
-    void Update()
+
+    public void FooterFlip(float rotationAmout)
     {
         
+       // curTextBox.GetComponentInChildren<TextBoxFooterTag>().transform.Rotate(0,rotationAmout,0);
+        
     }
+    public void SkipDialouge()
+    {
+        curTextPlayer.SkipTypewriter();
+    }
+    public void Awake()
+    {
+        //npcTextPlayer.SkipTypewriter();
+    }
+    // Start is called before the first frame update
+        private void Start()
+        {
+   
+            npcTextPlayer.onTextShowed.AddListener(OnTextShowed);
+            playerTextPlayer.onTextShowed.AddListener(OnTextShowed);
+
+            curTextPlayer = chatScript.dialogues[0].speaker == Speaker.Player ? playerTextPlayer : npcTextPlayer;
+            curTextPlayer.ShowText(chatScript.dialogues[0].dialogue);
+            chatCount++;
+
+        }
+
+        public void StartDialouge()
+        {
+
+        }
+
+        public void OnTextShowed()
+        {
+            isTalking = false;
+        }
+        public void NextProgress()
+        {
+            if (chatCount < chatScript.dialogues.Count)
+            {
+                if(curTextBox)
+                curTextBox.enabled = false;
+                
+                isTalking = true;
+                curTextPlayer = chatScript.dialogues[chatCount].speaker == Speaker.Player
+                    ? playerTextPlayer
+                    : npcTextPlayer;
+                curTextBox = curTextPlayer.GetComponentInParent<Canvas>();
+
+                curTextBox.enabled = true;
+                curTextPlayer.ShowText(chatScript.dialogues[chatCount].dialogue);
+                chatCount++;
+            }
+            else
+            {
+                chatCount = 0;
+            }
+        }
+    // Update is called once per frame
+   
 }
