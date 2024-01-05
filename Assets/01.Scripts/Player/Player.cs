@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Rendering.Universal;
 
@@ -8,26 +9,32 @@ public class Player : MonoBehaviour
     public static Player Instance { get; private set; }
 
     [SerializeField] private Collider2D _feetCollider;
-    [SerializeField] private Light2D _handLight;
+    [SerializeField] private Light2D _handLight, _surroundLight;
 
     [SerializeField] private Vector2 _camOffset;
-    [SerializeField] private float _lightOffsetX, _lightMinAngle, _lightMaxAngle;
+    [SerializeField] private float _lightOffsetX, _surroundLightOffsetX;
 
     [SerializeField] private float _moveSpeed = 5;
     [SerializeField] private float _jumpForce = 10;
     [SerializeField] private int _maxJumpCount = 1;
 
     private Rigidbody2D _rigid;
+    private Animator _animator;
+    private SpriteRenderer _spriteRenderer;
     private int _jumpCount = 0;
     private readonly HashSet<Collider2D> _steppingGrounds = new();
     private bool _isLeftDir = false;
+    private float _handLightDefaultAngleX;
 
     public bool IsOnGround { get => _steppingGrounds.Count > 0; }
 
     private void Awake()
     {
         Instance = this;
+        _handLightDefaultAngleX = _handLight.transform.eulerAngles.z;
         _rigid = GetComponent<Rigidbody2D>();
+        _animator = GetComponent<Animator>();
+        _spriteRenderer = GetComponent<SpriteRenderer>();
     }
 
     private void Start()
@@ -39,36 +46,31 @@ public class Player : MonoBehaviour
     {
         MoveUpdate();
         JumpUpdate();
-        HandLightUpdate();
+        LightUpdate();
     }
 
     private void MoveUpdate()
     {
         var xAxis = Input.GetAxisRaw("Horizontal");
         if (!Mathf.Approximately(xAxis, 0f)) _isLeftDir = xAxis < 0f;
-        transform.Translate(xAxis * _moveSpeed * Time.deltaTime * Vector3.right);
+        var velX = xAxis * _moveSpeed;
 
+        _animator.SetFloat("VelX", velX);
+        _animator.SetBool("IsOnGround", IsOnGround);
+        _animator.SetFloat("VelY", _rigid.velocity.y);
+
+        transform.Translate(velX * Time.deltaTime * Vector3.right);
+
+        _spriteRenderer.flipX = _isLeftDir;
         CameraController.Instance.SetOffset(_camOffset * (_isLeftDir ? -1 : 1), 0.7f);
     }
 
-    private void HandLightUpdate()
+    private void LightUpdate()
     {
         int dir = _isLeftDir ? -1 : 1;
         _handLight.transform.localPosition = new(dir * _lightOffsetX, _handLight.transform.localPosition.y);
-        _handLight.transform.up = (Vector2)Camera.main.ScreenToWorldPoint(Input.mousePosition) - (Vector2)_handLight.transform.position;
-        
-        if(!ExtraMath.IsAngleBetween(_handLight.transform.eulerAngles.z, _lightMinAngle * dir, _lightMaxAngle * dir))
-        {
-            if (ExtraMath.GetAngleDistance(_handLight.transform.eulerAngles.z, _lightMinAngle * dir) 
-                < ExtraMath.GetAngleDistance(_handLight.transform.eulerAngles.z, _lightMaxAngle * dir))
-            {
-                _handLight.transform.eulerAngles = new(0, 0, _lightMinAngle * dir);
-            }
-            else
-            {
-                _handLight.transform.eulerAngles = new(0, 0, _lightMaxAngle * dir);
-            }
-        }
+        _surroundLight.transform.localPosition = new(dir * _surroundLightOffsetX, _surroundLight.transform.localPosition.y);
+        _handLight.transform.eulerAngles = new(0, 0, dir * _handLightDefaultAngleX);
     }
 
     private void JumpUpdate()
@@ -81,6 +83,7 @@ public class Player : MonoBehaviour
 
     public void Jump()
     {
+        _animator.SetTrigger("Jump");
         if(IsOnGround && _jumpCount > 0)
         {
             _jumpCount--;
