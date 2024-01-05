@@ -26,7 +26,7 @@ Transform:
   m_GameObject: {fileID: 2375689616459915492}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0.475, y: 0.037, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -47,9 +47,9 @@ MonoBehaviour:
   m_ComponentVersion: 1
   m_LightType: 3
   m_BlendStyleIndex: 0
-  m_FalloffIntensity: 0.821
+  m_FalloffIntensity: 0.925
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_Intensity: 0.18
+  m_Intensity: 1.28
   m_LightVolumeIntensity: 1
   m_LightVolumeIntensityEnabled: 0
   m_ApplyToSortingLayers: 00000000
@@ -71,7 +71,7 @@ MonoBehaviour:
   m_PointLightInnerAngle: 360
   m_PointLightOuterAngle: 360
   m_PointLightInnerRadius: 0
-  m_PointLightOuterRadius: 6.89
+  m_PointLightOuterRadius: 6.62
   m_ShapeLightParametricSides: 5
   m_ShapeLightParametricAngleOffset: 0
   m_ShapeLightParametricRadius: 1
@@ -109,13 +109,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3357664214234878401}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: -0.7071068, w: 0.7071068}
-  m_LocalPosition: {x: 0.6, y: -0.024838626, z: 0}
+  m_LocalRotation: {x: 0, y: 0, z: -0.73129416, w: 0.68206227}
+  m_LocalPosition: {x: 0.343, y: 0.217, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2856824041992133508}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: -90}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: -93.99}
 --- !u!114 &6235992872927915443
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -246,6 +246,7 @@ GameObject:
   - component: {fileID: 3622759569376359627}
   - component: {fileID: 7165854523698902351}
   - component: {fileID: 1366285014593801986}
+  - component: {fileID: 2403024944357959022}
   m_Layer: 3
   m_Name: Player
   m_TagString: Untagged
@@ -311,7 +312,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 1
-  m_Sprite: {fileID: -9095717837082945937, guid: 207ee8102dd4143d288186ef0be518ee, type: 3}
+  m_Sprite: {fileID: -1391153595, guid: 2f66387326f3e704da8d365ee5834c4d, type: 3}
   m_Color: {r: 0.3150943, g: 0.48319167, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -336,10 +337,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _feetCollider: {fileID: 1366285014593801986}
   _handLight: {fileID: 6235992872927915443}
+  _surroundLight: {fileID: 1938804050324418043}
   _camOffset: {x: 8, y: 0}
-  _lightOffsetX: 0.6
-  _lightMinAngle: -90
-  _lightMaxAngle: -90
+  _lightOffsetX: 0.34
+  _surroundLightOffsetX: 0.47
   _moveSpeed: 3
   _jumpForce: 10
   _maxJumpCount: 1
@@ -375,8 +376,8 @@ CapsuleCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: -0.0044466257, y: 0}
-  m_Size: {x: 1.595824, y: 2}
+  m_Offset: {x: -0.15332943, y: 0.012662113}
+  m_Size: {x: 0.5154079, y: 1.5394562}
   m_Direction: 0
 --- !u!50 &7165854523698902351
 Rigidbody2D:
@@ -437,16 +438,37 @@ BoxCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0, y: -0.8512279}
+  m_Offset: {x: -0.13554436, y: -0.6834847}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 1, y: 2}
+    oldSize: {x: 0.71875, y: 1.515625}
     newSize: {x: 1, y: 2}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 1, y: 0.29754424}
+  m_Size: {x: 0.47521847, y: 0.18736291}
   m_EdgeRadius: 0
+--- !u!95 &2403024944357959022
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4605255069021877253}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 5368eff128fbdfe4fb1666c98cf73207, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
