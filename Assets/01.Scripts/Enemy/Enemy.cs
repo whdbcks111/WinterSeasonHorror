@@ -12,8 +12,20 @@ public class Enemy : MonoBehaviour
     [SerializeField] private float _minMoveDistance;
     [Header("몬스터 최대 이동 거리(이 값 넘으면 처음위치로)")]
     [SerializeField] private float _maxDistance;
+    [Header("몬스터 흐느끼는 소리 주기(초)")]
+    [SerializeField] private float _cryingCycleTime;
+
+
+    [Header("사운드")]
+    [SerializeField] private AudioClip Crying1;
+    [SerializeField] private AudioClip Crying2;
+    [SerializeField] private AudioClip Crying3;
+    [SerializeField] private AudioClip Screaming;
+
+    List<AudioClip> CrySounds = new List<AudioClip>();
 
     Rigidbody2D _rigidbody;
+    AudioSource _audioSource;
 
     //몬스터가 배치된 위치
     private Vector2 _initPosition;
@@ -27,7 +39,10 @@ public class Enemy : MonoBehaviour
     {
         _IsSettedInitPosition = false;
         _rigidbody = GetComponent<Rigidbody2D>();
-
+        _audioSource = GetComponent<AudioSource>();
+        CrySounds.Add(Crying1);
+        CrySounds.Add(Crying2);
+        CrySounds.Add(Crying3);
     }
 
     // Update is called once per frame
@@ -37,6 +52,16 @@ public class Enemy : MonoBehaviour
         {
             SetDestination();
         }
+
+        if (Input.GetKeyDown(KeyCode.U))
+        {
+            StartCoroutine(PlayCryingSound());
+        }
+        if (Input.GetKeyDown(KeyCode.J))
+        {
+            EncountWithPlayer();
+        }
+
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
@@ -69,14 +94,30 @@ public class Enemy : MonoBehaviour
             yield return null;
         }
     }
+    IEnumerator PlayCryingSound()
+    {
+        int Selecter = Random.Range(0, 3);
+
+        _audioSource.clip = CrySounds[Selecter];
+        _audioSource.Play();
+
+        _audioSource.volume = 0.2f;
+        yield return new WaitForSeconds(_cryingCycleTime);
+    }
     private void ReturnToInitPosition()
     {
         _destination = _initPosition;
     }
-
     private void SetInitPosition()
     {
         _initPosition = transform.position;
         _IsSettedInitPosition = true;
     }
+
+    private void EncountWithPlayer()
+    {
+        _audioSource.volume = 1f;
+        _audioSource.PlayOneShot(Screaming);
+    }
+   
 }
