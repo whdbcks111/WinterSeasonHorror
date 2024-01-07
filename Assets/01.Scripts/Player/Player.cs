@@ -12,7 +12,6 @@ public class Player : MonoBehaviour
     [SerializeField] private Light2D _handLight, _surroundLight;
 
     [SerializeField] private Vector2 _camOffset;
-    [SerializeField] private float _lightOffsetX, _surroundLightOffsetX;
 
     [SerializeField] private float _moveSpeed = 5;
     [SerializeField] private float _jumpForce = 10;
@@ -27,9 +26,11 @@ public class Player : MonoBehaviour
     private readonly HashSet<Collider2D> _steppingGrounds = new();
     private bool _isLeftDir = false;
     private float _handLightDefaultAngleX;
+    private float _handLightOffsetX, _surroundLightOffsetX;
 
     public bool IsLightOn { get => _handLight.gameObject.activeSelf; }
     public bool IsOnGround { get => _steppingGrounds.Count > 0; }
+    public float MoveSpeed { get => _moveSpeed; }
 
     private void Awake()
     {
@@ -39,6 +40,9 @@ public class Player : MonoBehaviour
         _rigid = GetComponent<Rigidbody2D>();
         _animator = GetComponent<Animator>();
         _spriteRenderer = GetComponent<SpriteRenderer>();
+
+        _handLightOffsetX = _handLight.transform.position.x;
+        _surroundLightOffsetX = _surroundLight.transform.position.x;
     }
 
     private void Start()
@@ -48,9 +52,13 @@ public class Player : MonoBehaviour
 
     private void Update()
     {
-        MoveUpdate();
         JumpUpdate();
         LightUpdate();
+    }
+
+    private void FixedUpdate()
+    {
+        MoveUpdate();
     }
 
     private void MoveUpdate()
@@ -63,7 +71,10 @@ public class Player : MonoBehaviour
         _animator.SetBool("IsOnGround", IsOnGround);
         _animator.SetFloat("VelY", _rigid.velocity.y);
 
-        transform.Translate(velX * Time.deltaTime * Vector3.right);
+        var befPos = _rigid.position;
+        _rigid.MovePosition(_rigid.position + velX * Time.fixedDeltaTime * Vector2.right);
+        Physics2D.SyncTransforms();
+        print($"{befPos} {_rigid.position}");
 
         _spriteRenderer.flipX = _isLeftDir;
         CameraController.Instance.SetOffset(_camOffset * (_isLeftDir ? -1 : 1), 0.7f);
@@ -80,7 +91,7 @@ public class Player : MonoBehaviour
         if (IsLightOn) LightEnerge -= Time.deltaTime;
 
         int dir = _isLeftDir ? -1 : 1;
-        _handLight.transform.localPosition = new(dir * _lightOffsetX, _handLight.transform.localPosition.y);
+        _handLight.transform.localPosition = new(dir * _handLightOffsetX, _handLight.transform.localPosition.y);
         _surroundLight.transform.localPosition = new(dir * _surroundLightOffsetX, _surroundLight.transform.localPosition.y);
         _handLight.transform.eulerAngles = new(0, 0, dir * _handLightDefaultAngleX);
     }
