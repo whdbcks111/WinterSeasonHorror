@@ -18,13 +18,13 @@ MonoBehaviour:
     m_Value: 0
   quality:
     m_OverrideState: 1
-    m_Value: 2
+    m_Value: 1
   intensity:
     m_OverrideState: 1
     m_Value: 1
   clamp:
     m_OverrideState: 1
-    m_Value: 0
+    m_Value: 0.2
 --- !u!114 &-439891991504544362
 MonoBehaviour:
   m_ObjectHideFlags: 3
@@ -72,7 +72,7 @@ MonoBehaviour:
   active: 1
   shadows:
     m_OverrideState: 1
-    m_Value: {x: 0.8613007, y: 0.9573848, z: 1, w: -0.11705693}
+    m_Value: {x: 0.8613007, y: 0.9573848, z: 1, w: -0.27760723}
   midtones:
     m_OverrideState: 1
     m_Value: {x: 0.9889392, y: 0.9849293, z: 1, w: -0.050167095}
