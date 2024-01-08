@@ -54,10 +54,6 @@ public class Player : MonoBehaviour
     {
         JumpUpdate();
         LightUpdate();
-    }
-
-    private void FixedUpdate()
-    {
         MoveUpdate();
     }
 
@@ -72,7 +68,7 @@ public class Player : MonoBehaviour
         _animator.SetFloat("VelY", _rigid.velocity.y);
 
         var befPos = _rigid.position;
-        _rigid.MovePosition(_rigid.position + velX * Time.fixedDeltaTime * Vector2.right);
+        transform.Translate(velX * Time.deltaTime * Vector2.right);
         Physics2D.SyncTransforms();
         print($"{befPos} {_rigid.position}");
 
