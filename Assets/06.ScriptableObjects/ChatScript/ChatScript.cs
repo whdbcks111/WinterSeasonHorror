@@ -12,7 +12,7 @@ public class ChatScript : ScriptableObject
     
     public int chapter;
     public int chatCount;
-    public List<string> participants = new List<string>(); // 대화 참여자들의 이름 리스트
+    public List<SpeakerType> participants = new List<SpeakerType>(); // 대화 참여자들의 이름 리스트
     
     public List<DialogueEntry> dialogues = new List<DialogueEntry>();
     // 대화 리스트
@@ -22,15 +22,15 @@ public class ChatScript : ScriptableObject
 [System.Serializable]
 public struct DialogueEntry
 {
-    public Speaker speaker;
+    public SpeakerType speaker;
     [TextArea(0, 3)]
     public string dialogue; // 대화 내용
 }
 
-public enum Speaker
+public enum SpeakerType
 {
     Player = 0,
     NPC =1,
-    
+ 
 }
 
