@@ -40,6 +40,7 @@ public class Player : MonoBehaviour
     private int _jumpCount = 0;
     private bool _isJumping = false;
     private bool _isLeftJump = false;
+    private float _jumpTimer = 0f;
 
     private float _handLightDefaultAngleX;
     private float _handLightOffsetX, _surroundLightOffsetX;
@@ -204,7 +205,7 @@ public class Player : MonoBehaviour
     {
         for(int i = 0; i < collision.contactCount; i++)
         {
-            if (_feetCollider.bounds.min.y + 0.5f >= collision.GetContact(i).point.y &&
+            if (_feetCollider.bounds.min.y + 0.1f >= collision.GetContact(i).point.y &&
                 _rigid.velocity.y <= 0.01f)
             {
                 if(!_steppingGrounds.Contains(collision.collider))

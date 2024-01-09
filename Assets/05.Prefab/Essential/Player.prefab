@@ -345,7 +345,7 @@ MonoBehaviour:
   _hiddenColor: {r: 0.21572717, g: 0.19126023, b: 0.3301887, a: 1}
   _moveSpeed: 3
   _runModifier: 2
-  _jumpForce: 10
+  _jumpForce: 6.8
   _maxJumpCount: 1
   _footStepAudioSpan: 0.65
   MaxLightEnerge: 200
@@ -416,7 +416,7 @@ Rigidbody2D:
     m_Bits: 0
   m_Interpolate: 0
   m_SleepingMode: 1
-  m_CollisionDetection: 0
+  m_CollisionDetection: 1
   m_Constraints: 4
 --- !u!61 &1366285014593801986
 BoxCollider2D:
