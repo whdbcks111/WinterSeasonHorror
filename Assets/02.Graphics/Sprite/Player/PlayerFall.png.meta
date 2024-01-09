@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: c51cf712150c99543af30b76ef90db72
+guid: 7504c5e9681f72a47a4bdfed153d87cf
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -123,169 +123,85 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Run SPRITE_0
+      name: PlayerFall_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 66
-        height: 100
+        width: 40
+        height: 118
       alignment: 9
-      pivot: {x: 0.6592356, y: 0}
+      pivot: {x: 0.5, y: 0.28187326}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: b7e330212fab55b4799f1694fe0bfcdc
-      internalID: -467284727
+      spriteID: 36cf8a7f0be9bd446aacea708e00ea08
+      internalID: 1382036833
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Run SPRITE_1
+      name: PlayerFall_1
       rect:
         serializedVersion: 2
-        x: 66
+        x: 40
         y: 0
-        width: 66
-        height: 100
+        width: 40
+        height: 118
       alignment: 9
-      pivot: {x: 0.6592356, y: 0}
+      pivot: {x: 0.5, y: 0.2818733}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 74040bda924df7140ad647d876696d59
-      internalID: 622050629
+      spriteID: 9c915e3321ee00c45abb5fe9815656a8
+      internalID: 1776359902
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Run SPRITE_2
+      name: PlayerFall_2
       rect:
         serializedVersion: 2
-        x: 132
+        x: 80
         y: 0
-        width: 66
-        height: 100
+        width: 40
+        height: 118
       alignment: 9
-      pivot: {x: 0.6592356, y: 0}
+      pivot: {x: 0.5, y: 0.2818733}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: fb3c628aeabefcf4781700822cb46d23
-      internalID: -191837148
+      spriteID: 305540e2ca9a8c14cac9104fdc133e13
+      internalID: -422217718
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Run SPRITE_3
+      name: PlayerFall_3
       rect:
         serializedVersion: 2
-        x: 198
+        x: 120
         y: 0
-        width: 66
-        height: 100
+        width: 40
+        height: 118
       alignment: 9
-      pivot: {x: 0.6592356, y: 0}
+      pivot: {x: 0.5, y: 0.2818733}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: fd86d95833b98074b845eac1035d9ce1
-      internalID: -507648929
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Run SPRITE_4
-      rect:
-        serializedVersion: 2
-        x: 264
-        y: 0
-        width: 66
-        height: 100
-      alignment: 9
-      pivot: {x: 0.6592356, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 6031f659d802ce24b92934049b8663fc
-      internalID: 1810029173
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Run SPRITE_5
-      rect:
-        serializedVersion: 2
-        x: 330
-        y: 0
-        width: 66
-        height: 100
-      alignment: 9
-      pivot: {x: 0.6592356, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: b0c053140ff7b8b4e9f3543c1b83a7d2
-      internalID: -1270298312
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Run SPRITE_6
-      rect:
-        serializedVersion: 2
-        x: 396
-        y: 0
-        width: 66
-        height: 100
-      alignment: 9
-      pivot: {x: 0.6592356, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 35c26719ecf2cd144b3caa01ebd4d81b
-      internalID: 1885477603
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Run SPRITE_7
-      rect:
-        serializedVersion: 2
-        x: 462
-        y: 0
-        width: 66
-        height: 100
-      alignment: 9
-      pivot: {x: 0.6592356, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 1b14e18e836bb924ea6a1d262f3347be
-      internalID: 1368100497
+      spriteID: e3bce1bd3b2c92e4fae6aeb44ccd3b98
+      internalID: -160796574
       vertices: []
       indices: 
       edges: []
@@ -301,14 +217,10 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      Run SPRITE_0: -467284727
-      Run SPRITE_1: 622050629
-      Run SPRITE_2: -191837148
-      Run SPRITE_3: -507648929
-      Run SPRITE_4: 1810029173
-      Run SPRITE_5: -1270298312
-      Run SPRITE_6: 1885477603
-      Run SPRITE_7: 1368100497
+      PlayerFall_0: 1382036833
+      PlayerFall_1: 1776359902
+      PlayerFall_2: -422217718
+      PlayerFall_3: -160796574
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
