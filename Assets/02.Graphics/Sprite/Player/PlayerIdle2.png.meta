@@ -128,10 +128,10 @@ TextureImporter:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 58
-        height: 101
+        width: 52
+        height: 103
       alignment: 9
-      pivot: {x: 0.3289691, y: 0.008921154}
+      pivot: {x: 0.3297063, y: 0.015421964}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -147,12 +147,12 @@ TextureImporter:
       name: PlayerIdle2_1
       rect:
         serializedVersion: 2
-        x: 58
+        x: 52
         y: 0
-        width: 58
-        height: 101
+        width: 52
+        height: 103
       alignment: 9
-      pivot: {x: 0.3289691, y: 0.008921154}
+      pivot: {x: 0.3297063, y: 0.01542196}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -168,12 +168,12 @@ TextureImporter:
       name: PlayerIdle2_2
       rect:
         serializedVersion: 2
-        x: 116
+        x: 104
         y: 0
-        width: 58
-        height: 101
+        width: 52
+        height: 103
       alignment: 9
-      pivot: {x: 0.3289691, y: 0.008921154}
+      pivot: {x: 0.3297063, y: 0.01542196}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -189,12 +189,12 @@ TextureImporter:
       name: PlayerIdle2_3
       rect:
         serializedVersion: 2
-        x: 174
+        x: 156
         y: 0
-        width: 58
-        height: 101
+        width: 52
+        height: 103
       alignment: 9
-      pivot: {x: 0.3289691, y: 0.008921154}
+      pivot: {x: 0.3297063, y: 0.01542196}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -210,12 +210,12 @@ TextureImporter:
       name: PlayerIdle2_4
       rect:
         serializedVersion: 2
-        x: 232
+        x: 208
         y: 0
-        width: 58
-        height: 101
+        width: 52
+        height: 103
       alignment: 9
-      pivot: {x: 0.3289691, y: 0.008921154}
+      pivot: {x: 0.3297063, y: 0.01542196}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -231,12 +231,12 @@ TextureImporter:
       name: PlayerIdle2_5
       rect:
         serializedVersion: 2
-        x: 290
+        x: 260
         y: 0
-        width: 58
-        height: 101
+        width: 52
+        height: 103
       alignment: 9
-      pivot: {x: 0.3289691, y: 0.008921154}
+      pivot: {x: 0.3297063, y: 0.01542196}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -252,12 +252,12 @@ TextureImporter:
       name: PlayerIdle2_6
       rect:
         serializedVersion: 2
-        x: 348
+        x: 312
         y: 0
-        width: 58
-        height: 101
+        width: 52
+        height: 103
       alignment: 9
-      pivot: {x: 0.3289691, y: 0.008921154}
+      pivot: {x: 0.3297063, y: 0.01542196}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -265,27 +265,6 @@ TextureImporter:
       bones: []
       spriteID: 34131e5027119684587919c737131e69
       internalID: 1624103415
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: PlayerIdle2_7
-      rect:
-        serializedVersion: 2
-        x: 406
-        y: 0
-        width: 58
-        height: 101
-      alignment: 9
-      pivot: {x: 0.3289691, y: 0.008921154}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 92844b273086cf0418cf6c5ed6d317cd
-      internalID: -1269619074
       vertices: []
       indices: 
       edges: []
@@ -308,7 +287,6 @@ TextureImporter:
       PlayerIdle2_4: 2068227617
       PlayerIdle2_5: -55879432
       PlayerIdle2_6: 1624103415
-      PlayerIdle2_7: -1269619074
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

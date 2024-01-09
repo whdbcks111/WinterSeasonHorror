@@ -128,10 +128,10 @@ TextureImporter:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 58
-        height: 101
+        width: 52
+        height: 103
       alignment: 9
-      pivot: {x: 0.3289691, y: 0.008}
+      pivot: {x: 0.3083274, y: 0.030681346}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -147,12 +147,12 @@ TextureImporter:
       name: PlayerIdle3_1
       rect:
         serializedVersion: 2
-        x: 58
+        x: 52
         y: 0
-        width: 58
-        height: 101
+        width: 52
+        height: 103
       alignment: 9
-      pivot: {x: 0.3289691, y: 0.008}
+      pivot: {x: 0.3083274, y: 0.03068135}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -168,12 +168,12 @@ TextureImporter:
       name: PlayerIdle3_2
       rect:
         serializedVersion: 2
-        x: 116
+        x: 104
         y: 0
-        width: 58
-        height: 101
+        width: 52
+        height: 103
       alignment: 9
-      pivot: {x: 0.3289691, y: 0.008}
+      pivot: {x: 0.3083274, y: 0.03068135}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -189,12 +189,12 @@ TextureImporter:
       name: PlayerIdle3_3
       rect:
         serializedVersion: 2
-        x: 174
+        x: 156
         y: 0
-        width: 58
-        height: 101
+        width: 52
+        height: 103
       alignment: 9
-      pivot: {x: 0.3289691, y: 0.008}
+      pivot: {x: 0.3083274, y: 0.03068135}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -210,12 +210,12 @@ TextureImporter:
       name: PlayerIdle3_4
       rect:
         serializedVersion: 2
-        x: 232
+        x: 208
         y: 0
-        width: 58
-        height: 101
+        width: 52
+        height: 103
       alignment: 9
-      pivot: {x: 0.3289691, y: 0.008}
+      pivot: {x: 0.3083274, y: 0.03068135}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -231,12 +231,12 @@ TextureImporter:
       name: PlayerIdle3_5
       rect:
         serializedVersion: 2
-        x: 290
+        x: 260
         y: 0
-        width: 58
-        height: 101
+        width: 52
+        height: 103
       alignment: 9
-      pivot: {x: 0.3289691, y: 0.008}
+      pivot: {x: 0.3083274, y: 0.03068135}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -252,12 +252,12 @@ TextureImporter:
       name: PlayerIdle3_6
       rect:
         serializedVersion: 2
-        x: 348
+        x: 312
         y: 0
-        width: 58
-        height: 101
+        width: 52
+        height: 103
       alignment: 9
-      pivot: {x: 0.3289691, y: 0.008}
+      pivot: {x: 0.3083274, y: 0.03068135}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -273,12 +273,12 @@ TextureImporter:
       name: PlayerIdle3_7
       rect:
         serializedVersion: 2
-        x: 406
+        x: 364
         y: 0
-        width: 58
-        height: 101
+        width: 52
+        height: 103
       alignment: 9
-      pivot: {x: 0.3289691, y: 0.008}
+      pivot: {x: 0.3083274, y: 0.03068135}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -286,6 +286,111 @@ TextureImporter:
       bones: []
       spriteID: 7d2967c5279583d4195ef4c23f2f0d47
       internalID: -605620809
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlayerIdle3_8
+      rect:
+        serializedVersion: 2
+        x: 416
+        y: 0
+        width: 52
+        height: 103
+      alignment: 9
+      pivot: {x: 0.3083274, y: 0.03068135}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 87c07f93d2210e2468a694e17a42f5a2
+      internalID: -1845038228
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlayerIdle3_9
+      rect:
+        serializedVersion: 2
+        x: 468
+        y: 0
+        width: 52
+        height: 103
+      alignment: 9
+      pivot: {x: 0.3083274, y: 0.03068135}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ffc76d417366bfb43b9195fc35c363a2
+      internalID: -1068917816
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlayerIdle3_10
+      rect:
+        serializedVersion: 2
+        x: 520
+        y: 0
+        width: 52
+        height: 103
+      alignment: 9
+      pivot: {x: 0.3083274, y: 0.03068135}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 90e8045eeefe35447899401eaa4e950b
+      internalID: -630443822
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlayerIdle3_11
+      rect:
+        serializedVersion: 2
+        x: 572
+        y: 0
+        width: 52
+        height: 103
+      alignment: 9
+      pivot: {x: 0.3083274, y: 0.03068135}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6c6f2e40a05d2b74cb88c4c9b53c59ae
+      internalID: -1596588109
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlayerIdle3_12
+      rect:
+        serializedVersion: 2
+        x: 624
+        y: 0
+        width: 52
+        height: 103
+      alignment: 9
+      pivot: {x: 0.3083274, y: 0.03068135}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cfbbc93dc8798c54a8c3539d6fdb98c0
+      internalID: 214158260
       vertices: []
       indices: 
       edges: []
@@ -303,12 +408,17 @@ TextureImporter:
     nameFileIdTable:
       PlayerIdle3_0: -1240414041
       PlayerIdle3_1: 464466628
+      PlayerIdle3_10: -630443822
+      PlayerIdle3_11: -1596588109
+      PlayerIdle3_12: 214158260
       PlayerIdle3_2: 2119034633
       PlayerIdle3_3: 739295629
       PlayerIdle3_4: 1790434678
       PlayerIdle3_5: 921383375
       PlayerIdle3_6: 1851259396
       PlayerIdle3_7: -605620809
+      PlayerIdle3_8: -1845038228
+      PlayerIdle3_9: -1068917816
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
