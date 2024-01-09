@@ -9,24 +9,28 @@ public class CameraController : MonoBehaviour
 
     [SerializeField] private Camera _camera;
     [SerializeField] private float _defaultSmoothTime;
+    [SerializeField] private Material _glitchMaterial;
 
     private float _smoothTime;
     private Vector2 _camOffset;
     private Vector2 _staticPos;
     private bool _isStatic;
     private Transform _focusTarget;
-
-    private Vector3 _vel;
-    private float _zoomVel;
+    private Vector3 _vel = Vector3.zero;
 
     private float _zoomSize, _zoomSmoothTime = 0f;
+    private float _zoomVel = 0f;
+
+    private float _glitchStrength = 0f, _targetGlitchStrength = 0f;
+    private float _glitchSmoothTime = 0f, _glitchVel = 0f;
 
     public float ZoomSize { get => _zoomSize; }
+    public float GlitchStrength { get => _targetGlitchStrength; }
 
     private void Awake()
     {
-        _zoomSize = _camera.orthographicSize;
         Instance = this;
+        _zoomSize = _camera.orthographicSize;
     }
 
     private void LateUpdate()
@@ -35,6 +39,11 @@ public class CameraController : MonoBehaviour
 
         transform.position = Vector3.SmoothDamp(transform.position, new Vector3(target.x, target.y, transform.position.z), ref _vel, _smoothTime);
         _camera.orthographicSize = Mathf.SmoothDamp(_camera.orthographicSize, _zoomSize, ref _zoomVel, _zoomSmoothTime);
+
+        _glitchStrength = Mathf.SmoothDamp(_glitchStrength, _targetGlitchStrength, ref _glitchVel, _glitchSmoothTime);
+        _glitchMaterial.SetFloat("_Intensity", Mathf.Clamp(_glitchStrength * 0.8f, 0, 10));
+        _glitchMaterial.SetFloat("_Threshold", Mathf.Clamp01(_glitchStrength * 0.1f));
+        _glitchMaterial.SetFloat("_Offset", Mathf.Clamp01(_glitchStrength * 5f));
     }
 
     public void SetStatic(Vector2 pos, float time = -1)
@@ -50,6 +59,12 @@ public class CameraController : MonoBehaviour
     {
         _zoomSize = zoom;
         _zoomSmoothTime = time;
+    }
+
+    public void SetGlitch(float strength, float time)
+    {
+        _targetGlitchStrength = strength;
+        _glitchSmoothTime = time;
     }
 
     public void SetFocus(Transform focusTarget, float time = -1)
