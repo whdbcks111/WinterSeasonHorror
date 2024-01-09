@@ -169,7 +169,10 @@ public class Player : MonoBehaviour
 
         int dir = _isLeftDir ? -1 : 1;
         _handLight.transform.localPosition = new(dir * _handLightOffsetX, _handLight.transform.localPosition.y);
-        _surroundLight.transform.localPosition = new(dir * _surroundLightOffsetX, _surroundLight.transform.localPosition.y);
+        _surroundLight.transform.localPosition = Vector3.MoveTowards(
+            _surroundLight.transform.localPosition, 
+            new(dir * _surroundLightOffsetX, _surroundLight.transform.localPosition.y),
+            Time.deltaTime);
         _handLight.transform.eulerAngles = new(0, 0, dir * _handLightDefaultAngleX);
     }
 
@@ -199,11 +202,17 @@ public class Player : MonoBehaviour
 
     private void OnCollisionStay2D(Collision2D collision)
     {
-        if (_feetCollider.bounds.min.y >= collision.GetContact(0).point.y &&
-            _rigid.velocity.y <= 0.01f && !_steppingGrounds.Contains(collision.collider))
+        for(int i = 0; i < collision.contactCount; i++)
         {
-            _steppingGrounds.Add(collision.collider);
-            _jumpCount = _maxJumpCount;
+            if (_feetCollider.bounds.min.y + 0.5f >= collision.GetContact(i).point.y &&
+                _rigid.velocity.y <= 0.01f)
+            {
+                if(!_steppingGrounds.Contains(collision.collider))
+                    _steppingGrounds.Add(collision.collider);
+                _jumpCount = _maxJumpCount;
+                break;
+            }
+
         }
 
     }
