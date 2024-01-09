@@ -1,14 +1,22 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq.Expressions;
+
+using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class Enemy : MonoBehaviour
 {
-
+    [SerializeField]
+    private Vector3 boxSize;
     [Header("몬스터 배회 속도")]
     [SerializeField] private float _idleMoveSpeed;
     [Header("몬스터 추적 속도")]
     [SerializeField] private float _chaseMoveSpeed;
+    [Header("몬스터 점프력")]
+    [SerializeField] private float _jumpForce;
+
     [Header("추적 시작 범위")]
     [SerializeField] private float _searchingRange;
     private bool _isPlayerInSight;
@@ -20,7 +28,7 @@ public class Enemy : MonoBehaviour
     [Header("몬스터 배회 최대 이동 거리(이 값 넘으면 처음위치로)")]
     [SerializeField] private float _maxRoamDistance;
 
-
+    [SerializeField] private Transform _jumpSensor;
 
     [Header("감지 범위")]
     [SerializeField] private float _detectRange;
@@ -28,9 +36,10 @@ public class Enemy : MonoBehaviour
     [SerializeField] private float _searchRange;
     [Header("수색 시 한쪽으로 간 후 대기하는 시간(초)")]
     [SerializeField] private float _searchWaitTime;
-
-    private Vector2 _searchDesntinationLeft;
-    private Vector2 _searchDesntinationRight;
+    [Header("수색 실패 시 배회 횟수")]
+    [SerializeField] private float _chaseFailRoamCount;
+    [Header("수색 실패 배회 시 다음 배회까지 걸리는 시간(초)")]
+    [SerializeField] private float _chaseFailRoamCoolTime;
 
     [Header("몬스터 흐느끼는 소리 주기(초)")]
     [SerializeField] private float _cryingCycleTime;
@@ -55,17 +64,23 @@ public class Enemy : MonoBehaviour
     public Vector2 InitPosition;
     private Vector3 _destination;
     private bool _IsSettedInitPosition;
-    private float _currentLocationX;
-    private float _prevLocationX;
-    private float _direction;
+    private Vector2 _currentLocation;
+    private Vector2 _prevLocation;
+    private Vector2 _posGap;
+    private Vector2 _chaseFailPosition;
+    private int _direction;
+    private bool _chasable;
+    private float SavedDir;
 
+    Rigidbody2D _rigid2d;
+    
 
     private Player _player;
 
     private GameObject _screamParticle;
 
     private FSM _fsm = new();
-    private BaseState _idleState, _roamState, _chaseState,_returnState;
+    private BaseState _idleState, _roamState, _chaseState,_chaseFailState,_returnState;
 
     // Start is called before the first frame update
     void Start()
@@ -77,11 +92,11 @@ public class Enemy : MonoBehaviour
         _idleState = new(
         onEnter: () =>
         {
-            _destination = transform.position;
+            
         },
         onUpdate: () =>
         {
-            MoveToDestination(_destination);
+            MoveToDestination(transform.position,_idleMoveSpeed);
         },
         onExit: () =>
         {
@@ -91,12 +106,12 @@ public class Enemy : MonoBehaviour
         _returnState = new(
         onEnter: () =>
         {
-            _destination = InitPosition;
+            
 
         },
         onUpdate: () =>
         {
-            MoveToDestination(_destination);
+            MoveToDestination(InitPosition, _idleMoveSpeed);
         },
         onExit: () =>
         {
@@ -106,6 +121,7 @@ public class Enemy : MonoBehaviour
         _roamState = new(
         onEnter: () =>
         {
+            //----목표 설정----
             float Distance = Random.Range(-_roamRange, _roamRange + 0.1f);
             if (Mathf.Abs(Distance) <= _minRoamDistance && Distance >= 0) Distance = _minRoamDistance;
             if (Mathf.Abs(Distance) <= _minRoamDistance && Distance < 0) Distance = -_minRoamDistance;
@@ -115,8 +131,7 @@ public class Enemy : MonoBehaviour
         },
         onUpdate: () =>
         {
-
-            MoveToDestination(_destination);
+            MoveToDestination(_destination, _idleMoveSpeed);
         },
         onExit: () =>
         {
@@ -126,20 +141,57 @@ public class Enemy : MonoBehaviour
         onEnter: () =>
         {
             StartCoroutine(EncountWithPlayer());
-            Debug.Log("조우");
         },
         onUpdate: () =>
         {
-            ChasingPlayer();
+            if (_isPlayerInSight && !_player.IsHidden)              //시야범위 안에 있으면서 숨지 않았을 때. : 계속 쫓아간다.
+            {
+                MoveToDestination(_player.transform.position, _chaseMoveSpeed);
+            }
+            if(_isPlayerInSight && _player.IsHidden)                //시야범위 안에 있으면서 숨었을 때. 추적 실패.
+            {
+                _fsm.CurrentState = _chaseFailState;
+            }
+            if (!_isPlayerInSight)                                   //시야범위에서 놓쳤을 때. 추적 실패.
+            {
+                _fsm.CurrentState = _chaseFailState;
+            }
+
         },
         onExit: () =>
         {
 
         });
 
+        //플레이어를 시야범위에서 놓쳤을 때.
+        _chaseFailState = new(                                
+            onEnter: () => {
+                _chaseFailPosition = transform.position;
 
-        _direction = 1;
+                if(_player.IsHidden)
+                {
+                    //플레이어가 숨어있을 때의 함수를 실행할 것. 머리박는 애니메이션, 조금 후 소리지르고 이후 초기 위치로 복귀.
+                    Debug.Log("플레이어가 숨었음.");
 
+                }
+
+                if(!_player.IsHidden)
+                {
+                    //감지범위를 벗어났을 때. 주변 배회 후 초기 위치로 복귀
+                    Debug.Log("감지범위 벗어남!");
+                    StartCoroutine(RoamNear());
+
+                }
+            },
+            onUpdate: () => {
+
+            },
+            onExit: () => { 
+                
+            });
+
+        _rigid2d = GetComponent<Rigidbody2D>();
+        _chasable = true;
         _IsSettedInitPosition = false;
         _isPlayerInSight = false;
         StartCoroutine(SetDirection());
@@ -156,27 +208,28 @@ public class Enemy : MonoBehaviour
     void Update()
     {
         HandleState();
-        if (Input.GetKeyDown(KeyCode.U))
+        RaycastHit2D hit = Physics2D.BoxCast(_jumpSensor.position, boxSize, 0f, Vector2.zero, 0f);
+        if (hit.collider != null && hit.collider.gameObject != this.gameObject)
         {
-            StartCoroutine(PlayCryingSound());
+            Debug.Log("BoxCast hit: " + hit.collider.name);
         }
-        if (Input.GetKeyDown(KeyCode.J))
+
+        if (Input.GetKeyDown(KeyCode.M))
         {
-            StartCoroutine(EncountWithPlayer());
+            Jump();
         }
 
         
-
-
-        SearchingPlayer();
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
         if (!_IsSettedInitPosition) StartCoroutine(SetInitPosition());
 
+
         //if (collision.gameObject == wall)
-        //_destination = transform.position;
+        Debug.Log("벽과 충돌함");
+        _destination = transform.position;
     }
     /* //수색-추적 코루틴
     private IEnumerator Searching_2()
@@ -243,7 +296,31 @@ public class Enemy : MonoBehaviour
         }
     }
     */
+    private IEnumerator RoamNear()
+    {
+        for(int i = 0; i < _chaseFailRoamCount; i++)
+        {
+            float Distance = Random.Range(-_roamRange, _roamRange + 0.1f);
+            if (Mathf.Abs(Distance) <= _minRoamDistance && Distance >= 0) Distance = _minRoamDistance;
+            if (Mathf.Abs(Distance) <= _minRoamDistance && Distance < 0) Distance = -_minRoamDistance;
 
+            if (Mathf.Abs(transform.position.x - _chaseFailPosition.x) <= _maxRoamDistance) _destination = new Vector3(transform.position.x + Distance, transform.position.y, 0);
+
+            while (transform.position != _destination)
+            {
+                MoveToDestination(_destination, _idleMoveSpeed);
+                yield return null;
+            }
+
+            yield return new WaitUntil(() => transform.position == _destination);
+            yield return new WaitForSeconds(_chaseFailRoamCoolTime);
+        }
+        yield return new WaitForSeconds(1);
+        Debug.Log("추적실패 배회 종료.");
+        TeleportToInitposition();
+        _fsm.CurrentState = _idleState;
+
+    }
     private IEnumerator PlayCryingSound()
     {
         int Selecter = Random.Range(0, 3);
@@ -256,66 +333,57 @@ public class Enemy : MonoBehaviour
     {
         SoundManager.Instance.PlaySFX(JumpScare, transform.position, CryVolume, 1);
         SoundManager.Instance.PlaySFX(Screaming, Camera.main.transform.position, ScreamVolume, 1, Camera.main.transform);
+        _chasable = false;
+        float SavedMoveSpeed = _chaseMoveSpeed;
+        _chaseMoveSpeed = 0;
         yield return new WaitForSeconds(0.7f);
+        
         _screamParticle.SetActive(true);
-        yield return new WaitForSeconds(4);
+        yield return new WaitForSeconds(1);
+        _chaseMoveSpeed = SavedMoveSpeed;
+        yield return new WaitForSeconds(3);
+        _chasable = true;
         _screamParticle.SetActive(false);
     }
     private IEnumerator SetInitPosition()
     {
         yield return new WaitForSeconds(1);
         InitPosition = transform.position;
-
-        _searchDesntinationLeft = new Vector2(InitPosition.x - _searchRange, transform.position.y);
-        _searchDesntinationRight = new Vector2(InitPosition.x + _searchRange, transform.position.y);
-
         _IsSettedInitPosition = true;
     }
-    
-    //0108 계속----------------------------------
-    private IEnumerator SetDirection()
+    private IEnumerator SetDirection() //0108. 진행방향에 따라 바라보는 방향이 달라지도록.
     {
         while(true)
         {
-            _currentLocationX = transform.position.x;
-            yield return null; //다음 프레임까지 대기.
-            _prevLocationX = _currentLocationX;
+            _currentLocation = transform.position;
 
-            _direction = (_currentLocationX - _prevLocationX);
+            yield return new WaitForSeconds(0.05f);
+            _prevLocation = _currentLocation;
+            _currentLocation = transform.position;
+            _posGap = (_currentLocation - _prevLocation);
 
-            if(_direction < 0 ) { _direction = -1; }
-            if(_direction > 0) { _direction = 1; }
-            if (_direction == 0) { _direction = _direction; }
+            if(_posGap.x <0) { transform.rotation = Quaternion.Euler(0, 180,0); }
+            if (_posGap.x > 0) { transform.rotation = Quaternion.Euler(0, 0, 0); }
+            if (_posGap.x == 0) { transform.rotation = transform.rotation; }
         }
     }
-    private void MoveToDestination(Vector3 Destination)
+    private void MoveToDestination(Vector3 Destination , float MoveSpeed)
     {
-        transform.position = Vector3.MoveTowards(transform.position,Destination, _idleMoveSpeed * Time.deltaTime);
-        if (Vector3.Distance(transform.position, _destination) < 0.1f)
+        
+        if(Mathf.Abs(Destination.x - transform.position.x) > 0.1f)
         {
-            _fsm.CurrentState = _idleState;
+            float dirx;
+            dirx = Destination.x - transform.position.x;
+            if (dirx < 0) { dirx = -1; SavedDir = dirx; }
+            if (dirx > 0) { dirx = 1; SavedDir = dirx; }
         }
-    }
-
-    private void SearchingPlayer()
-    {
-        if (Vector3.Distance(transform.position, _player.transform.position) < _searchingRange && _fsm.CurrentState != _chaseState)
+        if(Mathf.Abs(Destination.x - transform.position.x) <= 0.1f)
         {
-            _fsm.CurrentState = _chaseState;
+            SavedDir = 0;
+            _destination = transform.position;
         }
-    }
-    private void ChasingPlayer()
-    {
-        transform.position = Vector3.MoveTowards(transform.position, _player.transform.position, _chaseMoveSpeed * Time.deltaTime);
-    }
-    private void ChaseFailed()
-    {
-        /*
-        if(_fsm.CurrentState == _chaseState && )
-        {
 
-        }
-        */
+        transform.position += new Vector3(SavedDir * MoveSpeed * Time.deltaTime, 0, 0);
     }
     private void HandleState()
     {
@@ -323,34 +391,63 @@ public class Enemy : MonoBehaviour
 
         if (Input.GetKeyDown("1"))
         {
+            Debug.Log("idle");
             _fsm.CurrentState = _idleState;
         }
         if (Input.GetKeyDown("2"))
         {
+            Debug.Log("roam");
             _fsm.CurrentState = _roamState;
         }
         if (Input.GetKeyDown("3"))
         {
+            Debug.Log("chase");
             _fsm.CurrentState = _chaseState;
         }
         if (Input.GetKeyDown("4"))
         {
+            Debug.Log("return");
             _fsm.CurrentState = _returnState;
+        }
+        if (Input.GetKeyDown("5"))
+        {
+            Debug.Log("chasefail");
+            _fsm.CurrentState = _chaseFailState;
+        }
+    }
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = Color.red;
+        // 현재 오브젝트의 위치를 기준으로 상자를 그립니다.
+        Gizmos.DrawWireCube(_jumpSensor.position, boxSize);
+        
+
+    }
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if(collision.gameObject == _player.gameObject && !_player.IsHidden && _fsm.CurrentState != _chaseState && _chasable)
+        {
+            _isPlayerInSight = true;
+            Debug.Log("CHASE 상태로 전환.");
+            _fsm.CurrentState = _chaseState;
         }
     }
 
-    private void OnTriggerEnter2D(Collider2D collision)
+    private void TeleportToInitposition()
     {
-        if(collision.gameObject == _player.gameObject)
-        {
-            _isPlayerInSight = true;
-        }
+        transform.position = InitPosition;
+        _fsm.CurrentState = _idleState;
     }
     private void OnTriggerExit2D(Collider2D collision)
     {
         if(collision.gameObject == _player.gameObject)
         {
-            _isPlayerInSight = false; 
+            _isPlayerInSight = false;
         }
+    }
+
+    private void Jump()
+    {
+        _rigid2d.velocity = Vector2.up * _jumpForce;
     }
 }
