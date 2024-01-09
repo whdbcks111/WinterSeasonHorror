@@ -8,7 +8,7 @@ public class Player : MonoBehaviour
 {
     public static Player Instance { get; private set; }
 
-    [SerializeField] private Collider2D _feetCollider;
+    [SerializeField] private Collider2D _feetCollider, _bodyCollider;
     [SerializeField] private Light2D _handLight, _surroundLight;
 
     [SerializeField] private Vector2 _camOffset;
@@ -18,12 +18,17 @@ public class Player : MonoBehaviour
     [SerializeField] private float _runModifier = 1.3f;
     [SerializeField] private float _jumpForce = 10;
     [SerializeField] private int _maxJumpCount = 1;
+    [SerializeField] private float _footStepAudioSpan = 1f;
     
     public float MaxLightEnerge = 100;
     [HideInInspector] public float LightEnerge;
 
     public float MaxStamina = 20f;
     [HideInInspector] public float Stamina;
+
+    [Header("Audio Clips")]
+    [SerializeField] private AudioClip _footStepClip;
+    [SerializeField] private float _footStepVolume, _footStepPitch, _footStepPitchRandom;
 
     private Rigidbody2D _rigid;
     private Animator _animator;
@@ -40,6 +45,8 @@ public class Player : MonoBehaviour
     private float _handLightOffsetX, _surroundLightOffsetX;
 
     private bool _isHidden = false;
+
+    private float _footStepAudioTimer = 0f;
 
     public bool IsHidden { get => _isHidden; }
     public bool IsLightOn { get => _handLight.gameObject.activeSelf; }
@@ -80,31 +87,64 @@ public class Player : MonoBehaviour
     {
         _spriteRenderer.color = IsHidden ? _hiddenColor : Color.white;
 
+        if(Input.GetKeyDown(KeyCode.E))
+        {
+            _isHidden = !_isHidden;
+        }
     }
 
     private void MoveUpdate()
     {
-        var isRunning = Input.GetKey(KeyCode.LeftShift) && Stamina > 0f;
 
         var xAxis = Input.GetAxisRaw("Horizontal");
         if(_isJumping && (xAxis > 0f && _isLeftJump || xAxis < 0f && !_isLeftJump))
         {
             xAxis = 0f;
         }
+        var isMoving = !Mathf.Approximately(xAxis, 0f);
+        var isInRunningKey = Input.GetKey(KeyCode.LeftShift);
+        var isRunning = isInRunningKey && Stamina > 0f && isMoving;
 
-        if (!Mathf.Approximately(xAxis, 0f)) _isLeftDir = xAxis < 0f;
+        if (isMoving)
+        {
+            // moving
+            _isLeftDir = xAxis < 0f;
+            Reveal();
+
+            if (_footStepAudioTimer > 0f)
+            {
+                _footStepAudioTimer -= Time.deltaTime;
+            }
+            else if(IsOnGround)
+            {
+                SoundManager.Instance.PlaySFX(_footStepClip, transform.position, _footStepVolume, 
+                    _footStepPitch + Random.Range(0f, _footStepPitchRandom), transform);
+                _footStepAudioTimer = _footStepAudioSpan / (isRunning ? _runModifier : 1f);
+            }
+
+            var raycastResult = Physics2D.Raycast(transform.position + Vector3.up * 0.3f, Vector3.right * xAxis, 1f, LayerMask.GetMask("Pushable"));
+
+            _animator.SetBool("IsPushing", raycastResult.collider != null);
+        }
         var velX = xAxis * _moveSpeed;
 
         if(isRunning)
         {
             velX *= _runModifier;
             Stamina -= Time.deltaTime;
+
+            if(Stamina <= 0f)
+            {
+                Stamina = -5f;
+            }
+        }
+        else if(Stamina < MaxStamina)
+        {
+            Stamina += Time.deltaTime / 2f;
         }
 
         _animator.SetBool("IsRunning", isRunning);
-        _animator.SetFloat("VelX", velX);
-        _animator.SetBool("IsOnGround", IsOnGround);
-        _animator.SetFloat("VelY", _rigid.velocity.y);
+        _animator.SetBool("IsWalking", isMoving);
 
         transform.Translate(velX * Time.deltaTime * Vector2.right);
 
@@ -130,12 +170,15 @@ public class Player : MonoBehaviour
 
     private void JumpUpdate()
     {
-        if (IsOnGround && _rigid.velocity.y < 0.01f) _isJumping = false;
+        if (IsOnGround && _rigid.velocity.y <= 0.01f) _isJumping = false;
 
         if (Input.GetKeyDown(KeyCode.Space))
         {
             Jump();
         }
+
+        _animator.SetBool("IsJumping", _isJumping);
+        _animator.SetBool("IsFalling", _rigid.velocity.y < -0.01f);
     }
 
     public void Jump()
@@ -144,7 +187,6 @@ public class Player : MonoBehaviour
         {
             _isJumping = true;
             _jumpCount--;
-            _animator.SetTrigger("Jump");
             _isLeftJump = _isLeftDir;
             _rigid.velocity = new(_rigid.velocity.x, _jumpForce);
         }
