@@ -8,7 +8,7 @@ public class Player : MonoBehaviour
 {
     public static Player Instance { get; private set; }
 
-    [SerializeField] private Collider2D _feetCollider;
+    [SerializeField] private Collider2D _feetCollider, _bodyCollider;
     [SerializeField] private Light2D _handLight, _surroundLight;
 
     [SerializeField] private Vector2 _camOffset;
@@ -121,6 +121,10 @@ public class Player : MonoBehaviour
                     _footStepPitch + Random.Range(0f, _footStepPitchRandom), transform);
                 _footStepAudioTimer = _footStepAudioSpan / (isRunning ? _runModifier : 1f);
             }
+
+            var raycastResult = Physics2D.Raycast(transform.position + Vector3.up * 0.3f, Vector3.right * xAxis, 1f, LayerMask.GetMask("Pushable"));
+
+            _animator.SetBool("IsPushing", raycastResult.collider != null);
         }
         var velX = xAxis * _moveSpeed;
 
@@ -140,9 +144,7 @@ public class Player : MonoBehaviour
         }
 
         _animator.SetBool("IsRunning", isRunning);
-        _animator.SetFloat("VelX", velX);
-        _animator.SetBool("IsOnGround", IsOnGround);
-        _animator.SetFloat("VelY", _rigid.velocity.y);
+        _animator.SetBool("IsWalking", isMoving);
 
         transform.Translate(velX * Time.deltaTime * Vector2.right);
 
@@ -168,12 +170,15 @@ public class Player : MonoBehaviour
 
     private void JumpUpdate()
     {
-        if (IsOnGround && _rigid.velocity.y < 0.01f) _isJumping = false;
+        if (IsOnGround && _rigid.velocity.y <= 0.01f) _isJumping = false;
 
         if (Input.GetKeyDown(KeyCode.Space))
         {
             Jump();
         }
+
+        _animator.SetBool("IsJumping", _isJumping);
+        _animator.SetBool("IsFalling", _rigid.velocity.y < -0.01f);
     }
 
     public void Jump()
@@ -182,7 +187,6 @@ public class Player : MonoBehaviour
         {
             _isJumping = true;
             _jumpCount--;
-            _animator.SetTrigger("Jump");
             _isLeftJump = _isLeftDir;
             _rigid.velocity = new(_rigid.velocity.x, _jumpForce);
         }
