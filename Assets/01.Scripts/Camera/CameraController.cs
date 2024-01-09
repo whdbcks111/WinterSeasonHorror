@@ -11,6 +11,7 @@ public class CameraController : MonoBehaviour
     [SerializeField] private float _defaultSmoothTime;
     [SerializeField] private Material _glitchMaterial;
 
+    private Vector3 _curCameraPos;
     private float _smoothTime;
     private Vector2 _camOffset;
     private Vector2 _staticPos;
@@ -24,6 +25,8 @@ public class CameraController : MonoBehaviour
     private float _glitchStrength = 0f, _targetGlitchStrength = 0f;
     private float _glitchSmoothTime = 0f, _glitchVel = 0f;
 
+    private float _cameraShakeOffset = 0f, _cameraShakeTimer = 0f;
+
     public float ZoomSize { get => _zoomSize; }
     public float GlitchStrength { get => _targetGlitchStrength; }
 
@@ -31,13 +34,23 @@ public class CameraController : MonoBehaviour
     {
         Instance = this;
         _zoomSize = _camera.orthographicSize;
+        _curCameraPos = transform.position;
     }
 
     private void LateUpdate()
     {
         Vector2 target = _isStatic && _focusTarget != null ? _staticPos : (Vector2)_focusTarget.position + _camOffset;
 
-        transform.position = Vector3.SmoothDamp(transform.position, new Vector3(target.x, target.y, transform.position.z), ref _vel, _smoothTime);
+        _curCameraPos = Vector3.SmoothDamp(
+            _curCameraPos, 
+            new Vector3(target.x, target.y, transform.position.z), 
+            ref _vel, _smoothTime);
+        transform.position = _curCameraPos;
+        if(_cameraShakeTimer > 0f)
+        {
+            transform.position += new Vector3(Random.Range(-1f, 1f), Random.Range(-1f, 1f)) * _cameraShakeOffset;
+            _cameraShakeTimer -= Time.deltaTime;
+        }
         _camera.orthographicSize = Mathf.SmoothDamp(_camera.orthographicSize, _zoomSize, ref _zoomVel, _zoomSmoothTime);
 
         _glitchStrength = Mathf.SmoothDamp(_glitchStrength, _targetGlitchStrength, ref _glitchVel, _glitchSmoothTime);
@@ -59,6 +72,12 @@ public class CameraController : MonoBehaviour
     {
         _zoomSize = zoom;
         _zoomSmoothTime = time;
+    }
+
+    public void Shake(float offset, float time)
+    {
+        _cameraShakeTimer = time;
+        _cameraShakeOffset = offset;
     }
 
     public void SetGlitch(float strength, float time)

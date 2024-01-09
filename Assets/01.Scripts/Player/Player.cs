@@ -78,6 +78,11 @@ public class Player : MonoBehaviour
         LightUpdate();
         MoveUpdate();
         HiddenViewUpdate();
+
+        if(Input.GetKeyDown(KeyCode.S))
+        {
+            CameraController.Instance.Shake(0.1f, 1f);
+        }
     }
 
     public void Hide() => _isHidden = true;
