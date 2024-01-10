@@ -240,7 +240,7 @@ public class Player : MonoBehaviour
             _isLeftJump = _isLeftDir;
 
             var raycastResult = Physics2D.Raycast(
-                _feetCollider.bounds.center, Vector3.right * (_isLeftDir ? -1 : 1), 1.2f, LayerMask.GetMask("Pushable", "Wall"));
+                _bodyCollider.bounds.center, Vector3.right * (_isLeftDir ? -1 : 1), 1.2f, LayerMask.GetMask("Pushable", "Wall"));
             _rigid.velocity = new(_rigid.velocity.x, raycastResult.collider != null || _isRunning ? _highJumpForce : _jumpForce);
         }
     }
