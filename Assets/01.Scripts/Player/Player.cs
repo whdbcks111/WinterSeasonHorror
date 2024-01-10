@@ -39,6 +39,7 @@ public class Player : MonoBehaviour
     private readonly HashSet<Collider2D> _steppingGrounds = new();
     private bool _isLeftDir = false;
     private bool _isShifting = false;
+    private bool _isRunning = false;
 
     private int _jumpCount = 0;
     private bool _isJumping = false;
@@ -146,14 +147,14 @@ public class Player : MonoBehaviour
         var nextIsLeftDir = xAxis < 0f;
         var isMoving = !Mathf.Approximately(xAxis, 0f);
         var isInRunningKey = Input.GetKey(KeyCode.LeftShift);
-        var isRunning = isInRunningKey && Stamina > 0f && isMoving;
+        _isRunning = isInRunningKey && Stamina > 0f && isMoving;
 
         if (isMoving)
         {
             // moving
             if(_isLeftDir != nextIsLeftDir && !_isShifting)
             {
-                StartMoveShift(isRunning);
+                StartMoveShift(_isRunning);
                 return;
             }
             Reveal();
@@ -166,7 +167,7 @@ public class Player : MonoBehaviour
             {
                 SoundManager.Instance.PlaySFX(_footStepClip, transform.position, _footStepVolume, 
                     _footStepPitch + Random.Range(0f, _footStepPitchRandom), transform);
-                _footStepAudioTimer = _footStepAudioSpan / (isRunning ? _runModifier : 1f);
+                _footStepAudioTimer = _footStepAudioSpan / (_isRunning ? _runModifier : 1f);
             }
 
             var raycastResult = Physics2D.Raycast(transform.position + Vector3.up * 0.3f, Vector3.right * xAxis, 1f, LayerMask.GetMask("Pushable"));
@@ -176,7 +177,7 @@ public class Player : MonoBehaviour
 
         var velX = xAxis * _moveSpeed;
 
-        if (isRunning)
+        if (_isRunning)
         {
             velX *= _runModifier;
             Stamina -= Time.deltaTime;
@@ -194,7 +195,7 @@ public class Player : MonoBehaviour
 
         transform.Translate(velX * Time.deltaTime * Vector2.right);
 
-        _animator.SetBool("IsRunning", isRunning && !_isShifting);
+        _animator.SetBool("IsRunning", _isRunning && !_isShifting);
         _animator.SetBool("IsWalking", isMoving && !_isShifting);
     }
 
@@ -239,8 +240,8 @@ public class Player : MonoBehaviour
             _isLeftJump = _isLeftDir;
 
             var raycastResult = Physics2D.Raycast(
-                _feetCollider.bounds.center, Vector3.right * (_isLeftDir ? -1 : 1), 2f, LayerMask.GetMask("Pushable", "Wall"));
-            _rigid.velocity = new(_rigid.velocity.x, raycastResult.collider != null ? _highJumpForce : _jumpForce);
+                _feetCollider.bounds.center, Vector3.right * (_isLeftDir ? -1 : 1), 1.2f, LayerMask.GetMask("Pushable", "Wall"));
+            _rigid.velocity = new(_rigid.velocity.x, raycastResult.collider != null || _isRunning ? _highJumpForce : _jumpForce);
         }
     }
 

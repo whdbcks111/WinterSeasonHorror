@@ -341,11 +341,13 @@ MonoBehaviour:
   _bodyCollider: {fileID: 0}
   _handLight: {fileID: 6235992872927915443}
   _surroundLight: {fileID: 1938804050324418043}
-  _camOffset: {x: 5, y: 0}
+  _camOffset: {x: 5, y: 3}
   _hiddenColor: {r: 0.21572717, g: 0.19126023, b: 0.3301887, a: 1}
   _moveSpeed: 3
+  _moveShiftTime: 0.5
   _runModifier: 2
-  _jumpForce: 6.8
+  _jumpForce: 6
+  _highJumpForce: 9
   _maxJumpCount: 1
   _footStepAudioSpan: 0.65
   MaxLightEnerge: 200
@@ -353,7 +355,7 @@ MonoBehaviour:
   MaxStamina: 20
   Stamina: 0
   _footStepClip: {fileID: 8300000, guid: f1176a85b2701db44a45da25634db52c, type: 3}
-  _footStepVolume: 0.05
+  _footStepVolume: 0.2
   _footStepPitch: 0.56
   _footStepPitchRandom: 0.08
 --- !u!70 &3622759569376359627
