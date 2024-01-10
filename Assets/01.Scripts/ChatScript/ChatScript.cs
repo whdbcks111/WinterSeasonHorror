@@ -30,7 +30,8 @@ public struct DialogueEntry
 public enum SpeakerType
 {
     Player = 0,
-    NPC =1,
+    NPC1 =1,
+    NPC2 =2
  
 }
 
