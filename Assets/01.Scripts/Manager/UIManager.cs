@@ -71,8 +71,9 @@ public class UIManager : MonoBehaviour
             
         }
         // 매치되는 이미지 리스트가 없는 경우 만들어서 리턴
+        Debug.Log("딕션어리에 없어서 만들었엉");
         var imageList = new List<Image>();
-        var i = Instantiate(targetImage, Vector3.zero, quaternion.identity, parentImageTf);
+        var i = Instantiate(targetImage, Vector3.zero, quaternion.identity, canvas.transform);
         imageDictionary.Add(targetImage.sprite.name, imageList);
         i.transform.localPosition = Vector3.zero;
         imageList.Add(i);
@@ -112,7 +113,7 @@ public class UIManager : MonoBehaviour
             /*GameObject obj = new GameObject();
             obj.AddComponent<Image>().sprite = imagePrefab.sprite*/
             ;
-            _image = Instantiate(imagePrefab, Vector3.zero, quaternion.identity, parentImageTf);
+            _image = Instantiate(imagePrefab, Vector3.zero, quaternion.identity,canvas.transform);
             _image.transform.localPosition = Vector3.zero;
             images.Add(_image);
 

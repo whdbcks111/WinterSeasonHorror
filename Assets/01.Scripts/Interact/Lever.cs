@@ -21,7 +21,7 @@ public class Lever : InteractableObject
     public override void OnInteract()
     {
         _isOn = !_isOn;
-        HandleBlockingObjects(_isOn);
+        //HandleBlockingObjects(_isOn);
         HandleTargetObjects();
         
         // 기타 레버 상호작용 로직
@@ -67,8 +67,31 @@ public class Lever : InteractableObject
         {
             if (obj != null)
             {
-                obj.SetActive(!obj.activeSelf); // 레버가 활성화되면 Active 상태가 반대로 변화
+                StartCoroutine(FadeObject(obj, duration));
+                //obj.SetActive(!obj.activeSelf); // 레버가 활성화되면 Active 상태가 반대로 변화
             }
         }
+    }
+    private IEnumerator FadeObject(GameObject obj, float duration)
+    {
+        bool isActive = obj.activeSelf;
+        Renderer renderer = obj.GetComponent<Renderer>();
+        float counter = 0;
+
+        // Fade out logic
+        while (counter < duration)
+        {
+            counter += Time.deltaTime;
+            float alpha = Mathf.Lerp(isActive ? 1 : 0, isActive ? 0 : 1, counter / duration);
+            if (renderer != null)
+            {
+                Color color = renderer.material.color;
+                color.a = alpha;
+                renderer.material.color = color;
+            }
+            yield return null;
+        }
+
+        obj.SetActive(!isActive);
     }
 }
