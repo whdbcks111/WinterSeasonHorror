@@ -15,8 +15,10 @@ public class Player : MonoBehaviour
 
     [SerializeField] private Color _hiddenColor;
     [SerializeField] private float _moveSpeed = 5;
+    [SerializeField] private float _moveShiftTime;
     [SerializeField] private float _runModifier = 1.3f;
-    [SerializeField] private float _jumpForce = 10;
+    [SerializeField] private float _jumpForce = 5;
+    [SerializeField] private float _highJumpForce = 10;
     [SerializeField] private int _maxJumpCount = 1;
     [SerializeField] private float _footStepAudioSpan = 1f;
     
@@ -36,12 +38,14 @@ public class Player : MonoBehaviour
 
     private readonly HashSet<Collider2D> _steppingGrounds = new();
     private bool _isLeftDir = false;
+    private bool _isShifting = false;
 
     private int _jumpCount = 0;
     private bool _isJumping = false;
     private bool _isLeftJump = false;
-    private float _jumpTimer = 0f;
+    private float _moveShiftTimer = 0f;
 
+    private bool _isLighting;
     private float _handLightDefaultAngleX;
     private float _handLightOffsetX, _surroundLightOffsetX;
 
@@ -64,6 +68,7 @@ public class Player : MonoBehaviour
         _animator = GetComponent<Animator>();
         _spriteRenderer = GetComponent<SpriteRenderer>();
 
+        _isLighting = _handLight.gameObject.activeSelf;
         _handLightOffsetX = _handLight.transform.position.x - transform.position.x;
         _surroundLightOffsetX = _surroundLight.transform.position.x - transform.position.x;
     }
@@ -78,6 +83,7 @@ public class Player : MonoBehaviour
         JumpUpdate();
         LightUpdate();
         MoveUpdate();
+        MoveShiftUpdate();
         HiddenViewUpdate();
 
         if(Input.GetKeyDown(KeyCode.S))
@@ -99,14 +105,45 @@ public class Player : MonoBehaviour
         }
     }
 
+    private void StartMoveShift(bool isRunning)
+    {
+        if(isRunning) _rigid.AddForce((_isLeftDir ? 1 : -1) * 6 * Vector3.left, ForceMode2D.Impulse);
+        _isShifting = true;
+        _moveShiftTimer = _moveShiftTime;
+        _animator.SetBool(isRunning ? "IsRunShifting" : "IsWalkShifting", true);
+    }
+
+    private void MoveShiftUpdate()
+    {
+        _animator.SetBool("IsShifting", _isShifting);
+        if (!_isShifting) return;
+        if(_moveShiftTimer > 0)
+        {
+            _moveShiftTimer -= Time.deltaTime;
+        }
+        else
+        {
+            _isShifting = false;
+            _isLeftDir = !_isLeftDir;
+
+            _animator.SetBool("IsRunShifting", false);
+            _animator.SetBool("IsWalkShifting", false);
+            _spriteRenderer.flipX = _isLeftDir;
+        }
+    }
+
     private void MoveUpdate()
     {
+        // 방향전환중이면 _isLeftDir의 반대로 미리 이동
+        CameraController.Instance.SetOffset(_camOffset * new Vector2(_isLeftDir == _isShifting ? 1 : -1, 1), _moveShiftTime);
+        if (_isShifting) return;
 
         var xAxis = Input.GetAxisRaw("Horizontal");
         if(_isJumping && (xAxis > 0f && _isLeftJump || xAxis < 0f && !_isLeftJump))
         {
             xAxis = 0f;
         }
+        var nextIsLeftDir = xAxis < 0f;
         var isMoving = !Mathf.Approximately(xAxis, 0f);
         var isInRunningKey = Input.GetKey(KeyCode.LeftShift);
         var isRunning = isInRunningKey && Stamina > 0f && isMoving;
@@ -114,7 +151,11 @@ public class Player : MonoBehaviour
         if (isMoving)
         {
             // moving
-            _isLeftDir = xAxis < 0f;
+            if(_isLeftDir != nextIsLeftDir && !_isShifting)
+            {
+                StartMoveShift(isRunning);
+                return;
+            }
             Reveal();
 
             if (_footStepAudioTimer > 0f)
@@ -132,39 +173,38 @@ public class Player : MonoBehaviour
 
             _animator.SetBool("IsPushing", raycastResult.collider != null);
         }
+
         var velX = xAxis * _moveSpeed;
 
-        if(isRunning)
+        if (isRunning)
         {
             velX *= _runModifier;
             Stamina -= Time.deltaTime;
 
-            if(Stamina <= 0f)
+            if (Stamina <= 0f)
             {
                 Stamina = -5f;
             }
         }
-        else if(Stamina < MaxStamina)
+        else if (Stamina < MaxStamina)
         {
             Stamina += Time.deltaTime / 2f;
         }
 
-        _animator.SetBool("IsRunning", isRunning);
-        _animator.SetBool("IsWalking", isMoving);
 
         transform.Translate(velX * Time.deltaTime * Vector2.right);
 
-        _spriteRenderer.flipX = _isLeftDir;
-        CameraController.Instance.SetOffset(_camOffset * (_isLeftDir ? -1 : 1), 0.7f);
+        _animator.SetBool("IsRunning", isRunning && !_isShifting);
+        _animator.SetBool("IsWalking", isMoving && !_isShifting);
     }
 
     private void LightUpdate()
     {
         if(Input.GetKeyDown(KeyCode.W))
         {
-            _handLight.gameObject.SetActive(!_handLight.gameObject.activeSelf);
+            _isLighting = !_isLighting;
         }
-        if(LightEnerge <= 0f) _handLight.gameObject.SetActive(false);
+        _handLight.gameObject.SetActive(_isLighting && LightEnerge > 0f && !_isShifting);
 
         if (IsLightOn) LightEnerge -= Time.deltaTime;
 
@@ -197,7 +237,10 @@ public class Player : MonoBehaviour
             _isJumping = true;
             _jumpCount--;
             _isLeftJump = _isLeftDir;
-            _rigid.velocity = new(_rigid.velocity.x, _jumpForce);
+
+            var raycastResult = Physics2D.Raycast(
+                _feetCollider.bounds.center, Vector3.right * (_isLeftDir ? -1 : 1), 2f, LayerMask.GetMask("Pushable", "Wall"));
+            _rigid.velocity = new(_rigid.velocity.x, raycastResult.collider != null ? _highJumpForce : _jumpForce);
         }
     }
 
