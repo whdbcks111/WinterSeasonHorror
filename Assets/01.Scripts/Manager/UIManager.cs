@@ -11,9 +11,9 @@ public class UIManager : MonoBehaviour
     private Dictionary<string, List<Image>> imageDictionary = new ();
 
     public Sprite testSprite;
-    public Canvas canvas;
-    public Image horrorImage; // 공포 이미지
+    public Canvas canvas; 
     public Image imagePrefab;
+    private Transform parentImageTf;
 
     [SerializeField] private int maxImageCount = 3;
     private Camera cam;
@@ -38,8 +38,9 @@ public class UIManager : MonoBehaviour
 
     void Start()
     {
+        parentImageTf = imagePrefab.transform;
         originColor = Color.white;
-        canvas = horrorImage.GetComponentInParent<Canvas>();
+        canvas = imagePrefab.GetComponentInParent<Canvas>();
         cam = Camera.main;
 
     }
@@ -71,7 +72,7 @@ public class UIManager : MonoBehaviour
         }
         // 매치되는 이미지 리스트가 없는 경우 만들어서 리턴
         var imageList = new List<Image>();
-        var i = Instantiate(targetImage, Vector3.zero, quaternion.identity, canvas.transform);
+        var i = Instantiate(targetImage, Vector3.zero, quaternion.identity, parentImageTf);
         imageDictionary.Add(targetImage.sprite.name, imageList);
         i.transform.localPosition = Vector3.zero;
         imageList.Add(i);
@@ -111,13 +112,13 @@ public class UIManager : MonoBehaviour
             /*GameObject obj = new GameObject();
             obj.AddComponent<Image>().sprite = imagePrefab.sprite*/
             ;
-            _image = Instantiate(imagePrefab, Vector3.zero, quaternion.identity, canvas.transform);
+            _image = Instantiate(imagePrefab, Vector3.zero, quaternion.identity, parentImageTf);
             _image.transform.localPosition = Vector3.zero;
             images.Add(_image);
 
         }
 
-        if (horrorImage == null) return;
+        if (_image == null) return;
         _image.color = originColor;
         _image.gameObject.SetActive(true);
         RectTransform rectTransform = _image.GetComponent<RectTransform>();
@@ -132,11 +133,11 @@ public class UIManager : MonoBehaviour
                 break;
             case ScreenFit.Width:
                 rectTransform.sizeDelta = new Vector2(screenWidth,
-                    screenWidth / horrorImage.sprite.bounds.size.x * horrorImage.sprite.bounds.size.y);
+                    screenWidth /sprite.bounds.size.x * sprite.bounds.size.y);
                 break;
             case ScreenFit.Height:
                 rectTransform.sizeDelta =
-                    new Vector2(screenHeight / horrorImage.sprite.bounds.size.y * horrorImage.sprite.bounds.size.x,
+                    new Vector2(screenHeight / sprite.bounds.size.y * sprite.bounds.size.x,
                         screenHeight);
                 break;
             // 오토
@@ -148,10 +149,10 @@ public class UIManager : MonoBehaviour
                 else
                 {
                     rectTransform.sizeDelta = (Screen.height > Screen.width)
-                        ? new Vector2(screenHeight / horrorImage.sprite.bounds.size.y * horrorImage.sprite.bounds.size.x,
+                        ? new Vector2(screenHeight / sprite.bounds.size.y * sprite.bounds.size.x,
                             screenHeight)
                         : new Vector2(screenWidth,
-                            screenWidth / horrorImage.sprite.bounds.size.x * horrorImage.sprite.bounds.size.y);
+                            screenWidth / sprite.bounds.size.x * sprite.bounds.size.y);
                 }
                 break;
         }
@@ -162,7 +163,7 @@ public class UIManager : MonoBehaviour
   
     void ImageToFitScreen(PanelUI panelUI)
     {
-        
+        Sprite sprite = panelUI.image.sprite;
         imagePrefab.sprite = panelUI.image.sprite;
         var images = FindGetListContainingImage(imagePrefab);
        
@@ -198,7 +199,7 @@ public class UIManager : MonoBehaviour
 
         }
 
-        if (horrorImage == null) return;
+        if (_image == null) return;
         _image.color = originColor;
         _image.gameObject.SetActive(true);
         RectTransform rectTransform = _image.GetComponent<RectTransform>();
@@ -212,11 +213,11 @@ public class UIManager : MonoBehaviour
                 break;
             case ScreenFit.Width:
                 rectTransform.sizeDelta = new Vector2(screenWidth,
-                    screenWidth / horrorImage.sprite.bounds.size.x * horrorImage.sprite.bounds.size.y);
+                    screenWidth /sprite.bounds.size.x * sprite.bounds.size.y);
                 break;
             case ScreenFit.Height:
                 rectTransform.sizeDelta =
-                    new Vector2(screenHeight / horrorImage.sprite.bounds.size.y * horrorImage.sprite.bounds.size.x,
+                    new Vector2(screenHeight / sprite.bounds.size.y * sprite.bounds.size.x,
                         screenHeight);
                 break;
         }
