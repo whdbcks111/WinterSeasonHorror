@@ -10,19 +10,19 @@ public class Enemy : MonoBehaviour
 {
     [SerializeField]
     private Vector3 boxSize;
-    [SerializeField]
-    private float _rayLength;
+
     [Header("몬스터 배회 속도")]
     [SerializeField] private float _idleMoveSpeed;
     [Header("몬스터 추적 속도")]
     [SerializeField] private float _chaseMoveSpeed;
+    private float _savedChaseSpeed;
     [Header("몬스터 점프력")]
     [SerializeField] private float _jumpForce;
 
     [Header("추적 시작 범위")]
     [SerializeField] private float _searchingRange;
-    private bool _isChasing;
-    private bool _isInSight;
+    public bool _isChasing;
+    public bool _isInSight;
     [Header("추적 종료 카운트(초)")]
     [SerializeField] private float _searchingStopCount;
 
@@ -77,7 +77,7 @@ public class Enemy : MonoBehaviour
     private Vector2 _chaseFailPosition;
     private int _direction;
     private bool _chasable;
-    
+    private bool _isStartChasing;
     private float SavedDir;
 
     Rigidbody2D _rigid2d;
@@ -93,7 +93,7 @@ public class Enemy : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
+        _savedChaseSpeed = _chaseMoveSpeed;
         _player = Player.Instance;
         _fsm.CurrentState = _idleState;
 
@@ -148,6 +148,13 @@ public class Enemy : MonoBehaviour
             {
                 _fsm.CurrentState = _idleState;
             }
+
+
+            if (_isInSight && !_player.IsHidden && _fsm.CurrentState != _chaseState)
+            {
+                _fsm.CurrentState = _chaseState;
+            }
+
         },
         onExit: () =>
         {
@@ -156,34 +163,33 @@ public class Enemy : MonoBehaviour
         _chaseState = new(
         onEnter: () =>
         {
+            _isStartChasing = true;
             StartCoroutine(EncountWithPlayer());
 
-            StopCoroutine(RoamNear());
-            StopCoroutine(StopChasing());
+
+            Debug.Log("추적상태 진입");
         },
         onUpdate: () =>
         {
             if (_isChasing && !_player.IsHidden)              //추적중이면서 숨지 않았을 때. : 계속 쫓아간다.
             {
                 MoveToDestination(_player.transform.position, _chaseMoveSpeed);
-                Debug.Log("추적중..");
             }
-            if(!_isChasing && _player.IsHidden && _isInSight)                //추적중이면서 숨었을 때. 추적 실패.
+            if(!_isChasing && _player.IsHidden && _isInSight)                //추적 끝,숨었을 때. 추적 실패.
             {
                 _fsm.CurrentState = _chaseFailState;
-                Debug.Log("숨어서 추적 실패");
+            }
 
-            }
-            if (!_isChasing && !_isInSight)                                   //추적 실패 시.
+            if(!_isChasing && !_isInSight )
             {
                 _fsm.CurrentState = _chaseFailState;
-                Debug.Log("시야 밖으로 나가서 추적 실패");
-            }
+            }  //숨지 않았지만 시야 내부에 없고 추적이 끝남. 추적 실패.
+
 
         },
         onExit: () =>
         {
-
+            _isStartChasing = false;
         });
 
         //플레이어를
@@ -191,19 +197,21 @@ public class Enemy : MonoBehaviour
         _chaseFailState = new(                                
             onEnter: () => {
                 _chaseFailPosition = transform.position;
-                
+
+                Debug.Log("추적실패상태 진입");
 
                 if (_player.IsHidden) 
                 {
                     //플레이어가 숨어있을 때의 함수를 실행할 것. 머리박는 애니메이션, 조금 후 소리지르고 이후 초기 위치로 복귀.
-                    Debug.Log("플레이어가 숨었음.");
-                    StartCoroutine(RoamNear());
+                    //StartCoroutine(RoamNear());
+                    Debug.Log("플레이어가 숨어있을 때의 함수를 실행할 것. 머리박는 애니메이션, 조금 후 소리지르고 이후 초기 위치로 복귀.");
+                    TeleportToInitposition();
                 }
                 if(!_player.IsHidden)
                 {
                     //감지범위를 벗어났을 때. 주변 배회 후 초기 위치로 복귀
-                    Debug.Log("감지범위 벗어남!");
-                    StartCoroutine(RoamNear());
+                    Debug.Log("감지범위를 벗어났을 때. 주변 배회 후 초기 위치로 복귀");
+                    TeleportToInitposition();
                 }
             },
             onUpdate: () => {
@@ -216,6 +224,8 @@ public class Enemy : MonoBehaviour
                 
             });
 
+
+        _isStartChasing = false;
         _rigid2d = GetComponent<Rigidbody2D>();
         _chasable = true;
         _IsSettedInitPosition = false;
@@ -246,6 +256,11 @@ public class Enemy : MonoBehaviour
             Jump();
         }
 
+        if(!_player.IsHidden && _isInSight && !_isChasing)
+        {
+            _isChasing = true;
+            _fsm.CurrentState = _chaseState;
+        } 
 
     }
 
@@ -341,7 +356,6 @@ public class Enemy : MonoBehaviour
             yield return new WaitForSeconds(_chaseFailRoamCoolTime);
         }
         yield return new WaitForSeconds(1);
-        Debug.Log("추적실패 배회 종료.");
         TeleportToInitposition();
 
     }
@@ -358,13 +372,11 @@ public class Enemy : MonoBehaviour
         SoundManager.Instance.PlaySFX(JumpScare, transform.position, CryVolume, 1);
         SoundManager.Instance.PlaySFX(Screaming, Camera.main.transform.position, ScreamVolume, 1, Camera.main.transform);
         _chasable = false;
-        float SavedMoveSpeed = _chaseMoveSpeed;
-        _chaseMoveSpeed = 0;
         yield return new WaitForSeconds(0.7f);
         
         _screamParticle.SetActive(true);
         yield return new WaitForSeconds(1);
-        _chaseMoveSpeed = SavedMoveSpeed;
+       // _chaseMoveSpeed = SavedMoveSpeed;
         yield return new WaitForSeconds(3);
         _chasable = true;
         _screamParticle.SetActive(false);
@@ -393,11 +405,8 @@ public class Enemy : MonoBehaviour
     }
     private IEnumerator StopChasing()
     {
-        
         yield return new WaitForSeconds(_searchingStopCount);
         _isChasing = false;
-        
-        Debug.Log("코루틴 실행 완료, 추적 종료.");
     }
 
 
@@ -465,17 +474,16 @@ public class Enemy : MonoBehaviour
         }
         if (collision.gameObject == _player.gameObject && !_player.IsHidden && _fsm.CurrentState != _chaseState && _chasable && !_isChasing)
         {
-
             _isChasing = true;
-            Debug.Log("CHASE 상태로 전환.");
             _fsm.CurrentState = _chaseState;
         }
 
-        if(_isChasing && _player.IsHidden)
+        
+        if(_isChasing && !_player.IsHidden)
         {
             StopCoroutine(StopChasing());
-            Debug.Log("추적 종료되기 전 다시 추적");
         }
+        
     }
 
     private void TeleportToInitposition()
@@ -490,7 +498,7 @@ public class Enemy : MonoBehaviour
             _isInSight = false;
             
         }
-        if (collision.gameObject == _player.gameObject && _isChasing)
+        if (!_isInSight && _isChasing)
         {
             StartCoroutine(StopChasing());
         }
