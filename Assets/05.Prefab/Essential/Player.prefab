@@ -338,7 +338,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _feetCollider: {fileID: 1366285014593801986}
-  _bodyCollider: {fileID: 0}
+  _bodyCollider: {fileID: 3622759569376359627}
   _handLight: {fileID: 6235992872927915443}
   _surroundLight: {fileID: 1938804050324418043}
   _camOffset: {x: 5, y: 3}
