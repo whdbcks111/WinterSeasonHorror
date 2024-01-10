@@ -1,11 +1,11 @@
 
 
+using System;
 using UnityEngine;
 
 public class ActiveTrigger : MonoBehaviour
 {
     public GameObject[] TargetObjects;
-    public ActiveType Type = ActiveType.ActiveOnTrigger;
 
     private bool _alreadyTriggered = false;
 
@@ -17,10 +17,8 @@ public class ActiveTrigger : MonoBehaviour
 
             foreach (var obj in TargetObjects)
             {
-                obj.SetActive(Type == ActiveType.ActiveOnTrigger);
+                obj.SetActive(!obj.activeSelf);
             }
         }
     }
-
-    public enum ActiveType { ActiveOnTrigger, DeactiveOnTrigger }
 }

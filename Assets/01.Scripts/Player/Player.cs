@@ -10,6 +10,7 @@ public class Player : MonoBehaviour
 
     [SerializeField] private Collider2D _feetCollider, _bodyCollider;
     [SerializeField] private Light2D _handLight, _surroundLight;
+    [SerializeField] private SpriteRenderer _bangMark;
 
     [SerializeField] private Vector2 _camOffset;
 
@@ -58,6 +59,11 @@ public class Player : MonoBehaviour
     public bool IsLightOn { get => _handLight.gameObject.activeSelf; }
     public bool IsOnGround { get => _steppingGrounds.Count > 0; }
     public float MoveSpeed { get => _moveSpeed; }
+    public bool BangMarkVisible 
+    { 
+        get => _bangMark.gameObject.activeSelf; 
+        set => _bangMark.gameObject.SetActive(value); 
+    }
 
     private void Awake()
     {
