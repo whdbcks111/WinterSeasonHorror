@@ -5,38 +5,59 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using UnityEngine.Rendering;
+using System.Linq;
+using Unity.VisualScripting;
 
 public class DialougManager : MonoBehaviour
 {
-    
-    
-    private TextAnimatorPlayer curTextPlayer;
-    public Canvas curTextBox;
-    public ChatScript chatScript;
-    [Header("Player")] 
-    public Transform playerFooter;
-    public TextMeshProUGUI playerText;
-    public int playerChatCount = 0;
-    [SerializeField]
-    private TextAnimatorPlayer playerTextPlayer;
-    
-    [Header("NPC")]
-    public Transform npcFooter;
-    public TextMeshProUGUI npcText;
-    public int entityChatCount = 0;
-    [SerializeField]
-    private TextAnimatorPlayer npcTextPlayer;
 
+    [Header("TextBoxMove")]
+    public float yOffset = 0;
+    public Vector2 targetPos;
+    public Vector2 movePos;
+    public GameObject targetObject;
+    public List<Chatter> participants;
+
+
+    [Header("TextAnimator")]
+    public TextMeshProUGUI tmp;
+    public TypewriterByCharacter textPlayer;
+    public Canvas textBox;
+    public ChatScript chatScript;
+    public Transform playerFooter;
+    [Range(0, 3f)]
+    public float disaapearTextBoxDelay = 0f;
     
+ 
+    public int playerChatCount = 0;
+    
+
+
+
     public int chatCount = 0;
-    
+
     private bool isTalking = false;
     private bool isSkipable = false;
     private bool flipFlag = false;
 
+
+    public void MoveTextBox( )
+    {
+        SpriteRenderer sr = targetObject.GetComponent<SpriteRenderer>();
+        targetPos = new Vector2 (targetObject.transform.position.x , sr.bounds.max.y);
+        if (sr != null)
+        {
+            playerFooter.transform.rotation = new Quaternion(0,sr.flipX ? 180: 0 ,0,0);
+            movePos = targetPos + new Vector2(0, yOffset);
+            textBox.transform.position = movePos;
+        }
+    }
     public void Update()
     {
-        if(Input.GetKeyDown(KeyCode.LeftArrow)) 
+        if(targetObject)
+        MoveTextBox();
+
+        if (Input.GetKeyDown(KeyCode.LeftArrow))
         {
             if (!flipFlag)
             {
@@ -52,7 +73,7 @@ public class DialougManager : MonoBehaviour
             }
             flipFlag = false;
         }
-        if(Input.GetKeyDown(KeyCode.Return))
+        if (Input.GetKeyDown(KeyCode.Return))
         {
             if (isTalking)
             {
@@ -67,62 +88,83 @@ public class DialougManager : MonoBehaviour
 
     public void FooterFlip(float rotationAmout)
     {
-        
-       // curTextBox.GetComponentInChildren<TextBoxFooterTag>().transform.Rotate(0,rotationAmout,0);
-        
+
+        //curTextBox.GetComponentInChildren<TextBoxFooterTag>().transform.Rotate(0,rotationAmout,0);
+
     }
     public void SkipDialouge()
     {
-        curTextPlayer.SkipTypewriter();
+        textPlayer.SkipTypewriter();
     }
-    public void Awake()
+ 
+    public void SetParticipants()
     {
-        //npcTextPlayer.SkipTypewriter();
+        var p = chatScript.participants;
+         foreach(var c in FindObjectsOfType<Chatter>())
+        {
+            if (p.Contains(c.speakerType))
+            {
+                participants.Add(c);
+            }
+        }
+    }
+    private void OnTextShowed()
+    {
+        isTalking = false; 
+        //textBox.enabled = false;
+
     }
     // Start is called before the first frame update
-        private void Start()
-        {
-   
-            npcTextPlayer.onTextShowed.AddListener(OnTextShowed);
-            playerTextPlayer.onTextShowed.AddListener(OnTextShowed);
+    private void Start()
+    {
+      
+        SetParticipants();
 
-            curTextPlayer = chatScript.dialogues[0].speaker == Speaker.Player ? playerTextPlayer : npcTextPlayer;
-            curTextPlayer.ShowText(chatScript.dialogues[0].dialogue);
+        textPlayer.onTextShowed.AddListener(OnTextShowed);
+       /* textPlayer.ShowText(chatScript.dialogues[0].dialogue);
+        chatCount++;*/
+    }
+
+    public void SetTarget(SpeakerType speaker)
+    {
+        foreach (Chatter chatter in participants)
+        {
+            chatter.textBoxActive = false;
+            if (chatter.speakerType == speaker)
+            {
+                targetObject = chatter.gameObject;
+                chatter.textBoxActive = true;
+            }
+        }
+
+    }
+
+    public void NextProgress()
+    {
+        if (chatCount < chatScript.dialogues.Count)
+        {
+            if (textBox)
+                textBox.enabled = true;
+
+            isTalking = true;
+            SetTarget(chatScript.dialogues[chatCount].speaker);
+            if(targetObject == null)
+            {
+                Debug.Log("타겟 오브젝트 실패 " + chatScript.dialogues[chatCount].speaker);
+            }
+
+            
+            MoveTextBox();
+            //tmp.text = "";
+            
+            textPlayer.ShowText(chatScript.dialogues[chatCount].dialogue);
             chatCount++;
-
         }
-
-        public void StartDialouge()
+        else
         {
-
+            chatCount = 0;
         }
-
-        public void OnTextShowed()
-        {
-            isTalking = false;
-        }
-        public void NextProgress()
-        {
-            if (chatCount < chatScript.dialogues.Count)
-            {
-                if(curTextBox)
-                curTextBox.enabled = false;
-                
-                isTalking = true;
-                curTextPlayer = chatScript.dialogues[chatCount].speaker == Speaker.Player
-                    ? playerTextPlayer
-                    : npcTextPlayer;
-                curTextBox = curTextPlayer.GetComponentInParent<Canvas>();
-
-                curTextBox.enabled = true;
-                curTextPlayer.ShowText(chatScript.dialogues[chatCount].dialogue);
-                chatCount++;
-            }
-            else
-            {
-                chatCount = 0;
-            }
-        }
+    }
     // Update is called once per frame
-   
+
 }

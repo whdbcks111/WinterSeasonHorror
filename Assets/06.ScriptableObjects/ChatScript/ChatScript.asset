@@ -14,8 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   chapter: 1
   chatCount: 1
-  participants:
-  - a
+  participants: 0000000001000000
   dialogues:
   - speaker: 0
     dialogue: "\uC548\uB155\uD558\uC138\uC694, \uC774 \uB9C8\uC744\uC740 \uCC98\uC74C\uC778\uB370\uC694\uC5EC\uAE30\uC5D0
