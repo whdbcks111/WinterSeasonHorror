@@ -32,6 +32,8 @@ public class Player : MonoBehaviour
     [Header("Audio Clips")]
     [SerializeField] private AudioClip _footStepClip;
     [SerializeField] private float _footStepVolume, _footStepPitch, _footStepPitchRandom;
+    [SerializeField] private AudioClip _jumpClip;
+    [SerializeField] private float _jumpVolume;
 
     private Rigidbody2D _rigid;
     private Animator _animator;
@@ -273,6 +275,8 @@ public class Player : MonoBehaviour
             var raycastResult = Physics2D.Raycast(
                 _bodyCollider.bounds.center, Vector3.right * (_isLeftDir ? -1 : 1), 1.2f, LayerMask.GetMask("Pushable", "Wall"));
             _rigid.velocity = new(_rigid.velocity.x, raycastResult.collider != null || _isRunning ? _highJumpForce : _jumpForce);
+
+            SoundManager.Instance.PlaySFX(_jumpClip, transform.position, _jumpVolume, 1f);
         }
     }
 
