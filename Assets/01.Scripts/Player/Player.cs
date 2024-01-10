@@ -120,11 +120,6 @@ public class Player : MonoBehaviour
     private void HiddenViewUpdate()
     {
         _spriteRenderer.color = IsHidden ? _hiddenColor : Color.white;
-
-        if(Input.GetKeyDown(KeyCode.E))
-        {
-            _isHidden = !_isHidden;
-        }
     }
 
     private void StartMoveShift(bool isRunning)
