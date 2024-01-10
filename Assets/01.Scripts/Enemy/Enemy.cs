@@ -10,6 +10,8 @@ public class Enemy : MonoBehaviour
 {
     [SerializeField]
     private Vector3 boxSize;
+    [SerializeField]
+    private float _rayLength;
     [Header("몬스터 배회 속도")]
     [SerializeField] private float _idleMoveSpeed;
     [Header("몬스터 추적 속도")]
@@ -19,7 +21,12 @@ public class Enemy : MonoBehaviour
 
     [Header("추적 시작 범위")]
     [SerializeField] private float _searchingRange;
-    private bool _isPlayerInSight;
+    private bool _isChasing;
+    private bool _isInSight;
+    [Header("추적 종료 카운트(초)")]
+    [SerializeField] private float _searchingStopCount;
+
+
 
     [Header("몬스터 배회 시 이동 거리(범위 내 랜덤)")]
     [SerializeField] private float _roamRange;
@@ -70,6 +77,7 @@ public class Enemy : MonoBehaviour
     private Vector2 _chaseFailPosition;
     private int _direction;
     private bool _chasable;
+    
     private float SavedDir;
 
     Rigidbody2D _rigid2d;
@@ -89,14 +97,18 @@ public class Enemy : MonoBehaviour
         _player = Player.Instance;
         _fsm.CurrentState = _idleState;
 
-        _idleState = new(
+        _idleState = new(   
         onEnter: () =>
         {
-            
+            Debug.Log("idle 상태");
         },
         onUpdate: () =>
         {
-            MoveToDestination(transform.position,_idleMoveSpeed);
+            if(_isInSight && !_player.IsHidden && _fsm.CurrentState != _chaseState)
+            {
+                _fsm.CurrentState = _chaseState;
+            }
+            //MoveToDestination(transform.position,_idleMoveSpeed);
         },
         onExit: () =>
         {
@@ -132,6 +144,10 @@ public class Enemy : MonoBehaviour
         onUpdate: () =>
         {
             MoveToDestination(_destination, _idleMoveSpeed);
+            if(Mathf.Abs(_destination.x - transform.position.x) < 0.1f)
+            {
+                _fsm.CurrentState = _idleState;
+            }
         },
         onExit: () =>
         {
@@ -141,20 +157,27 @@ public class Enemy : MonoBehaviour
         onEnter: () =>
         {
             StartCoroutine(EncountWithPlayer());
+
+            StopCoroutine(RoamNear());
+            StopCoroutine(StopChasing());
         },
         onUpdate: () =>
         {
-            if (_isPlayerInSight && !_player.IsHidden)              //시야범위 안에 있으면서 숨지 않았을 때. : 계속 쫓아간다.
+            if (_isChasing && !_player.IsHidden)              //추적중이면서 숨지 않았을 때. : 계속 쫓아간다.
             {
                 MoveToDestination(_player.transform.position, _chaseMoveSpeed);
+                Debug.Log("추적중..");
             }
-            if(_isPlayerInSight && _player.IsHidden)                //시야범위 안에 있으면서 숨었을 때. 추적 실패.
+            if(!_isChasing && _player.IsHidden && _isInSight)                //추적중이면서 숨었을 때. 추적 실패.
             {
                 _fsm.CurrentState = _chaseFailState;
+                Debug.Log("숨어서 추적 실패");
+
             }
-            if (!_isPlayerInSight)                                   //시야범위에서 놓쳤을 때. 추적 실패.
+            if (!_isChasing && !_isInSight)                                   //추적 실패 시.
             {
                 _fsm.CurrentState = _chaseFailState;
+                Debug.Log("시야 밖으로 나가서 추적 실패");
             }
 
         },
@@ -163,28 +186,31 @@ public class Enemy : MonoBehaviour
 
         });
 
-        //플레이어를 시야범위에서 놓쳤을 때.
+        //플레이어를
+        //놓쳤을 때(_isplayerinsight가 false 일때).
         _chaseFailState = new(                                
             onEnter: () => {
                 _chaseFailPosition = transform.position;
+                
 
-                if(_player.IsHidden)
+                if (_player.IsHidden) 
                 {
                     //플레이어가 숨어있을 때의 함수를 실행할 것. 머리박는 애니메이션, 조금 후 소리지르고 이후 초기 위치로 복귀.
                     Debug.Log("플레이어가 숨었음.");
-
+                    StartCoroutine(RoamNear());
                 }
-
                 if(!_player.IsHidden)
                 {
                     //감지범위를 벗어났을 때. 주변 배회 후 초기 위치로 복귀
                     Debug.Log("감지범위 벗어남!");
                     StartCoroutine(RoamNear());
-
                 }
             },
             onUpdate: () => {
-
+            if (!_player.IsHidden && _isInSight && _fsm.CurrentState != _chaseState)     //시야 내에서 숨지 않았을 때. ( chase fail로 넘어왔다가 다시 활성화 되는 경우는 숨었다가 범위내에서 나왔을 때임.)
+                {
+                    _fsm.CurrentState = _chaseState;
+                }
             },
             onExit: () => { 
                 
@@ -193,7 +219,7 @@ public class Enemy : MonoBehaviour
         _rigid2d = GetComponent<Rigidbody2D>();
         _chasable = true;
         _IsSettedInitPosition = false;
-        _isPlayerInSight = false;
+        _isChasing = false;
         StartCoroutine(SetDirection());
 
         _screamParticle = transform.GetChild(0).gameObject;
@@ -209,9 +235,10 @@ public class Enemy : MonoBehaviour
     {
         HandleState();
         RaycastHit2D hit = Physics2D.BoxCast(_jumpSensor.position, boxSize, 0f, Vector2.zero, 0f);
+
         if (hit.collider != null && hit.collider.gameObject != this.gameObject)
         {
-            Debug.Log("BoxCast hit: " + hit.collider.name);
+            //Debug.Log("BoxCast hit: " + hit.collider.name);
         }
 
         if (Input.GetKeyDown(KeyCode.M))
@@ -219,14 +246,12 @@ public class Enemy : MonoBehaviour
             Jump();
         }
 
-        
+
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
         if (!_IsSettedInitPosition) StartCoroutine(SetInitPosition());
-
-
         //if (collision.gameObject == wall)
         Debug.Log("벽과 충돌함");
         _destination = transform.position;
@@ -318,7 +343,6 @@ public class Enemy : MonoBehaviour
         yield return new WaitForSeconds(1);
         Debug.Log("추적실패 배회 종료.");
         TeleportToInitposition();
-        _fsm.CurrentState = _idleState;
 
     }
     private IEnumerator PlayCryingSound()
@@ -351,7 +375,7 @@ public class Enemy : MonoBehaviour
         InitPosition = transform.position;
         _IsSettedInitPosition = true;
     }
-    private IEnumerator SetDirection() //0108. 진행방향에 따라 바라보는 방향이 달라지도록.
+    private IEnumerator SetDirection()
     {
         while(true)
         {
@@ -367,6 +391,16 @@ public class Enemy : MonoBehaviour
             if (_posGap.x == 0) { transform.rotation = transform.rotation; }
         }
     }
+    private IEnumerator StopChasing()
+    {
+        
+        yield return new WaitForSeconds(_searchingStopCount);
+        _isChasing = false;
+        
+        Debug.Log("코루틴 실행 완료, 추적 종료.");
+    }
+
+
     private void MoveToDestination(Vector3 Destination , float MoveSpeed)
     {
         
@@ -425,11 +459,22 @@ public class Enemy : MonoBehaviour
     }
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if(collision.gameObject == _player.gameObject && !_player.IsHidden && _fsm.CurrentState != _chaseState && _chasable)
+        if(collision.gameObject == _player.gameObject)
         {
-            _isPlayerInSight = true;
+            _isInSight = true;
+        }
+        if (collision.gameObject == _player.gameObject && !_player.IsHidden && _fsm.CurrentState != _chaseState && _chasable && !_isChasing)
+        {
+
+            _isChasing = true;
             Debug.Log("CHASE 상태로 전환.");
             _fsm.CurrentState = _chaseState;
+        }
+
+        if(_isChasing && _player.IsHidden)
+        {
+            StopCoroutine(StopChasing());
+            Debug.Log("추적 종료되기 전 다시 추적");
         }
     }
 
@@ -442,7 +487,12 @@ public class Enemy : MonoBehaviour
     {
         if(collision.gameObject == _player.gameObject)
         {
-            _isPlayerInSight = false;
+            _isInSight = false;
+            
+        }
+        if (collision.gameObject == _player.gameObject && _isChasing)
+        {
+            StartCoroutine(StopChasing());
         }
     }
 
