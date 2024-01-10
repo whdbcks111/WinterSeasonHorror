@@ -92,7 +92,6 @@ public class SoundManager : MonoBehaviour
     public void PlaySFX(AudioClip clip, Vector3 pos,
         float volume = 1f, float pitch = 1f, Transform parent = null)
     {
-        print(AudioSourcePrefab);
         var source = _sourcePool.Get();
         source.transform.SetParent(parent);
         source.transform.position = pos;
