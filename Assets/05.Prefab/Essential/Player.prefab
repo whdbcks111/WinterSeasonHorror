@@ -26,7 +26,7 @@ Transform:
   m_GameObject: {fileID: 2375689616459915492}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1.64, y: 1.47, z: 0}
+  m_LocalPosition: {x: 0.05, y: 1.33, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -47,9 +47,9 @@ MonoBehaviour:
   m_ComponentVersion: 1
   m_LightType: 3
   m_BlendStyleIndex: 0
-  m_FalloffIntensity: 0.651
+  m_FalloffIntensity: 0.828
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_Intensity: 1.28
+  m_Intensity: 1
   m_LightVolumeIntensity: 1
   m_LightVolumeIntensityEnabled: 0
   m_ApplyToSortingLayers: 00000000
@@ -62,7 +62,7 @@ MonoBehaviour:
   m_NormalMapQuality: 2
   m_UseNormalMap: 0
   m_ShadowIntensityEnabled: 1
-  m_ShadowIntensity: 1
+  m_ShadowIntensity: 0.509
   m_ShadowVolumeIntensityEnabled: 0
   m_ShadowVolumeIntensity: 0.75
   m_LocalBounds:
@@ -71,7 +71,7 @@ MonoBehaviour:
   m_PointLightInnerAngle: 360
   m_PointLightOuterAngle: 360
   m_PointLightInnerRadius: 0
-  m_PointLightOuterRadius: 6.62
+  m_PointLightOuterRadius: 6.54
   m_ShapeLightParametricSides: 5
   m_ShapeLightParametricAngleOffset: 0
   m_ShapeLightParametricRadius: 1
@@ -110,7 +110,7 @@ Transform:
   m_GameObject: {fileID: 3357664214234878401}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: -0.73129416, w: 0.68206227}
-  m_LocalPosition: {x: 0.466, y: 1.289, z: 0}
+  m_LocalPosition: {x: 0.294, y: 1.274, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -146,7 +146,7 @@ MonoBehaviour:
   m_NormalMapQuality: 2
   m_UseNormalMap: 0
   m_ShadowIntensityEnabled: 1
-  m_ShadowIntensity: 1
+  m_ShadowIntensity: 0.898
   m_ShadowVolumeIntensityEnabled: 0
   m_ShadowVolumeIntensity: 0.75
   m_LocalBounds:
@@ -179,7 +179,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _light: {fileID: 6235992872927915443}
-  _minIntensity: 0.32
+  _minIntensity: 0.53
   _maxIntensity: 1.21
 --- !u!60 &8529928624541683305
 PolygonCollider2D:
@@ -314,12 +314,12 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 1
-  m_Sprite: {fileID: -1391153595, guid: 2f66387326f3e704da8d365ee5834c4d, type: 3}
+  m_Sprite: {fileID: 208369175, guid: 9aa583a7e1bd0ec44af40b1cad17c30d, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 1, y: 2}
+  m_Size: {x: 1.0833334, y: 2.1458333}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
@@ -338,16 +338,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _feetCollider: {fileID: 1366285014593801986}
+  _bodyCollider: {fileID: 0}
   _handLight: {fileID: 6235992872927915443}
   _surroundLight: {fileID: 1938804050324418043}
   _camOffset: {x: 5, y: 0}
   _hiddenColor: {r: 0.21572717, g: 0.19126023, b: 0.3301887, a: 1}
   _moveSpeed: 3
   _runModifier: 2
-  _jumpForce: 10
+  _jumpForce: 6.8
   _maxJumpCount: 1
   _footStepAudioSpan: 0.65
-  MaxLightEnerge: 100
+  MaxLightEnerge: 200
   LightEnerge: 0
   MaxStamina: 20
   Stamina: 0
@@ -387,8 +388,8 @@ CapsuleCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 1.02}
-  m_Size: {x: 1.02, y: 1.958769}
+  m_Offset: {x: 0, y: 1.0691857}
+  m_Size: {x: 0.9, y: 2.0571404}
   m_Direction: 0
 --- !u!50 &7165854523698902351
 Rigidbody2D:
@@ -415,7 +416,7 @@ Rigidbody2D:
     m_Bits: 0
   m_Interpolate: 0
   m_SleepingMode: 1
-  m_CollisionDetection: 0
+  m_CollisionDetection: 1
   m_Constraints: 4
 --- !u!61 &1366285014593801986
 BoxCollider2D:
@@ -449,18 +450,18 @@ BoxCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0.11}
+  m_Offset: {x: 0, y: 0.23123252}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
-    pivot: {x: 0.5, y: 0}
-    oldSize: {x: 0.9583333, y: 2.0208333}
-    newSize: {x: 1, y: 2}
+    pivot: {x: 0.34371316, y: 0}
+    oldSize: {x: 1.0833334, y: 2.1458333}
+    newSize: {x: 1.0833334, y: 2.1458333}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 0.47521847, y: 0.18736291}
+  m_Size: {x: 0.88, y: 0.4115405}
   m_EdgeRadius: 0
 --- !u!95 &2403024944357959022
 Animator:
@@ -502,7 +503,7 @@ AudioReverbFilter:
   m_DryLevel: -1706
   m_Room: 0
   m_RoomHF: 0
-  m_DecayTime: 1
+  m_DecayTime: 2.9
   m_DecayHFRatio: 0.5
   m_ReflectionsLevel: -10000
   m_ReverbLevel: 0
