@@ -57,6 +57,7 @@ public class Player : MonoBehaviour
 
     private readonly Dictionary<string, Action> _onFootStepListeners = new();
 
+    public bool IsLeftDir { get => _isLeftDir;  }
     public bool IsHidden { get => _isHidden; }
     public bool IsLightOn { get => _handLight.gameObject.activeSelf; }
     public bool IsOnGround { get => _steppingGrounds.Count > 0; }
