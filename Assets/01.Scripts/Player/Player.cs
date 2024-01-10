@@ -1,6 +1,6 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Rendering.Universal;
 
@@ -55,6 +55,8 @@ public class Player : MonoBehaviour
 
     private float _footStepAudioTimer = 0f;
 
+    private readonly Dictionary<string, Action> _onFootStepListeners = new();
+
     public bool IsHidden { get => _isHidden; }
     public bool IsLightOn { get => _handLight.gameObject.activeSelf; }
     public bool IsOnGround { get => _steppingGrounds.Count > 0; }
@@ -101,6 +103,16 @@ public class Player : MonoBehaviour
 
     public void Hide() => _isHidden = true;
     public void Reveal() => _isHidden = false;
+
+    public void AddFootStepListener(string key, Action listener)
+    {
+        _onFootStepListeners[key] = listener;
+    }
+
+    public void RemoveFootStepListener(string key)
+    {
+        _onFootStepListeners.Remove(key);
+    }
 
     private void HiddenViewUpdate()
     {
@@ -153,7 +165,13 @@ public class Player : MonoBehaviour
         var nextIsLeftDir = xAxis < 0f;
         var isMoving = !Mathf.Approximately(xAxis, 0f);
         var isInRunningKey = Input.GetKey(KeyCode.LeftShift);
-        _isRunning = isInRunningKey && Stamina > 0f && isMoving;
+        var nextIsRunning = isInRunningKey && Stamina > 0f && isMoving;
+
+        if(_isRunning != nextIsRunning)
+        {
+            _footStepAudioTimer = 0f;
+        }
+        _isRunning = nextIsRunning;
 
         if (isMoving)
         {
@@ -172,8 +190,13 @@ public class Player : MonoBehaviour
             else if(IsOnGround)
             {
                 SoundManager.Instance.PlaySFX(_footStepClip, transform.position, _footStepVolume, 
-                    _footStepPitch + Random.Range(0f, _footStepPitchRandom), transform);
+                    _footStepPitch + UnityEngine.Random.Range(0f, _footStepPitchRandom), transform);
                 _footStepAudioTimer = _footStepAudioSpan / (_isRunning ? _runModifier : 1f);
+
+                foreach(var listener in _onFootStepListeners)
+                {
+                    listener.Value?.Invoke();
+                }
             }
 
             var raycastResult = Physics2D.Raycast(transform.position + Vector3.up * 0.3f, Vector3.right * xAxis, 1f, LayerMask.GetMask("Pushable"));
@@ -204,6 +227,7 @@ public class Player : MonoBehaviour
         _animator.SetBool("IsRunning", _isRunning && !_isShifting);
         _animator.SetBool("IsWalking", isMoving && !_isShifting);
     }
+
 
     private void LightUpdate()
     {
