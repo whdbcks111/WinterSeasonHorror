@@ -28,8 +28,7 @@ public class DialougManager : MonoBehaviour
     [Range(0, 3f)]
     public float disaapearTextBoxDelay = 0f;
     
- 
-    public int playerChatCount = 0;
+    
     
 
 
@@ -99,6 +98,7 @@ public class DialougManager : MonoBehaviour
  
     public void SetParticipants()
     {
+        participants.Clear();
         var p = chatScript.participants;
          foreach(var c in FindObjectsOfType<Chatter>())
         {
@@ -107,6 +107,16 @@ public class DialougManager : MonoBehaviour
                 participants.Add(c);
             }
         }
+
+        foreach (var cp in participants)
+        {
+            if (!chatScript.participants.Contains(cp.speakerType))
+            {
+                Debug.Log("ì°¸ì—¬ì ìˆ˜ê°€ ë§ì§€ ì•ŠìŠµë‹ˆë‹¤");
+            }
+        }
+
+        
     }
     private void OnTextShowed()
     {
@@ -150,7 +160,7 @@ public class DialougManager : MonoBehaviour
             SetTarget(chatScript.dialogues[chatCount].speaker);
             if(targetObject == null)
             {
-                Debug.Log("Å¸°Ù ¿ÀºêÁ§Æ® ½ÇÆĞ " + chatScript.dialogues[chatCount].speaker);
+                Debug.Log("Å¸ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ® ï¿½ï¿½ï¿½ï¿½ " + chatScript.dialogues[chatCount].speaker);
             }
 
             
@@ -165,6 +175,5 @@ public class DialougManager : MonoBehaviour
             chatCount = 0;
         }
     }
-    // Update is called once per frame
 
 }

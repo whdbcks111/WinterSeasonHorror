@@ -8,7 +8,7 @@ using UnityEditor.Searcher;
 
 public class UIManager : MonoBehaviour
 {
-    private Dictionary<string, List<Image>> imageDictionary = new Dictionary<string, List<Image>>();
+    private Dictionary<string, List<Image>> imageDictionary = new ();
 
     public Sprite testSprite;
     public Canvas canvas;
