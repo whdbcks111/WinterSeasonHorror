@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 21837466a6d5167439bd89435ddb1af6
+guid: 8070af923f0f40d4498da39d82985a62
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -110,169 +110,106 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Screaming_0
+      name: Jump_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 104
-        height: 95
+        width: 63
+        height: 98
       alignment: 9
-      pivot: {x: 0.4533147, y: -0.0008601713}
+      pivot: {x: 0.3647854, y: 0.02191982}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 81e352738a4d5ae409787bc2934431de
-      internalID: -2112200967
+      spriteID: fb4b7c9ed42a90b4f903a433f609c17a
+      internalID: -412924086
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Screaming_1
+      name: Jump_1
       rect:
         serializedVersion: 2
-        x: 104
+        x: 63
         y: 0
-        width: 104
-        height: 95
+        width: 63
+        height: 98
       alignment: 9
-      pivot: {x: 0.4533147, y: -0.0008601713}
+      pivot: {x: 0.3647854, y: 0.15608461}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: b54dad2f794990b4dac64eb994e14021
-      internalID: -1933705144
+      spriteID: 02796b019b044214093e2b5a50af1294
+      internalID: 1510030036
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Screaming_2
+      name: Jump_2
       rect:
         serializedVersion: 2
-        x: 208
+        x: 126
         y: 0
-        width: 104
-        height: 95
+        width: 63
+        height: 98
       alignment: 9
-      pivot: {x: 0.4533147, y: -0.0017203426}
+      pivot: {x: 0.3647854, y: 0.24300826}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 1db3e75cda3e6614b81c32c703b6af39
-      internalID: -194342769
+      spriteID: 78bb05f4f27bc644f93ef5dc278e3f53
+      internalID: 498307021
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Screaming_3
+      name: Jump_3
       rect:
         serializedVersion: 2
-        x: 312
+        x: 189
         y: 0
-        width: 104
-        height: 95
+        width: 63
+        height: 98
       alignment: 9
-      pivot: {x: 0.4533147, y: -0.0008601713}
+      pivot: {x: 0.3383302, y: 0.24489792}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 08cc75162a517b842b7ae73de10082ff
-      internalID: -356187018
+      spriteID: 2bed0aac2b41d354aa0b5cdfa3b8062b
+      internalID: 2144187760
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Screaming_5
+      name: Jump_4
       rect:
         serializedVersion: 2
-        x: 520
+        x: 252
         y: 0
-        width: 104
-        height: 95
+        width: 63
+        height: 98
       alignment: 9
-      pivot: {x: 0.4533147, y: -0.0008601713}
+      pivot: {x: 0.3647854, y: 0.2108843}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: a619e46ea0a4f5b429d8641fb76e8ae8
-      internalID: -981316247
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Screaming_7
-      rect:
-        serializedVersion: 2
-        x: 728
-        y: 0
-        width: 104
-        height: 95
-      alignment: 9
-      pivot: {x: 0.4533147, y: -0.0008601713}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 66bdb86c4223dca42b69d741a081d145
-      internalID: -1860360582
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Screaming_4
-      rect:
-        serializedVersion: 2
-        x: 416
-        y: 0
-        width: 104
-        height: 95
-      alignment: 9
-      pivot: {x: 0.4533147, y: -0.0008601713}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: f671277b498894948ae229c697e07ef8
-      internalID: -1829478919
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Screaming_6
-      rect:
-        serializedVersion: 2
-        x: 624
-        y: 0
-        width: 104
-        height: 95
-      alignment: 9
-      pivot: {x: 0.4533147, y: -0.0008601713}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 00173ef853bdf4b46b2552253a557ba0
-      internalID: 158592499
+      spriteID: 1f4e051a12daf544eb11ff0ebf23da88
+      internalID: 668725713
       vertices: []
       indices: 
       edges: []
@@ -288,14 +225,11 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      Screaming_0: -2112200967
-      Screaming_1: -1933705144
-      Screaming_2: -194342769
-      Screaming_3: -356187018
-      Screaming_4: -1829478919
-      Screaming_5: -981316247
-      Screaming_6: 158592499
-      Screaming_7: -1860360582
+      Jump_0: -412924086
+      Jump_1: 1510030036
+      Jump_2: 498307021
+      Jump_3: 2144187760
+      Jump_4: 668725713
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
