@@ -1,3 +1,4 @@
+using Cysharp.Threading.Tasks;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -14,7 +15,6 @@ public class Lever : InteractableObject
     [SerializeField] private Transform handleAxisTf; //핸들 축
     
     private bool _isOn = false; // 레버 상태
-    public GameObject[] blockingObjects; // 길을 막는 오브젝트들
     public GameObject[] targetObjects;
     
     public override void OnInteract()
@@ -50,28 +50,18 @@ public class Lever : InteractableObject
 
         GetComponent<BoxCollider2D>().enabled = true;
     }
-    private void HandleBlockingObjects(bool active)
-    {
-        foreach (var obj in blockingObjects)
-        {
-            if (obj != null)
-            {
-                obj.SetActive(!active); // 레버가 활성화되면 오브젝트 비활성화
-            }
-        }
-    }
     private void HandleTargetObjects()
     {
         foreach (var obj in targetObjects)
         {
             if (obj != null)
             {
-                StartCoroutine(FadeObject(obj, duration));
+                FadeObject(obj, duration).Forget();
                 //obj.SetActive(!obj.activeSelf); // 레버가 활성화되면 Active 상태가 반대로 변화
             }
         }
     }
-    private IEnumerator FadeObject(GameObject obj, float duration)
+    private async UniTask FadeObject(GameObject obj, float duration)
     {
         bool isActive = obj.activeSelf;
         SpriteRenderer spriteRenderer = obj.GetComponent<SpriteRenderer>();
@@ -81,6 +71,7 @@ public class Lever : InteractableObject
         // Fade out logic
         while (counter < duration)
         {
+            print(counter / duration);
             counter += Time.deltaTime;
             float alpha = Mathf.Lerp(isActive ? 1 : 0, isActive ? 0 : 1, counter / duration);
             if (spriteRenderer != null)
@@ -89,7 +80,7 @@ public class Lever : InteractableObject
                 color.a = alpha;
                 spriteRenderer.color = color;
             }
-            yield return null;
+            await UniTask.Yield();
         }
 
         obj.SetActive(!isActive);
