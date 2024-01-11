@@ -333,6 +333,7 @@ GameObject:
   - component: {fileID: 2403024944357959022}
   - component: {fileID: 3183956141710255865}
   - component: {fileID: 1007024222449373291}
+  - component: {fileID: 5114714592293558279}
   m_Layer: 3
   m_Name: Player
   m_TagString: Untagged
@@ -426,7 +427,7 @@ MonoBehaviour:
   _bodyCollider: {fileID: 3622759569376359627}
   _handLight: {fileID: 6235992872927915443}
   _surroundLight: {fileID: 1938804050324418043}
-  _bangMark: {fileID: 0}
+  _bangMark: {fileID: 3166591733614938537}
   _camOffset: {x: 5, y: 3}
   _hiddenColor: {r: 0.21572717, g: 0.19126023, b: 0.3301887, a: 1}
   _moveSpeed: 3
@@ -440,10 +441,12 @@ MonoBehaviour:
   LightEnerge: 0
   MaxStamina: 20
   Stamina: 0
-  _footStepClip: {fileID: 8300000, guid: f1176a85b2701db44a45da25634db52c, type: 3}
-  _footStepVolume: 0.2
-  _footStepPitch: 0.56
-  _footStepPitchRandom: 0.08
+  _footStepClip: {fileID: 8300000, guid: 96109309400c8e7449616fb2b0c9f2b4, type: 3}
+  _footStepVolume: 0.43
+  _footStepPitch: 0.38
+  _footStepPitchRandom: 0.03
+  _jumpClip: {fileID: 8300000, guid: 0b5281096911eca4e9ecbd5a53a22172, type: 3}
+  _jumpVolume: 1
 --- !u!70 &3622759569376359627
 CapsuleCollider2D:
   m_ObjectHideFlags: 0
@@ -603,3 +606,17 @@ AudioReverbFilter:
   m_LFReference: 250
   m_ReflectionsDelay: 0
   m_ReverbPreset: 27
+--- !u!114 &5114714592293558279
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4605255069021877253}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e8fb4feda6f394b48b86ef7e4fa6efe3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  FallClip: {fileID: 8300000, guid: 0bbde39b3a5c0514a96403194a409445, type: 3}
+  VolumeMultiplier: 0.5
