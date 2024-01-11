@@ -8,28 +8,52 @@ public class Player : MonoBehaviour
 {
     public static Player Instance { get; private set; }
 
-    [SerializeField] private Collider2D _feetCollider, _bodyCollider;
-    [SerializeField] private Light2D _handLight, _surroundLight;
+    [Header("콜라이더(충돌체) 할당")]
+    [SerializeField] private Collider2D _feetCollider;
+    [SerializeField] private Collider2D _bodyCollider;
+
+    [Header("라이트 할당")]
+    [SerializeField] private Light2D _handLight;
+    [SerializeField] private Light2D _surroundLight;
+
+    [Header("상호작용 아이콘")]
     [SerializeField] private SpriteRenderer _bangMark;
 
+    [Header("카메라 오프셋")]
     [SerializeField] private Vector2 _camOffset;
 
+    [Header("숨었을 때 색상")]
     [SerializeField] private Color _hiddenColor;
+    [Header("숨었을 때 레이어 우선순위")]
+    [SerializeField] private int _hiddenOrderInLayer = -50;
+    [Header("숨고 나서 다시 숨기까지 쿨타임")]
+    [SerializeField] private float _hideCooldown = 3f;
+
+    [Header("플레이어 이동속도")]
     [SerializeField] private float _moveSpeed = 5;
+    [Header("플레이어 방향전환 시간")]
     [SerializeField] private float _moveShiftTime;
+    [Header("플레이어 달리기 배속")]
     [SerializeField] private float _runModifier = 1.3f;
+    [Header("플레이어 일반 점프력")]
     [SerializeField] private float _jumpForce = 5;
+    [Header("플레이어 장애물 넘는 점프력")]
     [SerializeField] private float _highJumpForce = 10;
+    [Header("플레이어 점프 가능 횟수")]
     [SerializeField] private int _maxJumpCount = 1;
+
+    [Header("플레이어 발자국 간격 (초)")]
     [SerializeField] private float _footStepAudioSpan = 1f;
-    
+
+    [Header("플레이어 손전등 전력 지속시간 (초)")]
     public float MaxLightEnerge = 100;
     [HideInInspector] public float LightEnerge;
 
+    [Header("플레이어 달리기 지속시간 (초)")]
     public float MaxStamina = 20f;
     [HideInInspector] public float Stamina;
 
-    [Header("Audio Clips")]
+    [Header("효과음 할당")]
     [SerializeField] private AudioClip _footStepClip;
     [SerializeField] private float _footStepVolume, _footStepPitch, _footStepPitchRandom;
     [SerializeField] private AudioClip _jumpClip;
@@ -54,13 +78,18 @@ public class Player : MonoBehaviour
     private float _handLightOffsetX, _surroundLightOffsetX;
 
     private bool _isHidden = false;
+    private int _defaultOrderInLayer;
+    private float _hideTimer = 0f;
 
+    private bool _isControllable = true;
     private float _footStepAudioTimer = 0f;
 
     private readonly Dictionary<string, Action> _onFootStepListeners = new();
 
-    public bool IsLeftDir { get => _isLeftDir;  }
+    public bool IsControllable { get => _isControllable; set => _isControllable = value; }
+    public bool IsLeftDir { get => _isLeftDir; }
     public bool IsHidden { get => _isHidden; }
+    public bool IsInHideCooldown { get => _hideTimer > 0f; }
     public bool IsLightOn { get => _handLight.gameObject.activeSelf; }
     public bool IsOnGround { get => _steppingGrounds.Count > 0; }
     public float MoveSpeed { get => _moveSpeed; }
@@ -80,6 +109,7 @@ public class Player : MonoBehaviour
         _animator = GetComponent<Animator>();
         _spriteRenderer = GetComponent<SpriteRenderer>();
 
+        _defaultOrderInLayer = _spriteRenderer.sortingOrder;
         _isLighting = _handLight.gameObject.activeSelf;
         _handLightOffsetX = _handLight.transform.position.x - transform.position.x;
         _surroundLightOffsetX = _surroundLight.transform.position.x - transform.position.x;
@@ -104,8 +134,18 @@ public class Player : MonoBehaviour
         }
     }
 
-    public void Hide() => _isHidden = true;
-    public void Reveal() => _isHidden = false;
+    public void Hide()
+    {
+        if (_isHidden) return;
+        if (_hideTimer > 0f) return;
+        _isHidden = true;
+    }
+
+    public void Reveal() {
+        if (!_isHidden) return;
+        _isHidden = false;
+        _hideTimer = _hideCooldown;
+    }
 
     public void AddFootStepListener(string key, Action listener)
     {
@@ -119,6 +159,11 @@ public class Player : MonoBehaviour
 
     private void HiddenViewUpdate()
     {
+        if(_hideTimer > 0f)
+        {
+            _hideTimer -= Time.deltaTime;
+        }
+        _spriteRenderer.sortingOrder = IsHidden ? _hiddenOrderInLayer : _defaultOrderInLayer;
         _spriteRenderer.color = IsHidden ? _hiddenColor : Color.white;
     }
 
@@ -155,14 +200,14 @@ public class Player : MonoBehaviour
         CameraController.Instance.SetOffset(_camOffset * new Vector2(_isLeftDir == _isShifting ? 1 : -1, 1), _moveShiftTime);
         if (_isShifting) return;
 
-        var xAxis = Input.GetAxisRaw("Horizontal");
+        var xAxis = IsControllable ? Input.GetAxisRaw("Horizontal") : 0;
         if(_isJumping && (xAxis > 0f && _isLeftJump || xAxis < 0f && !_isLeftJump))
         {
             xAxis = 0f;
         }
         var nextIsLeftDir = xAxis < 0f;
         var isMoving = !Mathf.Approximately(xAxis, 0f);
-        var isInRunningKey = Input.GetKey(KeyCode.LeftShift);
+        var isInRunningKey = IsControllable && Input.GetKey(KeyCode.LeftShift);
         var nextIsRunning = isInRunningKey && Stamina > 0f && isMoving;
 
         if(_isRunning != nextIsRunning)
@@ -229,7 +274,7 @@ public class Player : MonoBehaviour
 
     private void LightUpdate()
     {
-        if(Input.GetKeyDown(KeyCode.W))
+        if(IsControllable && Input.GetKeyDown(KeyCode.W))
         {
             _isLighting = !_isLighting;
         }
@@ -250,7 +295,7 @@ public class Player : MonoBehaviour
     {
         if (IsOnGround && _rigid.velocity.y <= 0.01f) _isJumping = false;
 
-        if (Input.GetKeyDown(KeyCode.Space))
+        if (IsControllable && Input.GetKeyDown(KeyCode.Space))
         {
             Jump();
         }

@@ -10,6 +10,27 @@ using Unity.VisualScripting;
 
 public class DialougManager : MonoBehaviour
 {
+    // 1. Private static instance
+    private static DialougManager instance;
+
+    // 2. Public static property
+    public static DialougManager Instance
+    {
+        get
+        {
+            if (instance == null)
+            {
+                instance = FindObjectOfType<DialougManager>();
+                if (instance == null)
+                {
+                    GameObject obj = new GameObject();
+                    obj.name = typeof(DialougManager).Name;
+                    instance = obj.AddComponent<DialougManager>();
+                }
+            }
+            return instance;
+        }
+    }
 
     [Header("TextBoxMove")]
     public float yOffset = 0;
@@ -17,7 +38,6 @@ public class DialougManager : MonoBehaviour
     public Vector2 movePos;
     public GameObject targetObject;
     public List<Chatter> participants;
-
 
     [Header("TextAnimator")]
     public TextMeshProUGUI tmp;
@@ -27,16 +47,11 @@ public class DialougManager : MonoBehaviour
     public Transform playerFooter;
     [Range(0, 3f)]
     public float disaapearTextBoxDelay = 0f;
-    
-    
-    
-
-
 
     public int chatCount = 0;
 
     private bool isTalking = false;
-    private bool isSkipable = false;
+   // private bool isSkipable = false;
     private bool flipFlag = false;
 
 
@@ -72,7 +87,7 @@ public class DialougManager : MonoBehaviour
             }
             flipFlag = false;
         }
-        if (Input.GetKeyDown(KeyCode.Return))
+        if (Input.GetKeyDown(KeyCode.Return) && chatScript && targetObject)
         {
             if (isTalking)
             {
@@ -118,6 +133,17 @@ public class DialougManager : MonoBehaviour
 
         
     }
+    public void StartDialouge(ChatScript _chatScript)
+    {
+        print("Start Dialogue");
+        chatCount = 0; 
+        chatScript = _chatScript;   
+
+        SetParticipants();
+        NextProgress();
+
+        Player.Instance.IsControllable = false;
+    }
     private void OnTextShowed()
     {
         isTalking = false; 
@@ -127,14 +153,22 @@ public class DialougManager : MonoBehaviour
     // Start is called before the first frame update
     private void Start()
     {
-      
-        SetParticipants();
-
+        
         textPlayer.onTextShowed.AddListener(OnTextShowed);
        /* textPlayer.ShowText(chatScript.dialogues[0].dialogue);
         chatCount++;*/
     }
+    public void EndDialouge()
+    {
+        targetObject = null;
+        chatCount = 0;
+        chatScript = null;
+        textBox.enabled = false;
+        textBox = null;
+        isTalking = false;
 
+        Player.Instance.IsControllable = true;
+    }
     public void SetTarget(SpeakerType speaker)
     {
         foreach (Chatter chatter in participants)
@@ -160,7 +194,9 @@ public class DialougManager : MonoBehaviour
             SetTarget(chatScript.dialogues[chatCount].speaker);
             if(targetObject == null)
             {
-                Debug.Log("Ÿ�� ������Ʈ ���� " + chatScript.dialogues[chatCount].speaker);
+                
+                Debug.Log("해당 타겟이 존재하지않습니다. " + chatScript.dialogues[chatCount].speaker);
+                return;
             }
 
             
@@ -172,7 +208,22 @@ public class DialougManager : MonoBehaviour
         }
         else
         {
-            chatCount = 0;
+            EndDialouge();
+        }
+    }
+    private void Awake()
+    {
+        if (instance == null)
+        {
+            instance = this;
+            DontDestroyOnLoad(this.gameObject); // 4. 인스턴스 유지
+        }
+        else
+        {
+            if (this != instance)
+            {
+                Destroy(this.gameObject);
+            }
         }
     }
 

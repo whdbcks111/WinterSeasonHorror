@@ -16,12 +16,11 @@ public class Lever : InteractableObject
     private bool _isOn = false; // 레버 상태
     public GameObject[] blockingObjects; // 길을 막는 오브젝트들
     public GameObject[] targetObjects;
-
-    private bool flag = false;
+    
     public override void OnInteract()
     {
         _isOn = !_isOn;
-        HandleBlockingObjects(_isOn);
+        //HandleBlockingObjects(_isOn);
         HandleTargetObjects();
         
         // 기타 레버 상호작용 로직
@@ -67,8 +66,32 @@ public class Lever : InteractableObject
         {
             if (obj != null)
             {
-                obj.SetActive(!obj.activeSelf); // 레버가 활성화되면 Active 상태가 반대로 변화
+                StartCoroutine(FadeObject(obj, duration));
+                //obj.SetActive(!obj.activeSelf); // 레버가 활성화되면 Active 상태가 반대로 변화
             }
         }
+    }
+    private IEnumerator FadeObject(GameObject obj, float duration)
+    {
+        bool isActive = obj.activeSelf;
+        SpriteRenderer spriteRenderer = obj.GetComponent<SpriteRenderer>();
+        float counter = 0;
+        
+        if(!isActive) obj.SetActive(true);
+        // Fade out logic
+        while (counter < duration)
+        {
+            counter += Time.deltaTime;
+            float alpha = Mathf.Lerp(isActive ? 1 : 0, isActive ? 0 : 1, counter / duration);
+            if (spriteRenderer != null)
+            {
+                Color color = spriteRenderer.color; // Use spriteRenderer.color instead of renderer.material.color
+                color.a = alpha;
+                spriteRenderer.color = color;
+            }
+            yield return null;
+        }
+
+        obj.SetActive(!isActive);
     }
 }

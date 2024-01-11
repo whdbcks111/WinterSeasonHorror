@@ -1,18 +1,63 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
-public class HidingSpot : MonoBehaviour
+public class HidingSpot : InteractableObject
 {
-    // Start is called before the first frame update
-    void Start()
+
+    protected override void InvokeInteract()
     {
-        
+        if (isInteractable && Input.GetKeyDown(KeyCode.E))
+        {
+            if(!Player.Instance.IsInHideCooldown)
+                Interact();
+        }
+    }
+    protected override void PlayerTrigger(bool isOn)
+    {
+        if (Player.Instance.IsInHideCooldown && isOn)
+        {
+            return;
+        }
+        isInteractable = isOn;
+        SetBangMark(isOn);
     }
 
-    // Update is called once per frame
-    void Update()
+    protected override void TriggerStay( )
     {
-        
+        if (isInteractable)
+        {
+            Debug.Log("스테이;");
+            if(Player.Instance.IsInHideCooldown&& Player.Instance.BangMarkVisible)
+            {
+                Debug.Log("말풍선 오프;");
+                SetBangMark(false);
+                
+            }
+            else if(!Player.Instance.IsInHideCooldown&&! Player.Instance.BangMarkVisible)
+            {
+                Debug.Log("말풍선 온;");
+                SetBangMark(true);
+            }
+            
+        }
     }
+
+
+    public override void OnInteract()
+    {
+        if (Player.Instance.IsHidden)
+        {
+            Player.Instance.Reveal();
+        }
+        else
+        {
+            Player.Instance.Hide();
+        }
+    }
+
+   
+    
 }
