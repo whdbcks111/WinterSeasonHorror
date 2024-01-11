@@ -93,7 +93,7 @@ public class DialougManager : MonoBehaviour
             }
             flipFlag = false;
         }
-        if (Input.GetKeyDown(KeyCode.Return))
+        if (Input.GetKeyDown(KeyCode.Return) && chatScript && targetObject)
         {
             if (isTalking)
             {
@@ -205,7 +205,13 @@ public class DialougManager : MonoBehaviour
         }
         else
         {
+            targetObject = null;
             chatCount = 0;
+            chatScript = null;
+            textBox.enabled = false;
+            textBox = null;
+            isTalking = false;
+            
         }
     }
     private void Awake()
