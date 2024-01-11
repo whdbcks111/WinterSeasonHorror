@@ -81,10 +81,12 @@ public class Player : MonoBehaviour
     private int _defaultOrderInLayer;
     private float _hideTimer = 0f;
 
+    private bool _isControllable = true;
     private float _footStepAudioTimer = 0f;
 
     private readonly Dictionary<string, Action> _onFootStepListeners = new();
 
+    public bool IsControllable { get => _isControllable; set => _isControllable = value; }
     public bool IsLeftDir { get => _isLeftDir; }
     public bool IsHidden { get => _isHidden; }
     public bool IsInHideCooldown { get => _hideTimer > 0f; }
@@ -198,14 +200,14 @@ public class Player : MonoBehaviour
         CameraController.Instance.SetOffset(_camOffset * new Vector2(_isLeftDir == _isShifting ? 1 : -1, 1), _moveShiftTime);
         if (_isShifting) return;
 
-        var xAxis = Input.GetAxisRaw("Horizontal");
+        var xAxis = IsControllable ? Input.GetAxisRaw("Horizontal") : 0;
         if(_isJumping && (xAxis > 0f && _isLeftJump || xAxis < 0f && !_isLeftJump))
         {
             xAxis = 0f;
         }
         var nextIsLeftDir = xAxis < 0f;
         var isMoving = !Mathf.Approximately(xAxis, 0f);
-        var isInRunningKey = Input.GetKey(KeyCode.LeftShift);
+        var isInRunningKey = IsControllable && Input.GetKey(KeyCode.LeftShift);
         var nextIsRunning = isInRunningKey && Stamina > 0f && isMoving;
 
         if(_isRunning != nextIsRunning)
@@ -272,7 +274,7 @@ public class Player : MonoBehaviour
 
     private void LightUpdate()
     {
-        if(Input.GetKeyDown(KeyCode.W))
+        if(IsControllable && Input.GetKeyDown(KeyCode.W))
         {
             _isLighting = !_isLighting;
         }
@@ -293,7 +295,7 @@ public class Player : MonoBehaviour
     {
         if (IsOnGround && _rigid.velocity.y <= 0.01f) _isJumping = false;
 
-        if (Input.GetKeyDown(KeyCode.Space))
+        if (IsControllable && Input.GetKeyDown(KeyCode.Space))
         {
             Jump();
         }

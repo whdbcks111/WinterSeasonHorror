@@ -12,7 +12,7 @@ public class PlayerDetectAreaTrigger : BaseTrigger
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.CompareTag("HandLight"))
+        if (collision.TryGetComponent(out Player _))
         {
             if (_enterCount > 0 && TriggerOnce) return;
             if (_isEntered) return;
@@ -25,7 +25,7 @@ public class PlayerDetectAreaTrigger : BaseTrigger
     }
     private void OnTriggerExit2D(Collider2D collision)
     {
-        if (collision.CompareTag("HandLight"))
+        if (collision.TryGetComponent(out Player _))
         {
             _isEntered = false;
 
