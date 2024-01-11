@@ -8,28 +8,50 @@ public class Player : MonoBehaviour
 {
     public static Player Instance { get; private set; }
 
-    [SerializeField] private Collider2D _feetCollider, _bodyCollider;
-    [SerializeField] private Light2D _handLight, _surroundLight;
+    [Header("콜라이더(충돌체) 할당")]
+    [SerializeField] private Collider2D _feetCollider;
+    [SerializeField] private Collider2D _bodyCollider;
+
+    [Header("라이트 할당")]
+    [SerializeField] private Light2D _handLight;
+    [SerializeField] private Light2D _surroundLight;
+
+    [Header("상호작용 아이콘")]
     [SerializeField] private SpriteRenderer _bangMark;
 
+    [Header("카메라 오프셋")]
     [SerializeField] private Vector2 _camOffset;
 
+    [Header("숨었을 때 색상")]
     [SerializeField] private Color _hiddenColor;
+    [Header("숨었을 때 레이어 우선순위")]
+    [SerializeField] private int _hiddenOrderInLayer = -50;
+
+    [Header("플레이어 이동속도")]
     [SerializeField] private float _moveSpeed = 5;
+    [Header("플레이어 방향전환 시간")]
     [SerializeField] private float _moveShiftTime;
+    [Header("플레이어 달리기 배속")]
     [SerializeField] private float _runModifier = 1.3f;
+    [Header("플레이어 일반 점프력")]
     [SerializeField] private float _jumpForce = 5;
+    [Header("플레이어 장애물 넘는 점프력")]
     [SerializeField] private float _highJumpForce = 10;
+    [Header("플레이어 점프 가능 횟수")]
     [SerializeField] private int _maxJumpCount = 1;
+
+    [Header("플레이어 발자국 간격 (초)")]
     [SerializeField] private float _footStepAudioSpan = 1f;
-    
+
+    [Header("플레이어 손전등 전력 지속시간 (초)")]
     public float MaxLightEnerge = 100;
     [HideInInspector] public float LightEnerge;
 
+    [Header("플레이어 달리기 지속시간 (초)")]
     public float MaxStamina = 20f;
     [HideInInspector] public float Stamina;
 
-    [Header("Audio Clips")]
+    [Header("효과음 할당")]
     [SerializeField] private AudioClip _footStepClip;
     [SerializeField] private float _footStepVolume, _footStepPitch, _footStepPitchRandom;
     [SerializeField] private AudioClip _jumpClip;
@@ -54,6 +76,7 @@ public class Player : MonoBehaviour
     private float _handLightOffsetX, _surroundLightOffsetX;
 
     private bool _isHidden = false;
+    private int _defaultOrderInLayer;
 
     private float _footStepAudioTimer = 0f;
 
@@ -80,6 +103,7 @@ public class Player : MonoBehaviour
         _animator = GetComponent<Animator>();
         _spriteRenderer = GetComponent<SpriteRenderer>();
 
+        _defaultOrderInLayer = _spriteRenderer.sortingOrder;
         _isLighting = _handLight.gameObject.activeSelf;
         _handLightOffsetX = _handLight.transform.position.x - transform.position.x;
         _surroundLightOffsetX = _surroundLight.transform.position.x - transform.position.x;
@@ -119,6 +143,7 @@ public class Player : MonoBehaviour
 
     private void HiddenViewUpdate()
     {
+        _spriteRenderer.sortingOrder = IsHidden ? _hiddenOrderInLayer : _defaultOrderInLayer;
         _spriteRenderer.color = IsHidden ? _hiddenColor : Color.white;
     }
 
