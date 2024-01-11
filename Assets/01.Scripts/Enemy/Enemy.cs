@@ -15,7 +15,6 @@ public class Enemy : MonoBehaviour
     [SerializeField] private float _idleMoveSpeed;
     [Header("몬스터 추적 속도")]
     [SerializeField] private float _chaseMoveSpeed;
-    private float _savedChaseSpeed;
     [Header("몬스터 점프력")]
     [SerializeField] private float _jumpForce;
 
@@ -34,15 +33,8 @@ public class Enemy : MonoBehaviour
     [SerializeField] private float _minRoamDistance;
     [Header("몬스터 배회 최대 이동 거리(이 값 넘으면 처음위치로)")]
     [SerializeField] private float _maxRoamDistance;
-
     [SerializeField] private Transform _jumpSensor;
 
-    [Header("감지 범위")]
-    [SerializeField] private float _detectRange;
-    [Header("수색 범위")]
-    [SerializeField] private float _searchRange;
-    [Header("수색 시 한쪽으로 간 후 대기하는 시간(초)")]
-    [SerializeField] private float _searchWaitTime;
     [Header("수색 실패 시 배회 횟수")]
     [SerializeField] private float _chaseFailRoamCount;
     [Header("수색 실패 배회 시 다음 배회까지 걸리는 시간(초)")]
@@ -51,12 +43,8 @@ public class Enemy : MonoBehaviour
     [Header("몬스터 흐느끼는 소리 주기(초)")]
     [SerializeField] private float _cryingCycleTime;
 
-
     [Header("사운드")]
-    [SerializeField] private AudioClip Crying1;
-    [SerializeField] private AudioClip Crying2;
-    [SerializeField] private AudioClip Crying3;
-
+    [SerializeField] private List<AudioClip> _crySounds = new();
     [SerializeField] private AudioClip JumpScare;
     [SerializeField] private AudioClip Screaming;
 
@@ -64,7 +52,6 @@ public class Enemy : MonoBehaviour
     [SerializeField][Range(0f, 1f)] private float CryVolume;
     [Header("비명 볼륨")]
     [SerializeField][Range(0f, 1f)] private float ScreamVolume;
-    List<AudioClip> CrySounds = new List<AudioClip>();
 
 
     //몬스터가 배치된 위치
@@ -80,20 +67,21 @@ public class Enemy : MonoBehaviour
     private bool _isStartChasing;
     private float SavedDir;
 
+    private Coroutine _roamco;
+    private Coroutine _encountco;
+
     Rigidbody2D _rigid2d;
-    
+    Animator _anim;
 
     private Player _player;
-
     private GameObject _screamParticle;
-
     private FSM _fsm = new();
     private BaseState _idleState, _roamState, _chaseState,_chaseFailState,_returnState;
 
     // Start is called before the first frame update
     void Start()
     {
-        _savedChaseSpeed = _chaseMoveSpeed;
+
         _player = Player.Instance;
         _fsm.CurrentState = _idleState;
 
@@ -110,25 +98,15 @@ public class Enemy : MonoBehaviour
             }
             //MoveToDestination(transform.position,_idleMoveSpeed);
         },
-        onExit: () =>
-        {
-
-        });
+        onExit: () =>{});
         
         _returnState = new(
-        onEnter: () =>
-        {
-            
-
-        },
+        onEnter: () =>{},
         onUpdate: () =>
         {
             MoveToDestination(InitPosition, _idleMoveSpeed);
         },
-        onExit: () =>
-        {
-            
-        });
+        onExit: () =>{});
         
         _roamState = new(
         onEnter: () =>
@@ -156,40 +134,43 @@ public class Enemy : MonoBehaviour
             }
 
         },
-        onExit: () =>
-        {
-        });
+        onExit: () => { });
 
         _chaseState = new(
         onEnter: () =>
         {
             _isStartChasing = true;
-            StartCoroutine(EncountWithPlayer());
 
-
+            _encountco = StartCoroutine(EncountWithPlayer());
+            StopCoroutine(_roamco);
             Debug.Log("추적상태 진입");
         },
         onUpdate: () =>
         {
-            if (_isChasing && !_player.IsHidden)              //추적중이면서 숨지 않았을 때. : 계속 쫓아간다.
+            if(_isChasing)
             {
-                MoveToDestination(_player.transform.position, _chaseMoveSpeed);
+                if (_player.IsHidden)              //추적중이면서 숨었을 때: 추적 실패로 넘어가지 말고 연출 실행 후 추적 실패로 넘어갈 것.
+                {
+                    Debug.Log("추적 실패 후");
+                    _fsm.CurrentState = _chaseFailState;
+                }
+                else             //추적중이면서 숨지 않았을 때. : 계속 쫓아간다.
+                {
+                    MoveToDestination(_player.transform.position, _chaseMoveSpeed);
+                }
             }
-            if(!_isChasing && _player.IsHidden && _isInSight)                //추적 끝,숨었을 때. 추적 실패.
+            else if (!_isInSight || (_player.IsHidden && _isInSight))                //추적 끝,숨었을 때. 혹은 숨지 않았지만 시야 내부에 없고 추적이 끝남. 추적 실패.
             {
                 _fsm.CurrentState = _chaseFailState;
             }
 
-            if(!_isChasing && !_isInSight )
-            {
-                _fsm.CurrentState = _chaseFailState;
-            }  //숨지 않았지만 시야 내부에 없고 추적이 끝남. 추적 실패.
 
 
         },
         onExit: () =>
         {
             _isStartChasing = false;
+            
         });
 
         //플레이어를
@@ -207,11 +188,11 @@ public class Enemy : MonoBehaviour
                     Debug.Log("플레이어가 숨어있을 때의 함수를 실행할 것. 머리박는 애니메이션, 조금 후 소리지르고 이후 초기 위치로 복귀.");
                     TeleportToInitposition();
                 }
-                if(!_player.IsHidden)
+                else
                 {
                     //감지범위를 벗어났을 때. 주변 배회 후 초기 위치로 복귀
                     Debug.Log("감지범위를 벗어났을 때. 주변 배회 후 초기 위치로 복귀");
-                    TeleportToInitposition();
+                    _roamco = StartCoroutine(RoamNear());
                 }
             },
             onUpdate: () => {
@@ -226,18 +207,18 @@ public class Enemy : MonoBehaviour
 
 
         _isStartChasing = false;
+
+        
+        _anim = GetComponent<Animator>();
         _rigid2d = GetComponent<Rigidbody2D>();
+
         _chasable = true;
         _IsSettedInitPosition = false;
         _isChasing = false;
         StartCoroutine(SetDirection());
-
         _screamParticle = transform.GetChild(0).gameObject;
         _screamParticle.SetActive(false);
 
-        CrySounds.Add(Crying1);
-        CrySounds.Add(Crying2);
-        CrySounds.Add(Crying3);
     }
 
     // Update is called once per frame
@@ -338,20 +319,20 @@ public class Enemy : MonoBehaviour
     */
     private IEnumerator RoamNear()
     {
-        for(int i = 0; i < _chaseFailRoamCount; i++)
+        for(int i= 0; i < _chaseFailRoamCount; i++)
         {
             float Distance = Random.Range(-_roamRange, _roamRange + 0.1f);
             if (Mathf.Abs(Distance) <= _minRoamDistance && Distance >= 0) Distance = _minRoamDistance;
             if (Mathf.Abs(Distance) <= _minRoamDistance && Distance < 0) Distance = -_minRoamDistance;
 
             if (Mathf.Abs(transform.position.x - _chaseFailPosition.x) <= _maxRoamDistance) _destination = new Vector3(transform.position.x + Distance, transform.position.y, 0);
-
+            
             while (transform.position != _destination)
             {
                 MoveToDestination(_destination, _idleMoveSpeed);
                 yield return null;
             }
-
+            Debug.Log(i);
             yield return new WaitUntil(() => transform.position == _destination);
             yield return new WaitForSeconds(_chaseFailRoamCoolTime);
         }
@@ -361,14 +342,18 @@ public class Enemy : MonoBehaviour
     }
     private IEnumerator PlayCryingSound()
     {
-        int Selecter = Random.Range(0, 3);
-        SoundManager.Instance.PlaySFX(CrySounds[Selecter], transform.position, CryVolume, 1);
+        int Selecter = Random.Range(0, _crySounds.Count);
+        SoundManager.Instance.PlaySFX(_crySounds[Selecter], transform.position, CryVolume, 1);
 
         //_audioSource.volume = 0.2f;
         yield return new WaitForSeconds(_cryingCycleTime);
     }
     public IEnumerator EncountWithPlayer()
     {
+        _anim.SetTrigger("Scream");
+
+
+
         SoundManager.Instance.PlaySFX(JumpScare, transform.position, CryVolume, 1);
         SoundManager.Instance.PlaySFX(Screaming, Camera.main.transform.position, ScreamVolume, 1, Camera.main.transform);
         _chasable = false;
