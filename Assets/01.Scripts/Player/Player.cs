@@ -26,6 +26,8 @@ public class Player : MonoBehaviour
     [SerializeField] private Color _hiddenColor;
     [Header("숨었을 때 레이어 우선순위")]
     [SerializeField] private int _hiddenOrderInLayer = -50;
+    [Header("숨고 나서 다시 숨기까지 쿨타임")]
+    [SerializeField] private float _hideCooldown = 3f;
 
     [Header("플레이어 이동속도")]
     [SerializeField] private float _moveSpeed = 5;
@@ -77,13 +79,15 @@ public class Player : MonoBehaviour
 
     private bool _isHidden = false;
     private int _defaultOrderInLayer;
+    private float _hideTimer = 0f;
 
     private float _footStepAudioTimer = 0f;
 
     private readonly Dictionary<string, Action> _onFootStepListeners = new();
 
-    public bool IsLeftDir { get => _isLeftDir;  }
+    public bool IsLeftDir { get => _isLeftDir; }
     public bool IsHidden { get => _isHidden; }
+    public bool IsInHideCooldown { get => _hideTimer > 0f; }
     public bool IsLightOn { get => _handLight.gameObject.activeSelf; }
     public bool IsOnGround { get => _steppingGrounds.Count > 0; }
     public float MoveSpeed { get => _moveSpeed; }
@@ -128,8 +132,15 @@ public class Player : MonoBehaviour
         }
     }
 
-    public void Hide() => _isHidden = true;
-    public void Reveal() => _isHidden = false;
+    public void Hide()
+    {
+        if (_hideTimer > 0f) return;
+        _isHidden = true;
+    }
+    public void Reveal() {
+        _isHidden = false;
+        _hideTimer = _hideCooldown;
+    }
 
     public void AddFootStepListener(string key, Action listener)
     {
@@ -143,6 +154,10 @@ public class Player : MonoBehaviour
 
     private void HiddenViewUpdate()
     {
+        if(_hideTimer > 0f)
+        {
+            _hideTimer -= Time.deltaTime;
+        }
         _spriteRenderer.sortingOrder = IsHidden ? _hiddenOrderInLayer : _defaultOrderInLayer;
         _spriteRenderer.color = IsHidden ? _hiddenColor : Color.white;
     }
