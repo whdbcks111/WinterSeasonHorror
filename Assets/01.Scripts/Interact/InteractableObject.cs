@@ -7,9 +7,8 @@ public abstract class InteractableObject : MonoBehaviour
 {
     [SerializeField]
     private bool isInteractable = false; // 상호작용 가능 여부
-
-    [SerializeField]
-    private AudioClip interactionSound; // 상호작용 사운드
+    [SerializeField] private bool isReusable = false;
+    
 
     [SerializeField] public Sprite originSprite;
     
@@ -17,7 +16,10 @@ public abstract class InteractableObject : MonoBehaviour
     
     [SerializeField] public AudioClip interactSound;
 
-    public bool isWorking = false;
+    [SerializeField] public AudioClip DeInteractSound;
+
+    private bool isOn = false;
+  
     
     
     
@@ -42,16 +44,20 @@ public abstract class InteractableObject : MonoBehaviour
 
     protected virtual void PlayInteractionSound()
     {
-        if (interactionSound != null)
+        if (DeInteractSound)
         {
-           SoundManager.Instance.PlaySFX(interactSound,Player.Instance.transform.position);
+           SoundManager.Instance.PlaySFX(isOn ? interactSound : DeInteractSound ,Player.Instance.transform.position);
+        }
+        else if (interactSound)
+        {
+            SoundManager.Instance.PlaySFX( interactSound ,Player.Instance.transform.position);
         }
     }
 
     protected virtual void ProvideVisualFeedback(bool isInteract)
     {
-        _image.sprite = isInteract ?  interactSprite : originSprite;
-        // 시각적 피드백 로직 구현 (예: 깜빡이는 애니메이션)
+        if(_image)
+            _image.sprite = isInteract ? interactSprite : originSprite;
     }
 
     private void SetBangMark(bool isOn)
@@ -63,11 +69,13 @@ public abstract class InteractableObject : MonoBehaviour
     {
         if (isInteractable)
         {
-            
+            isOn = !isOn;   
             OnInteract();
             PlayInteractionSound();
             ProvideVisualFeedback(true);
-            isInteractable = false;
+            
+            if(!isReusable)
+                isInteractable = false;
         }
     }
 
@@ -79,22 +87,17 @@ public abstract class InteractableObject : MonoBehaviour
    
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.CompareTag("Player"))
+
+        if (other.TryGetComponent(out Player p))
         {
-            
             PlayerTrigger(true);
         }
-    }
-
-    private void OnTriggerStay(Collider other)
-    {
-        
     }
 
 
     private void OnTriggerExit2D(Collider2D other)
     {
-        if (other.CompareTag("Player"))
+        if (other.TryGetComponent(out Player p))
         {
             PlayerTrigger(false);
         }

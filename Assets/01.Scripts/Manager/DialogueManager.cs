@@ -10,6 +10,27 @@ using Unity.VisualScripting;
 
 public class DialougManager : MonoBehaviour
 {
+    // 1. Private static instance
+    private static DialougManager instance;
+
+    // 2. Public static property
+    public static DialougManager Instance
+    {
+        get
+        {
+            if (instance == null)
+            {
+                instance = FindObjectOfType<DialougManager>();
+                if (instance == null)
+                {
+                    GameObject obj = new GameObject();
+                    obj.name = typeof(DialougManager).Name;
+                    instance = obj.AddComponent<DialougManager>();
+                }
+            }
+            return instance;
+        }
+    }
 
     [Header("TextBoxMove")]
     public float yOffset = 0;
@@ -36,7 +57,7 @@ public class DialougManager : MonoBehaviour
     public int chatCount = 0;
 
     private bool isTalking = false;
-    private bool isSkipable = false;
+   // private bool isSkipable = false;
     private bool flipFlag = false;
 
 
@@ -118,6 +139,13 @@ public class DialougManager : MonoBehaviour
 
         
     }
+    public void StartDialouge(ChatScript _chatScript)
+    {
+        chatCount = 0; 
+        chatScript = _chatScript;   
+        SetParticipants();
+        //Player.Instance... 정지 코드
+    }
     private void OnTextShowed()
     {
         isTalking = false; 
@@ -129,12 +157,15 @@ public class DialougManager : MonoBehaviour
     {
       
         SetParticipants();
-
+        
         textPlayer.onTextShowed.AddListener(OnTextShowed);
        /* textPlayer.ShowText(chatScript.dialogues[0].dialogue);
         chatCount++;*/
     }
-
+    public void EndDialouge()
+    {
+        Debug.Log("EndDialouge");
+    }
     public void SetTarget(SpeakerType speaker)
     {
         foreach (Chatter chatter in participants)
@@ -160,7 +191,9 @@ public class DialougManager : MonoBehaviour
             SetTarget(chatScript.dialogues[chatCount].speaker);
             if(targetObject == null)
             {
-                Debug.Log("Ÿ�� ������Ʈ ���� " + chatScript.dialogues[chatCount].speaker);
+                
+                Debug.Log("해당 타겟이 존재하지않습니다. " + chatScript.dialogues[chatCount].speaker);
+                return;
             }
 
             
@@ -173,6 +206,21 @@ public class DialougManager : MonoBehaviour
         else
         {
             chatCount = 0;
+        }
+    }
+    private void Awake()
+    {
+        if (instance == null)
+        {
+            instance = this;
+            DontDestroyOnLoad(this.gameObject); // 4. 인스턴스 유지
+        }
+        else
+        {
+            if (this != instance)
+            {
+                Destroy(this.gameObject);
+            }
         }
     }
 

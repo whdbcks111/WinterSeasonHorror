@@ -2,17 +2,23 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class HidingSpot : MonoBehaviour
+public class HidingSpot : InteractableObject
 {
-    // Start is called before the first frame update
-    void Start()
+   
+    
+
+    public override void OnInteract()
     {
-        
+        if (Player.Instance.IsHidden)
+        {
+            Player.Instance.Reveal();
+        }
+        else
+        {
+            Player.Instance.Hide();
+        }
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+   
+    
 }

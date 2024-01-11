@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   chapter: 0
   chatCount: 0
-  participants: 000000000100000002000000
+  participants: 00000000
   dialogues:
   - speaker: 0
     dialogue: "\uC544\uB2C8, \uC544\uB2C8, \uC774\uAC8C \uBB50\uC57C? \uB3C4\uB300\uCCB4
@@ -51,7 +51,3 @@ MonoBehaviour:
   - speaker: 0
     dialogue: "\uC228\uB9CC \uC26C\uACE0 \uC788\uC5B4\uC120 \uC548 \uB3FC. \uB098\uC544\uAC00\uC57C
       \uD574. \uC5B4\uB5BB\uAC8C\uB4E0, \uC77C\uB2E8 \uAC00\uBCF4\uC790."
-  - speaker: 1
-    dialogue: "\uD14C\uC2A4\uD2B8\uC785\uB2C8\uB2E4. \uD14C\uC2A4\uD2B8"
-  - speaker: 2
-    dialogue: "\uD14C\uC2A4\uD2B8 2\uC785\uB2C8\uB2E4 \uD14C\uC2A4\uD2B8"
