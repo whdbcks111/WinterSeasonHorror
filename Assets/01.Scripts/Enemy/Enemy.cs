@@ -86,7 +86,7 @@ public class Enemy : MonoBehaviour
 
     private Player _player;
     private FSM _fsm = new();
-    private BaseState _idleState, _roamState, _chaseState,_chaseFailState,_returnState;
+    private BaseState _idleState, _roamState, _chaseState,_chaseFailState,_returnState ,_threteningHide;
 
     // Start is called before the first frame update
     void Start()
@@ -105,12 +105,11 @@ public class Enemy : MonoBehaviour
         {
             if(_isInSight && !_player.IsHidden && _fsm.CurrentState != _chaseState)
             {
-                _fsm.CurrentState = _chaseState;
+                //_fsm.CurrentState = _chaseState;
             }
 
             _anim.SetBool("IsWalking", false);
 
-            //MoveToDestination(transform.position,_idleMoveSpeed);
         },
         onExit: () =>{});
         
@@ -180,7 +179,7 @@ public class Enemy : MonoBehaviour
                 if (_player.IsHidden)              //추적중이면서 숨었을 때: 추적 실패로 넘어가지 말고 연출 실행 후 추적 실패로 넘어갈 것.
                 {
                     Debug.Log("추적 실패 후");
-                    _fsm.CurrentState = _chaseFailState;
+                    _fsm.CurrentState = _threteningHide;
                 }
                 else             //추적중이면서 숨지 않았을 때. : 계속 쫓아간다.
                 {
@@ -206,18 +205,8 @@ public class Enemy : MonoBehaviour
                 _chaseFailPosition = transform.position;
 
                 _anim.SetBool("IsWalking", true);
-
-
-                if (_player.IsHidden) 
+                if (!_player.IsHidden) 
                 {
-                    //플레이어가 숨어있을 때의 함수를 실행할 것. 머리박는 애니메이션, 조금 후 소리지르고 이후 초기 위치로 복귀.
-                    //StartCoroutine(RoamNear());
-                    Debug.Log("플레이어가 숨어있을 때의 함수를 실행할 것. 머리박는 애니메이션, 조금 후 소리지르고 이후 초기 위치로 복귀.");
-                    TeleportToInitposition();
-                }
-                else
-                {
-                    //감지범위를 벗어났을 때. 주변 배회 후 초기 위치로 복귀
                     Debug.Log("감지범위를 벗어났을 때. 주변 배회 후 초기 위치로 복귀");
                     _roamco = StartCoroutine(RoamNear());
                 }
@@ -231,6 +220,13 @@ public class Enemy : MonoBehaviour
             onExit: () => {
                 _anim.SetBool("IsWalking", false);
 
+            });
+
+        _threteningHide = new(onEnter: () => {
+        },
+            onUpdate: () => {
+            },
+            onExit: () => {
             });
 
 
@@ -258,8 +254,6 @@ public class Enemy : MonoBehaviour
         {
             Jump();
         }
-
-
         RaycastHit2D GroundHit = Physics2D.BoxCast(_groundSensor.position , _groundBox,0f, Vector2.zero, 0f, LayerMask.GetMask("Pushable", "Wall"));
         if (GroundHit.collider != null )
         {
@@ -275,12 +269,19 @@ public class Enemy : MonoBehaviour
         }
         */ //레이캐스트
 
+        if(Input.GetKeyDown(KeyCode.M))
+        {
+            StartCoroutine(Threatening());
+            _fsm.CurrentState = _threteningHide;
+        }
 
+        /*
         if(!_player.IsHidden && _isInSight && !_isChasing)
         {
             _isChasing = true;
             _fsm.CurrentState = _chaseState;
         } 
+        */
 
     }
 
@@ -444,7 +445,28 @@ public class Enemy : MonoBehaviour
         _isChasing = false;
     }
 
+    private IEnumerator Threatening()
+    {
+        
+        while(Mathf.Abs(transform.position.x - _player.transform.position.x) >= 1.2f)
+        {
+            MoveToDestination(_player.transform.position, 2);
+            yield return null;
+        }
+        yield return new WaitForSeconds(2);
+        for (int i = 0; i < 3; i++)
+        {
+            _anim.SetBool("IsHeadButt", true);
+            yield return new WaitForSeconds(1f);
+            _anim.SetBool("IsHeadButt", false);
+            yield return new WaitForSeconds(0.05f);
+        }
+        yield return new WaitForSeconds(2);
+        _anim.SetBool("IsScreaming", true);
 
+        yield return new WaitForSeconds(1);
+        _anim.SetBool("IsScreaming", false);
+    }
     private void MoveToDestination(Vector3 Destination , float MoveSpeed)
     {
         
@@ -510,7 +532,7 @@ public class Enemy : MonoBehaviour
         if (collision.gameObject == _player.gameObject && !_player.IsHidden && _fsm.CurrentState != _chaseState && _chasable && !_isChasing)
         {
             _isChasing = true;
-            _fsm.CurrentState = _chaseState;
+            //_fsm.CurrentState = _chaseState;
         }
 
         

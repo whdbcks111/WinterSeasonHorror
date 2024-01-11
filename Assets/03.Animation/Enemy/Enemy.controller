@@ -8,7 +8,7 @@ AnimatorState:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Run
-  m_Speed: 1
+  m_Speed: 0.9
   m_CycleOffset: 0
   m_Transitions: []
   m_StateMachineBehaviours: []
@@ -34,7 +34,7 @@ AnimatorState:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Walk
-  m_Speed: 1
+  m_Speed: 0.45
   m_CycleOffset: 0
   m_Transitions: []
   m_StateMachineBehaviours: []
@@ -86,7 +86,7 @@ AnimatorState:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Scream
-  m_Speed: 1
+  m_Speed: 0.8
   m_CycleOffset: 0
   m_Transitions: []
   m_StateMachineBehaviours: []
@@ -116,7 +116,7 @@ AnimatorStateTransition:
     m_ConditionEvent: IsScreaming
     m_EventTreshold: 0
   - m_ConditionMode: 2
-    m_ConditionEvent: IsHeadFuking
+    m_ConditionEvent: IsHeadButt
     m_EventTreshold: 0
   - m_ConditionMode: 2
     m_ConditionEvent: IsJumping
@@ -152,22 +152,22 @@ AnimatorStateMachine:
   m_ChildStates:
   - serializedVersion: 1
     m_State: {fileID: 8757511755218880316}
-    m_Position: {x: 680, y: 170, z: 0}
+    m_Position: {x: 450, y: 180, z: 0}
   - serializedVersion: 1
     m_State: {fileID: -8726445367510025130}
-    m_Position: {x: 770, y: 50, z: 0}
+    m_Position: {x: 770, y: 20, z: 0}
   - serializedVersion: 1
     m_State: {fileID: -7354935361604826737}
     m_Position: {x: 230, y: -110, z: 0}
   - serializedVersion: 1
     m_State: {fileID: -8820353703416590645}
-    m_Position: {x: 770, y: -30, z: 0}
+    m_Position: {x: 750, y: -100, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 5944270865747923499}
-    m_Position: {x: 540, y: -210, z: 0}
+    m_Position: {x: 460, y: -210, z: 0}
   - serializedVersion: 1
     m_State: {fileID: -8215724339110274825}
-    m_Position: {x: 720, y: -110, z: 0}
+    m_Position: {x: 650, y: -180, z: 0}
   m_ChildStateMachines: []
   m_AnyStateTransitions:
   - {fileID: 5765878021260044296}
@@ -180,7 +180,7 @@ AnimatorStateMachine:
   m_StateMachineTransitions: {}
   m_StateMachineBehaviours: []
   m_AnyStatePosition: {x: 460, y: 20, z: 0}
-  m_EntryPosition: {x: 470, y: 180, z: 0}
+  m_EntryPosition: {x: 270, y: 190, z: 0}
   m_ExitPosition: {x: 660, y: -350, z: 0}
   m_ParentStateMachinePosition: {x: 800, y: 20, z: 0}
   m_DefaultState: {fileID: 8757511755218880316}
@@ -198,37 +198,37 @@ AnimatorController:
     m_DefaultFloat: 0
     m_DefaultInt: 0
     m_DefaultBool: 0
-    m_Controller: {fileID: 9100000}
+    m_Controller: {fileID: 0}
   - m_Name: IsScreaming
     m_Type: 4
     m_DefaultFloat: 0
     m_DefaultInt: 0
     m_DefaultBool: 0
-    m_Controller: {fileID: 9100000}
-  - m_Name: IsHeadFuking
+    m_Controller: {fileID: 0}
+  - m_Name: IsHeadButt
     m_Type: 4
     m_DefaultFloat: 0
     m_DefaultInt: 0
     m_DefaultBool: 0
-    m_Controller: {fileID: 9100000}
+    m_Controller: {fileID: 0}
   - m_Name: IsJumping
     m_Type: 4
     m_DefaultFloat: 0
     m_DefaultInt: 0
     m_DefaultBool: 0
-    m_Controller: {fileID: 9100000}
+    m_Controller: {fileID: 0}
   - m_Name: IsRunning
     m_Type: 4
     m_DefaultFloat: 0
     m_DefaultInt: 0
     m_DefaultBool: 0
-    m_Controller: {fileID: 9100000}
+    m_Controller: {fileID: 0}
   - m_Name: IsWalking
     m_Type: 4
     m_DefaultFloat: 0
     m_DefaultInt: 0
     m_DefaultBool: 0
-    m_Controller: {fileID: 9100000}
+    m_Controller: {fileID: 0}
   m_AnimatorLayers:
   - serializedVersion: 5
     m_Name: Base Layer
@@ -254,7 +254,7 @@ AnimatorStateTransition:
     m_ConditionEvent: IsScreaming
     m_EventTreshold: 0
   - m_ConditionMode: 2
-    m_ConditionEvent: IsHeadFuking
+    m_ConditionEvent: IsHeadButt
     m_EventTreshold: 0
   - m_ConditionMode: 2
     m_ConditionEvent: IsJumping
@@ -291,7 +291,7 @@ AnimatorStateTransition:
     m_ConditionEvent: IsJumping
     m_EventTreshold: 0
   - m_ConditionMode: 2
-    m_ConditionEvent: IsHeadFuking
+    m_ConditionEvent: IsHeadButt
     m_EventTreshold: 0
   - m_ConditionMode: 2
     m_ConditionEvent: IsScreaming
@@ -328,7 +328,7 @@ AnimatorStateTransition:
     m_ConditionEvent: IsScreaming
     m_EventTreshold: 0
   - m_ConditionMode: 2
-    m_ConditionEvent: IsHeadFuking
+    m_ConditionEvent: IsHeadButt
     m_EventTreshold: 0
   - m_ConditionMode: 2
     m_ConditionEvent: IsJumping
@@ -365,7 +365,7 @@ AnimatorStateTransition:
     m_ConditionEvent: IsScreaming
     m_EventTreshold: 0
   - m_ConditionMode: 2
-    m_ConditionEvent: IsHeadFuking
+    m_ConditionEvent: IsHeadButt
     m_EventTreshold: 0
   - m_ConditionMode: 2
     m_ConditionEvent: IsJumping
@@ -425,7 +425,7 @@ AnimatorStateTransition:
   m_Name: 
   m_Conditions:
   - m_ConditionMode: 1
-    m_ConditionEvent: IsHeadFuking
+    m_ConditionEvent: IsHeadButt
     m_EventTreshold: 0
   - m_ConditionMode: 2
     m_ConditionEvent: IsJumping
@@ -461,7 +461,7 @@ AnimatorState:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Idle
-  m_Speed: 1
+  m_Speed: 0.25
   m_CycleOffset: 0
   m_Transitions: []
   m_StateMachineBehaviours: []
