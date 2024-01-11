@@ -57,7 +57,7 @@ public class DialougManager : MonoBehaviour
     public int chatCount = 0;
 
     private bool isTalking = false;
-    private bool isSkipable = false;
+   // private bool isSkipable = false;
     private bool flipFlag = false;
 
 

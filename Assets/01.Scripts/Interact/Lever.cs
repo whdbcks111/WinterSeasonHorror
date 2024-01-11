@@ -16,8 +16,7 @@ public class Lever : InteractableObject
     private bool _isOn = false; // 레버 상태
     public GameObject[] blockingObjects; // 길을 막는 오브젝트들
     public GameObject[] targetObjects;
-
-    private bool flag = false;
+    
     public override void OnInteract()
     {
         _isOn = !_isOn;
@@ -75,19 +74,20 @@ public class Lever : InteractableObject
     private IEnumerator FadeObject(GameObject obj, float duration)
     {
         bool isActive = obj.activeSelf;
-        Renderer renderer = obj.GetComponent<Renderer>();
+        SpriteRenderer spriteRenderer = obj.GetComponent<SpriteRenderer>();
         float counter = 0;
-
+        
+        if(!isActive) obj.SetActive(true);
         // Fade out logic
         while (counter < duration)
         {
             counter += Time.deltaTime;
             float alpha = Mathf.Lerp(isActive ? 1 : 0, isActive ? 0 : 1, counter / duration);
-            if (renderer != null)
+            if (spriteRenderer != null)
             {
-                Color color = renderer.material.color;
+                Color color = spriteRenderer.color; // Use spriteRenderer.color instead of renderer.material.color
                 color.a = alpha;
-                renderer.material.color = color;
+                spriteRenderer.color = color;
             }
             yield return null;
         }

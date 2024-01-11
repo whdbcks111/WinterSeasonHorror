@@ -8,6 +8,27 @@ using UnityEditor.Searcher;
 
 public class UIManager : MonoBehaviour
 {
+    private static UIManager instance;
+
+    // 2. Public static property
+    public static UIManager Instance
+    {
+        get
+        {
+            if (instance == null)
+            {
+                instance = FindObjectOfType<UIManager>();
+                if (instance == null)
+                {
+                    GameObject obj = new GameObject();
+                    obj.name = typeof(UIManager).Name;
+                    instance = obj.AddComponent<UIManager>();
+                }
+            }
+            return instance;
+        }
+    }
+    
     private Dictionary<string, List<Image>> imageDictionary = new ();
 
     public Sprite testSprite;
@@ -273,5 +294,21 @@ public class UIManager : MonoBehaviour
         flag = false;
         image.color = originalColor;
         image.gameObject.SetActive(false); // 이미지 비활성화
+    }
+    
+    private void Awake()
+    {
+        if (instance == null)
+        {
+            instance = this;
+            DontDestroyOnLoad(this.gameObject); // 4. 인스턴스 유지
+        }
+        else
+        {
+            if (this != instance)
+            {
+                Destroy(this.gameObject);
+            }
+        }
     }
 }

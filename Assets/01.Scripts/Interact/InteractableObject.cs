@@ -8,8 +8,7 @@ public abstract class InteractableObject : MonoBehaviour
     [SerializeField]
     private bool isInteractable = false; // 상호작용 가능 여부
     [SerializeField] private bool isReusable = false;
-    [SerializeField]
-    private AudioClip interactionSound; // 상호작용 사운드
+    
 
     [SerializeField] public Sprite originSprite;
     
@@ -17,6 +16,9 @@ public abstract class InteractableObject : MonoBehaviour
     
     [SerializeField] public AudioClip interactSound;
 
+    [SerializeField] public AudioClip DeInteractSound;
+
+    private bool isOn = false;
   
     
     
@@ -42,9 +44,13 @@ public abstract class InteractableObject : MonoBehaviour
 
     protected virtual void PlayInteractionSound()
     {
-        if (interactionSound)
+        if (DeInteractSound)
         {
-           SoundManager.Instance.PlaySFX(interactSound,Player.Instance.transform.position);
+           SoundManager.Instance.PlaySFX(isOn ? interactSound : DeInteractSound ,Player.Instance.transform.position);
+        }
+        else if (interactSound)
+        {
+            SoundManager.Instance.PlaySFX( interactSound ,Player.Instance.transform.position);
         }
     }
 
@@ -63,7 +69,7 @@ public abstract class InteractableObject : MonoBehaviour
     {
         if (isInteractable)
         {
-            
+            isOn = !isOn;   
             OnInteract();
             PlayInteractionSound();
             ProvideVisualFeedback(true);
