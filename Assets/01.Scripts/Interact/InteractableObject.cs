@@ -1,12 +1,13 @@
 using System;
 using Unity.VisualScripting;
+using UnityEditor.Rendering;
 using UnityEngine;
 using UnityEngine.UI;
 
 public abstract class InteractableObject : MonoBehaviour
 {
     [SerializeField]
-    private bool isInteractable = false; // 상호작용 가능 여부
+    protected bool isInteractable = false; // 상호작용 가능 여부
     [SerializeField] private bool isReusable = false;
     
 
@@ -32,11 +33,17 @@ public abstract class InteractableObject : MonoBehaviour
         _image = GetComponent<Image>();
     }
 
-    private void Update()
+     protected virtual void Update()
+     {
+         InvokeInteract();
+     } 
+     
+
+    protected virtual void InvokeInteract()
     {
         if (isInteractable && Input.GetKeyDown(KeyCode.E))
         {
-            Interact();
+                Interact();
         }
     }
 
@@ -60,9 +67,9 @@ public abstract class InteractableObject : MonoBehaviour
             _image.sprite = isInteract ? interactSprite : originSprite;
     }
 
-    private void SetBangMark(bool isOn)
+    protected void SetBangMark(bool isOn)
     {
-        Player.Instance.BangMarkVisible = isOn;
+            Player.Instance.BangMarkVisible = isOn;
     }
 
     public void Interact()
@@ -81,10 +88,19 @@ public abstract class InteractableObject : MonoBehaviour
 
     protected virtual void PlayerTrigger(bool isOn)
     {
+        if (Player.Instance.IsInHideCooldown)
+        {
+            return;
+        }
         isInteractable = isOn;
         SetBangMark(isOn);
     }
-   
+
+    protected virtual void TriggerStay()
+    {
+        
+    }
+    
     private void OnTriggerEnter2D(Collider2D other)
     {
 
@@ -94,6 +110,16 @@ public abstract class InteractableObject : MonoBehaviour
         }
     }
 
+    private void OnTriggerStay2D(Collider2D other)
+    {
+        
+        Debug.Log(other.name);
+        if (other.TryGetComponent(out Player p))
+        {
+            
+            TriggerStay();
+        }
+    }
 
     private void OnTriggerExit2D(Collider2D other)
     {
