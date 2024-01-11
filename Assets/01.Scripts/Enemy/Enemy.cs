@@ -79,12 +79,12 @@ public class Enemy : MonoBehaviour
 
     private Coroutine _roamco;
     private Coroutine _encountco;
+    private Coroutine _stopChaseCoroutine;
 
     Rigidbody2D _rigid2d;
     Animator _anim;
 
     private Player _player;
-    private GameObject _screamParticle;
     private FSM _fsm = new();
     private BaseState _idleState, _roamState, _chaseState,_chaseFailState,_returnState;
 
@@ -169,7 +169,8 @@ public class Enemy : MonoBehaviour
             _isStartChasing = true;
 
             _encountco = StartCoroutine(EncountWithPlayer());
-            StopCoroutine(_roamco);
+            if(_roamco != null)
+                StopCoroutine(_roamco);
             Debug.Log("추적상태 진입");
         },
         onUpdate: () =>
@@ -243,8 +244,6 @@ public class Enemy : MonoBehaviour
         _IsSettedInitPosition = false;
         _isChasing = false;
         StartCoroutine(SetDirection());
-        _screamParticle = transform.GetChild(0).gameObject;
-        _screamParticle.SetActive(false);
 
     }
 
@@ -395,10 +394,7 @@ public class Enemy : MonoBehaviour
         _chasable = false;
 
         _chaseMoveSpeed = 0;
-        yield return new WaitForSeconds(0.7f);
-        
-        _screamParticle.SetActive(true);
-        yield return new WaitForSeconds(1);
+        yield return new WaitForSeconds(1.7f);
         _chaseMoveSpeed = 5;
 
         _anim.SetBool("IsScreaming", false);
@@ -407,7 +403,6 @@ public class Enemy : MonoBehaviour
         // _chaseMoveSpeed = SavedMoveSpeed;
         yield return new WaitForSeconds(3);
         _chasable = true;
-        _screamParticle.SetActive(false);
     }
     private IEnumerator SetInitPosition()
     {
@@ -519,9 +514,9 @@ public class Enemy : MonoBehaviour
         }
 
         
-        if(_isChasing && !_player.IsHidden)
+        if(_isChasing && !_player.IsHidden && _stopChaseCoroutine != null)
         {
-            StopCoroutine(StopChasing());
+            StopCoroutine(_stopChaseCoroutine);
         }
         
     }
@@ -540,7 +535,7 @@ public class Enemy : MonoBehaviour
         }
         if (!_isInSight && _isChasing)
         {
-            StartCoroutine(StopChasing());
+            _stopChaseCoroutine = StartCoroutine(StopChasing());
         }
     }
 

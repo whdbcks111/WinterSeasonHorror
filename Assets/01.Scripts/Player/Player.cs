@@ -265,7 +265,7 @@ public class Player : MonoBehaviour
         }
 
 
-        transform.Translate(velX * Time.deltaTime * Vector2.right);
+        _rigid.velocity = new(velX, _rigid.velocity.y);
 
         _animator.SetBool("IsRunning", _isRunning && !_isShifting);
         _animator.SetBool("IsWalking", isMoving && !_isShifting);

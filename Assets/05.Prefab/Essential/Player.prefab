@@ -153,7 +153,7 @@ MonoBehaviour:
     m_Center: {x: 0, y: -0.00000011920929, z: 0}
     m_Extent: {x: 0.9985302, y: 0.99853027, z: 0}
   m_PointLightInnerAngle: 23.017895
-  m_PointLightOuterAngle: 91.15976
+  m_PointLightOuterAngle: 36.044487
   m_PointLightInnerRadius: 0
   m_PointLightOuterRadius: 11.79
   m_ShapeLightParametricSides: 5
@@ -225,11 +225,11 @@ PolygonCollider2D:
   m_AutoTiling: 0
   m_Points:
     m_Paths:
-    - - {x: -8.341445, y: 8.166752}
-      - {x: -4.809012, y: 10.797557}
-      - {x: 0.0020921305, y: 11.737613}
-      - {x: 5.200466, y: 10.631328}
-      - {x: 8.249061, y: 8.232046}
+    - - {x: -3.693238, y: 11.239354}
+      - {x: -2.012765, y: 11.626842}
+      - {x: 0.0020921323, y: 11.737613}
+      - {x: 1.8864281, y: 11.6686535}
+      - {x: 3.6335704, y: 11.2575}
       - {x: -0.03579378, y: -0.0026544929}
   m_UseDelaunayMesh: 0
 --- !u!1 &4271028733916242000
@@ -450,8 +450,8 @@ MonoBehaviour:
   _moveSpeed: 3
   _moveShiftTime: 0.5
   _runModifier: 2
-  _jumpForce: 6
-  _highJumpForce: 9
+  _jumpForce: 7
+  _highJumpForce: 8.5
   _maxJumpCount: 1
   _footStepAudioSpan: 0.65
   MaxLightEnerge: 200
@@ -510,8 +510,8 @@ CapsuleCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 1.0691857}
-  m_Size: {x: 0.9, y: 2.0571404}
+  m_Offset: {x: 0, y: 0.78}
+  m_Size: {x: 0.9, y: 1.48}
   m_Direction: 0
 --- !u!50 &7165854523698902351
 Rigidbody2D:

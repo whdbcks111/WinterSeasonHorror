@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 5426032486588255818}
   - component: {fileID: 2850491327994982444}
   - component: {fileID: 146917483518597753}
+  - component: {fileID: 2671150442069835372}
   m_Layer: 6
   m_Name: Box
   m_TagString: Untagged
@@ -158,3 +159,17 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 1
   m_Constraints: 0
+--- !u!114 &2671150442069835372
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6830876601064124105}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e8fb4feda6f394b48b86ef7e4fa6efe3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  FallClip: {fileID: 8300000, guid: cdfda52cc0c0c0b45a843104e4e7c56e, type: 3}
+  VolumeMultiplier: 0.2

@@ -1,6 +1,8 @@
+#if UNITY_EDITOR
 using System.Collections.Generic;
-using UnityEditor;
 using UnityEngine;
+
+using UnityEditor;
 
 [CustomEditor(typeof(ChatScript))]
 public class ChatScriptEditor : Editor
@@ -23,3 +25,4 @@ public class ChatScriptEditor : Editor
         }
     }
 }
+#endif
