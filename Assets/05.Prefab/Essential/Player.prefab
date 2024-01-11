@@ -326,14 +326,15 @@ GameObject:
   m_Component:
   - component: {fileID: 2856824041992133508}
   - component: {fileID: 8510630159548869203}
+  - component: {fileID: 5114714592293558279}
   - component: {fileID: 9140435366268738925}
+  - component: {fileID: 8797065832281766964}
   - component: {fileID: 3622759569376359627}
   - component: {fileID: 7165854523698902351}
   - component: {fileID: 1366285014593801986}
   - component: {fileID: 2403024944357959022}
   - component: {fileID: 3183956141710255865}
   - component: {fileID: 1007024222449373291}
-  - component: {fileID: 5114714592293558279}
   m_Layer: 3
   m_Name: Player
   m_TagString: Untagged
@@ -411,6 +412,20 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &5114714592293558279
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4605255069021877253}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e8fb4feda6f394b48b86ef7e4fa6efe3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  FallClip: {fileID: 8300000, guid: 0bbde39b3a5c0514a96403194a409445, type: 3}
+  VolumeMultiplier: 0.5
 --- !u!114 &9140435366268738925
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -430,6 +445,8 @@ MonoBehaviour:
   _bangMark: {fileID: 3166591733614938537}
   _camOffset: {x: 5, y: 3}
   _hiddenColor: {r: 0.21572717, g: 0.19126023, b: 0.3301887, a: 1}
+  _hiddenOrderInLayer: -50
+  _hideCooldown: 3
   _moveSpeed: 3
   _moveShiftTime: 0.5
   _runModifier: 2
@@ -447,6 +464,20 @@ MonoBehaviour:
   _footStepPitchRandom: 0.03
   _jumpClip: {fileID: 8300000, guid: 0b5281096911eca4e9ecbd5a53a22172, type: 3}
   _jumpVolume: 1
+--- !u!114 &8797065832281766964
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4605255069021877253}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e5f77bc67b7e0604684f119dbbefbcf5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  speakerType: 0
+  textBoxActive: 0
 --- !u!70 &3622759569376359627
 CapsuleCollider2D:
   m_ObjectHideFlags: 0
@@ -606,17 +637,3 @@ AudioReverbFilter:
   m_LFReference: 250
   m_ReflectionsDelay: 0
   m_ReverbPreset: 27
---- !u!114 &5114714592293558279
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4605255069021877253}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e8fb4feda6f394b48b86ef7e4fa6efe3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  FallClip: {fileID: 8300000, guid: 0bbde39b3a5c0514a96403194a409445, type: 3}
-  VolumeMultiplier: 0.5

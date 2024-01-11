@@ -39,7 +39,6 @@ public class DialougManager : MonoBehaviour
     public GameObject targetObject;
     public List<Chatter> participants;
 
-
     [Header("TextAnimator")]
     public TextMeshProUGUI tmp;
     public TypewriterByCharacter textPlayer;
@@ -48,11 +47,6 @@ public class DialougManager : MonoBehaviour
     public Transform playerFooter;
     [Range(0, 3f)]
     public float disaapearTextBoxDelay = 0f;
-    
-    
-    
-
-
 
     public int chatCount = 0;
 
@@ -141,10 +135,14 @@ public class DialougManager : MonoBehaviour
     }
     public void StartDialouge(ChatScript _chatScript)
     {
+        print("Start Dialogue");
         chatCount = 0; 
         chatScript = _chatScript;   
+
         SetParticipants();
-        //Player.Instance... 정지 코드
+        NextProgress();
+
+        Player.Instance.IsControllable = false;
     }
     private void OnTextShowed()
     {
@@ -155,8 +153,6 @@ public class DialougManager : MonoBehaviour
     // Start is called before the first frame update
     private void Start()
     {
-      
-        SetParticipants();
         
         textPlayer.onTextShowed.AddListener(OnTextShowed);
        /* textPlayer.ShowText(chatScript.dialogues[0].dialogue);
@@ -164,7 +160,14 @@ public class DialougManager : MonoBehaviour
     }
     public void EndDialouge()
     {
-        Debug.Log("EndDialouge");
+        targetObject = null;
+        chatCount = 0;
+        chatScript = null;
+        textBox.enabled = false;
+        textBox = null;
+        isTalking = false;
+
+        Player.Instance.IsControllable = true;
     }
     public void SetTarget(SpeakerType speaker)
     {
@@ -205,13 +208,7 @@ public class DialougManager : MonoBehaviour
         }
         else
         {
-            targetObject = null;
-            chatCount = 0;
-            chatScript = null;
-            textBox.enabled = false;
-            textBox = null;
-            isTalking = false;
-            
+            EndDialouge();
         }
     }
     private void Awake()
