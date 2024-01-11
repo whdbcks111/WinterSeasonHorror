@@ -134,10 +134,13 @@ public class Player : MonoBehaviour
 
     public void Hide()
     {
+        if (_isHidden) return;
         if (_hideTimer > 0f) return;
         _isHidden = true;
     }
+
     public void Reveal() {
+        if (!_isHidden) return;
         _isHidden = false;
         _hideTimer = _hideCooldown;
     }
