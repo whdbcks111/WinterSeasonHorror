@@ -96,6 +96,7 @@ public class Player : MonoBehaviour
     private bool _isHidden = false;
     private int _defaultOrderInLayer;
     private float _hideTimer = 0f;
+    private float _hideCannotMoveTimer = 0f;
 
     private bool _isControllable = true;
     private float _footStepAudioTimer = 0f;
@@ -200,6 +201,7 @@ public class Player : MonoBehaviour
         if (_isHidden) return;
         if (_hideTimer > 0f) return;
         _isHidden = true;
+        _hideCannotMoveTimer = 0.5f;
     }
 
     public void Reveal() {
@@ -221,9 +223,10 @@ public class Player : MonoBehaviour
     private void HiddenViewUpdate()
     {
         if(_hideTimer > 0f)
-        {
             _hideTimer -= Time.deltaTime;
-        }
+        if(_hideCannotMoveTimer > 0f)
+            _hideCannotMoveTimer -= Time.deltaTime;
+
         _spriteRenderer.sortingOrder = IsHidden ? _hiddenOrderInLayer : _defaultOrderInLayer;
         _spriteRenderer.color = IsHidden ? _hiddenColor : Color.white;
     }
@@ -260,6 +263,7 @@ public class Player : MonoBehaviour
         // 방향전환중이면 _isLeftDir의 반대로 미리 이동
         CameraController.Instance.SetOffset(_camOffset * new Vector2(_isLeftDir == _isShifting ? 1 : -1, 1), _moveShiftTime);
         if (_isShifting) return;
+        if (_hideCannotMoveTimer > 0) return;
 
         var xAxis = IsControllable ? Input.GetAxisRaw("Horizontal") : 0;
         if(_isJumping && (xAxis > 0f && _isLeftJump || xAxis < 0f && !_isLeftJump))
