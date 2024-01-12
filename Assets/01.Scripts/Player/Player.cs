@@ -2,11 +2,17 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Audio;
+using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
+using UnityEngine.UI;
 
 public class Player : MonoBehaviour
 {
     public static Player Instance { get; private set; }
+
+    [Header("포스트 프로세싱 볼륨 할당")]
+    [SerializeField] private Volume _postProcessingVolume;
 
     [Header("콜라이더(충돌체) 할당")]
     [SerializeField] private Collider2D _feetCollider;
@@ -58,6 +64,13 @@ public class Player : MonoBehaviour
     [SerializeField] private float _footStepVolume, _footStepPitch, _footStepPitchRandom;
     [SerializeField] private AudioClip _jumpClip;
     [SerializeField] private float _jumpVolume;
+    [SerializeField] private AudioMixerGroup _breatheGroup;
+    [SerializeField] private AudioClip _breatheClip;
+    [SerializeField] private float _breathePitch = 1f, _breatheMinVolume = 0.1f, _breatheMaxVolume = 2f, _breatheMinSpeed = 0.5f, _breatheMaxSpeed = 2f;
+
+    [Header("거친 숨 스크린 이미지")]
+    [SerializeField] private Image _breatheScreenImage;
+    [SerializeField] private float _maxBreatheScreenAlpha = 1f;
 
     private Rigidbody2D _rigid;
     private Animator _animator;
@@ -83,6 +96,8 @@ public class Player : MonoBehaviour
 
     private bool _isControllable = true;
     private float _footStepAudioTimer = 0f;
+
+    private SFXController _breatheController;
 
     private readonly Dictionary<string, Action> _onFootStepListeners = new();
 
@@ -118,6 +133,8 @@ public class Player : MonoBehaviour
     private void Start()
     {
         CameraController.Instance.SetFocus(transform, 0.5f);
+        _breatheController = SoundManager.Instance.PlayLoopSFX(_breatheClip, transform.position, 
+            _breatheMaxVolume, _breatheMaxSpeed, transform, _breatheGroup);
     }
 
     private void Update()
@@ -127,10 +144,47 @@ public class Player : MonoBehaviour
         MoveUpdate();
         MoveShiftUpdate();
         HiddenViewUpdate();
+        BreatheUpdate();
 
         if(Input.GetKeyDown(KeyCode.S))
         {
             CameraController.Instance.Shake(0.1f, 1f);
+        }
+    }
+
+    private void BreatheUpdate()
+    {
+        const float blurThreshold = 0.7f, screenPanelThreshold = 0.3f;
+        var progress = 1 - Stamina / MaxStamina;
+        _breatheController.Pitch = Mathf.Lerp(_breatheMinSpeed, _breatheMaxSpeed, progress);
+        _breatheController.Volume = Mathf.Lerp(_breatheMinVolume, _breatheMaxVolume, progress);
+        _breatheGroup.audioMixer.SetFloat("BreathePitch", _breathePitch / _breatheController.Pitch);
+
+        var breatheScreenColor = _breatheScreenImage.color;
+        if (progress < screenPanelThreshold)
+        {
+            breatheScreenColor.a = 0f;
+        }
+        else
+        {
+            var screenProgress = (progress - screenPanelThreshold) / (1 - screenPanelThreshold);
+            breatheScreenColor.a = Mathf.Lerp(0f, _maxBreatheScreenAlpha, screenProgress);
+        }
+        _breatheScreenImage.color = breatheScreenColor;
+
+        if (_postProcessingVolume.profile.TryGet<DepthOfField>(out var depthOfField))
+        {
+            if(progress < blurThreshold)
+            {
+                depthOfField.mode.Override(DepthOfFieldMode.Off);
+            }
+            else
+            {
+                var blurProgress = (progress - blurThreshold) / (1 - blurThreshold);
+                depthOfField.mode.Override(DepthOfFieldMode.Gaussian);
+
+                depthOfField.gaussianMaxRadius.Override(Mathf.Lerp(0.5f, 1.5f, blurProgress));
+            }
         }
     }
 
@@ -261,7 +315,7 @@ public class Player : MonoBehaviour
         }
         else if (Stamina < MaxStamina)
         {
-            Stamina += Time.deltaTime / 2f;
+            Stamina += Time.deltaTime;
         }
 
 

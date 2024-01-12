@@ -67,7 +67,7 @@ public class SoundManager : MonoBehaviour
     public void PlayBGM(AudioClip clip, bool loop = true, float volume = 1f, float pitch = 1f)
     {
         _bgmSource = _sourcePool.Get();
-        _bgmSource.transform.parent = Camera.main.transform;
+        _bgmSource.transform.parent = Player.Instance.transform;
         _bgmSource.transform.localPosition = Vector3.zero;
 
         _bgmSource.loop = loop;
@@ -90,14 +90,14 @@ public class SoundManager : MonoBehaviour
     }
 
     public void PlaySFX(AudioClip clip, Vector3 pos,
-        float volume = 1f, float pitch = 1f, Transform parent = null)
+        float volume = 1f, float pitch = 1f, Transform parent = null, AudioMixerGroup group = null)
     {
         var source = _sourcePool.Get();
         source.transform.SetParent(parent);
         source.transform.position = pos;
         source.loop = false;
 
-        source.outputAudioMixerGroup = SFXMixerGroup;
+        source.outputAudioMixerGroup = group == null ? SFXMixerGroup : group;
         source.clip = clip;
         source.volume = volume;
         source.pitch = pitch;
@@ -107,14 +107,14 @@ public class SoundManager : MonoBehaviour
     }
 
     public SFXController PlayLoopSFX(AudioClip clip, Vector3 pos,
-        float volume = 1f, float pitch = 1f, Transform parent = null)
+        float volume = 1f, float pitch = 1f, Transform parent = null, AudioMixerGroup group = null)
     {
         var source = _sourcePool.Get();
         source.transform.SetParent(parent);
         source.transform.position = pos;
         source.loop = true;
 
-        source.outputAudioMixerGroup = SFXMixerGroup;
+        source.outputAudioMixerGroup = group == null ? SFXMixerGroup : group;
         source.clip = clip;
         source.volume = volume;
         source.pitch = pitch;

@@ -12,54 +12,54 @@ public class Enemy : MonoBehaviour
     private Vector3 boxSize;
     [SerializeField]
     private Vector3 _groundBox;
-    [Header("¸ó½ºÅÍ ¹èÈ¸ ¼Óµµ")]
+    [Header("ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È¸ ï¿½Óµï¿½")]
     [SerializeField] private float _idleMoveSpeed;
-    [Header("¸ó½ºÅÍ ÃßÀû ¼Óµµ")]
+    [Header("ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Óµï¿½")]
     [SerializeField] private float _chaseMoveSpeed;
-    [Header("¸ó½ºÅÍ Á¡ÇÁ·Â")]
+    [Header("ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½")]
     [SerializeField] private float _jumpForce;
     [SerializeField] private float _forwardForce;
-    [Header("ÃßÀû ½ÃÀÛ ¹üÀ§")]
+    [Header("ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½")]
     [SerializeField] private float _searchingRange;
     public bool _isChasing;
     public bool _isInSight;
-    [Header("ÃßÀû Á¾·á Ä«¿îÆ®(ÃÊ)")]
+    [Header("ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ Ä«ï¿½ï¿½Æ®(ï¿½ï¿½)")]
     [SerializeField] private float _searchingStopCount;
 
 
 
-    [Header("¸ó½ºÅÍ ¹èÈ¸ ½Ã ÀÌµ¿ °Å¸®(¹üÀ§ ³» ·£´ý)")]
+    [Header("ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È¸ ï¿½ï¿½ ï¿½Ìµï¿½ ï¿½Å¸ï¿½(ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½)")]
     [SerializeField] private float _roamRange;
-    [Header("¸ó½ºÅÍ ¹èÈ¸ ½Ã ÃÖ¼Ò ÀÌµ¿°Å¸®")]
+    [Header("ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È¸ ï¿½ï¿½ ï¿½Ö¼ï¿½ ï¿½Ìµï¿½ï¿½Å¸ï¿½")]
     [SerializeField] private float _minRoamDistance;
-    [Header("¸ó½ºÅÍ ¹èÈ¸ ÃÖ´ë ÀÌµ¿ °Å¸®(ÀÌ °ª ³ÑÀ¸¸é Ã³À½À§Ä¡·Î)")]
+    [Header("ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È¸ ï¿½Ö´ï¿½ ï¿½Ìµï¿½ ï¿½Å¸ï¿½(ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Ã³ï¿½ï¿½ï¿½ï¿½Ä¡ï¿½ï¿½)")]
     [SerializeField] private float _maxRoamDistance;
 
     [SerializeField] private Transform _jumpSensor;
     [SerializeField] private Transform _groundSensor;
 
-    [Header("¼ö»ö ½ÇÆÐ ½Ã ¹èÈ¸ È½¼ö")]
+    [Header("ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½È¸ È½ï¿½ï¿½")]
     [SerializeField] private float _chaseFailRoamCount;
-    [Header("¼ö»ö ½ÇÆÐ ¹èÈ¸ ½Ã ´ÙÀ½ ¹èÈ¸±îÁö °É¸®´Â ½Ã°£(ÃÊ)")]
+    [Header("ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È¸ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È¸ï¿½ï¿½ï¿½ï¿½ ï¿½É¸ï¿½ï¿½ï¿½ ï¿½Ã°ï¿½(ï¿½ï¿½)")]
     [SerializeField] private float _chaseFailRoamCoolTime;
 
-    [Header("¸ó½ºÅÍ Èå´À³¢´Â ¼Ò¸® ÁÖ±â(ÃÊ)")]
+    [Header("ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ò¸ï¿½ ï¿½Ö±ï¿½(ï¿½ï¿½)")]
     [SerializeField] private float _cryingCycleTime;
 
-    [Header("»ç¿îµå")]
+    [Header("ï¿½ï¿½ï¿½ï¿½")]
     [SerializeField] private List<AudioClip> _crySounds = new();
     [SerializeField] private AudioClip JumpScare;
     [SerializeField] private AudioClip _screamingSound;
 
     [SerializeField] private AudioClip _headbuttSound;
 
-    [Header("Èå´À³¦ º¼·ý")]
+    [Header("ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½")]
     [SerializeField][Range(0f, 1f)] private float CryVolume;
-    [Header("ºñ¸í º¼·ý")]
+    [Header("ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½")]
     [SerializeField][Range(0f, 1f)] private float ScreamVolume;
 
 
-    //¸ó½ºÅÍ°¡ ¹èÄ¡µÈ À§Ä¡
+    //ï¿½ï¿½ï¿½Í°ï¿½ ï¿½ï¿½Ä¡ï¿½ï¿½ ï¿½ï¿½Ä¡
     public Vector2 InitPosition;
     private Vector3 _destination;
     private bool _IsSettedInitPosition;
@@ -98,7 +98,7 @@ public class Enemy : MonoBehaviour
         _idleState = new(   
         onEnter: () =>
         {
-            Debug.Log("idle »óÅÂ");
+            Debug.Log("idle ï¿½ï¿½ï¿½ï¿½");
 
             _anim.SetBool("IsWalking", false);
             _anim.SetBool("IsRunning", false);
@@ -138,7 +138,7 @@ public class Enemy : MonoBehaviour
         _roamState = new(
         onEnter: () =>
         {
-            //----¸ñÇ¥ ¼³Á¤----
+            //----ï¿½ï¿½Ç¥ ï¿½ï¿½ï¿½ï¿½----
             float Distance = Random.Range(-_roamRange, _roamRange + 0.1f);
             if (Mathf.Abs(Distance) <= _minRoamDistance && Distance >= 0) Distance = _minRoamDistance;
             if (Mathf.Abs(Distance) <= _minRoamDistance && Distance < 0) Distance = -_minRoamDistance;
@@ -175,7 +175,7 @@ public class Enemy : MonoBehaviour
             _isStartChasing = true;
 
             _encountco = StartCoroutine(EncountWithPlayer());
-            Debug.Log("ÃßÀû»óÅÂ ÁøÀÔ");
+            Debug.Log("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½");
         },
         onUpdate: () =>
         {
@@ -199,7 +199,7 @@ public class Enemy : MonoBehaviour
                 _chaseFailPosition = transform.position;
             },
             onUpdate: () => {
-            if (!_player.IsHidden && _isInSight && _fsm.CurrentState != _chaseState)     //½Ã¾ß ³»¿¡¼­ ¼ûÁö ¾Ê¾ÒÀ» ¶§.
+            if (!_player.IsHidden && _isInSight && _fsm.CurrentState != _chaseState)     //ï¿½Ã¾ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ê¾ï¿½ï¿½ï¿½ ï¿½ï¿½.
                 {
                     _fsm.CurrentState = _chaseState;
                 }
@@ -264,7 +264,7 @@ public class Enemy : MonoBehaviour
         if (!_IsSettedInitPosition) StartCoroutine(SetInitPosition());
         //if (collision.gameObject == wall)
     }
-    /* //¼ö»ö-ÃßÀû ÄÚ·çÆ¾
+    /* //ï¿½ï¿½ï¿½ï¿½-ï¿½ï¿½ï¿½ï¿½ ï¿½Ú·ï¿½Æ¾
     private IEnumerator Searching_2()
     {
         int Selecter = Random.Range(0, 2);
@@ -274,7 +274,7 @@ public class Enemy : MonoBehaviour
 
         _destination = new Vector3(FirstSearchDestination.x,FirstSearchDestination.y,0);
         yield return Moving(_destination);
-        yield return new WaitUntil(() => new Vector2(transform.position.x, transform.position.y) == FirstSearchDestination); // ´ë¸®ÀÚ, ¶÷´Ù½Ä.
+        yield return new WaitUntil(() => new Vector2(transform.position.x, transform.position.y) == FirstSearchDestination); // ï¿½ë¸®ï¿½ï¿½, ï¿½ï¿½ï¿½Ù½ï¿½.
 
         
         
@@ -283,13 +283,13 @@ public class Enemy : MonoBehaviour
         _destination = new Vector3(SecondSearchDesntination.x,SecondSearchDesntination.y,0);
         yield return Moving(_destination);
 
-        yield return new WaitUntil(() => new Vector2(transform.position.x, transform.position.y) == SecondSearchDesntination); // ´ë¸®ÀÚ, ¶÷´Ù½Ä.
+        yield return new WaitUntil(() => new Vector2(transform.position.x, transform.position.y) == SecondSearchDesntination); // ï¿½ë¸®ï¿½ï¿½, ï¿½ï¿½ï¿½Ù½ï¿½.
         
         yield return new WaitForSeconds(_searchWaitTime);
         ReturnToInitPosition();
-    } //¼ö»ö-ÃßÀû*/
-    /* //¹èÈ¸ ÄÚ·çÆ¾
-    private IEnumerator Searching_1() // ¹èÈ¸
+    } //ï¿½ï¿½ï¿½ï¿½-ï¿½ï¿½ï¿½ï¿½*/
+    /* //ï¿½ï¿½È¸ ï¿½Ú·ï¿½Æ¾
+    private IEnumerator Searching_1() // ï¿½ï¿½È¸
     {
         
         while(_currentState == State.Walk)
@@ -318,7 +318,7 @@ public class Enemy : MonoBehaviour
         }
     }
     */
-    /* //ÀÌµ¿ ÄÚ·çÆ¾
+    /* //ï¿½Ìµï¿½ ï¿½Ú·ï¿½Æ¾
     private IEnumerator Moving(Vector3 Destination)
     {
         while (Destination != transform.position)
@@ -414,7 +414,7 @@ public class Enemy : MonoBehaviour
             yield return new WaitForSeconds(0.05f);
         }
     }
-    private IEnumerator IdleToRoam()    //idle»óÅÂ¿¡¼­ roam »óÅÂ·Î ÀÌµ¿.
+    private IEnumerator IdleToRoam()    //idleï¿½ï¿½ï¿½Â¿ï¿½ï¿½ï¿½ roam ï¿½ï¿½ï¿½Â·ï¿½ ï¿½Ìµï¿½.
     {
         yield return new WaitForSeconds(2);
         _fsm.CurrentState = _roamState;
@@ -534,7 +534,7 @@ public class Enemy : MonoBehaviour
         if (collision.gameObject == _player.gameObject && !_player.IsHidden && _fsm.CurrentState != _chaseState && _chasable && !_isChasing)
         {
             _isChasing = true;
-            //_fsm.CurrentState = _chaseState;
+            _fsm.CurrentState = _chaseState;
         }
     }
 
@@ -545,7 +545,7 @@ public class Enemy : MonoBehaviour
     }
     private void OnTriggerExit2D(Collider2D collision)
     {
-        if(collision.gameObject == _player.gameObject)
+        if(_player != null && collision.gameObject == _player.gameObject)
         {
             _isInSight = false;
             
