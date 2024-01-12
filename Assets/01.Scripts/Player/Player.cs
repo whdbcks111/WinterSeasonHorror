@@ -66,7 +66,10 @@ public class Player : MonoBehaviour
     [SerializeField] private float _jumpVolume;
     [SerializeField] private AudioMixerGroup _breatheGroup;
     [SerializeField] private AudioClip _breatheClip;
-    [SerializeField] private float _breathePitch = 1f, _breatheMinVolume = 0.1f, _breatheMaxVolume = 2f, _breatheMinSpeed = 0.5f, _breatheMaxSpeed = 2f;
+    [SerializeField] private float _breathePitch = 1f, _breatheMinVolume = 0.1f, 
+        _breatheMaxVolume = 2f, _breatheMinSpeed = 0.5f, _breatheMaxSpeed = 2f;
+    [SerializeField] private AudioClip _heartbeatClip;
+    [SerializeField] private float _heartbeatPitch = 1f, _heartbeatMinVolume = 0.1f, _heartbeatMaxVolume = 2f;
 
     [Header("거친 숨 스크린 이미지")]
     [SerializeField] private Image _breatheScreenImage;
@@ -97,7 +100,7 @@ public class Player : MonoBehaviour
     private bool _isControllable = true;
     private float _footStepAudioTimer = 0f;
 
-    private SFXController _breatheController;
+    private SFXController _breatheController, _heartbeatController;
 
     private readonly Dictionary<string, Action> _onFootStepListeners = new();
 
@@ -133,8 +136,10 @@ public class Player : MonoBehaviour
     private void Start()
     {
         CameraController.Instance.SetFocus(transform, 0.5f);
-        _breatheController = SoundManager.Instance.PlayLoopSFX(_breatheClip, transform.position, 
+        _breatheController = SoundManager.Instance.PlayLoopSFX(_breatheClip, transform.position,
             _breatheMaxVolume, _breatheMaxSpeed, transform, _breatheGroup);
+        _heartbeatController = SoundManager.Instance.PlayLoopSFX(_heartbeatClip, transform.position,
+            _heartbeatMaxVolume, _breatheMaxSpeed, transform, _breatheGroup);
     }
 
     private void Update()
@@ -158,6 +163,8 @@ public class Player : MonoBehaviour
         var progress = 1 - Stamina / MaxStamina;
         _breatheController.Pitch = Mathf.Lerp(_breatheMinSpeed, _breatheMaxSpeed, progress);
         _breatheController.Volume = Mathf.Lerp(_breatheMinVolume, _breatheMaxVolume, progress);
+        _heartbeatController.Pitch = Mathf.Lerp(_breatheMinSpeed, _breatheMaxSpeed, progress);
+        _heartbeatController.Volume = Mathf.Lerp(_heartbeatMinVolume, _heartbeatMaxVolume, progress);
         _breatheGroup.audioMixer.SetFloat("BreathePitch", _breathePitch / _breatheController.Pitch);
 
         var breatheScreenColor = _breatheScreenImage.color;
