@@ -105,7 +105,7 @@ public class Enemy : MonoBehaviour
         {
             if(_isInSight && !_player.IsHidden && _fsm.CurrentState != _chaseState)
             {
-                //_fsm.CurrentState = _chaseState;
+                _fsm.CurrentState = _chaseState;
             }
 
             _anim.SetBool("IsWalking", false);
@@ -275,13 +275,13 @@ public class Enemy : MonoBehaviour
             _fsm.CurrentState = _threteningHide;
         }
 
-        /*
+        
         if(!_player.IsHidden && _isInSight && !_isChasing)
         {
             _isChasing = true;
             _fsm.CurrentState = _chaseState;
         } 
-        */
+        
 
     }
 
@@ -532,7 +532,7 @@ public class Enemy : MonoBehaviour
         if (collision.gameObject == _player.gameObject && !_player.IsHidden && _fsm.CurrentState != _chaseState && _chasable && !_isChasing)
         {
             _isChasing = true;
-            //_fsm.CurrentState = _chaseState;
+            _fsm.CurrentState = _chaseState;
         }
 
         
@@ -550,7 +550,7 @@ public class Enemy : MonoBehaviour
     }
     private void OnTriggerExit2D(Collider2D collision)
     {
-        if(collision.gameObject == _player.gameObject)
+        if(_player != null && collision.gameObject == _player.gameObject)
         {
             _isInSight = false;
             
