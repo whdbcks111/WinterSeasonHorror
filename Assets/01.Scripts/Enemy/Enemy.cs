@@ -186,6 +186,12 @@ public class Enemy : MonoBehaviour
             else
             {
                 MoveToDestination(_player.transform.position, _chaseMoveSpeed);
+
+                if((_player.transform.position.x - transform.position.x) > 0)
+                {
+                    transform.rotation = Quaternion.Euler(0, 0, 0);
+                }
+                else transform.rotation = Quaternion.Euler(0, 180, 0);
             }
         },
         onExit: () =>
@@ -222,6 +228,12 @@ public class Enemy : MonoBehaviour
                         _fsm.CurrentState = _chaseState;
                     }
                 }
+
+                if ((_player.transform.position.x - transform.position.x) > 0)
+                {
+                    transform.rotation = Quaternion.Euler(0, 0, 0);
+                }
+                else transform.rotation = Quaternion.Euler(0, 180, 0);
             },
             onExit: () => {
             });
@@ -390,8 +402,9 @@ public class Enemy : MonoBehaviour
     {
         while (true)
         {
-            if(_isOnGround)
+            if(_isOnGround && _fsm.CurrentState != _chaseState &&  _fsm.CurrentState != _threteningHide)
             {
+                Debug.Log("상시 전환 활성화");
                 _currentLocation = transform.position;
 
                 yield return new WaitForSeconds(0.05f);
@@ -401,7 +414,7 @@ public class Enemy : MonoBehaviour
 
                 if (_posGap.x < 0)
                 {
-                    transform.rotation = Quaternion.Euler(0, 180, 0);
+                    transform.eulerAngles = new(0, 180, 0);
                     _isLeftDir = true;
                 }
                 if (_posGap.x > 0)
