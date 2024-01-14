@@ -6,60 +6,34 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-public class Enemy : MonoBehaviour
+public class Believer : MonoBehaviour
 {
     [SerializeField]
     private Vector3 boxSize;
     [SerializeField]
     private Vector3 _groundBox;
-    [Header("���� ��ȸ �ӵ�")]
     [SerializeField] private float _idleMoveSpeed;
-    [Header("���� ���� �ӵ�")]
     [SerializeField] private float _chaseMoveSpeed;
-    [Header("���� ������")]
     [SerializeField] private float _jumpForce;
     [SerializeField] private float _forwardForce;
-    [Header("���� ���� ����")]
     [SerializeField] private float _searchingRange;
     public bool _isChasing;
     public bool _isInSight;
-    [Header("���� ���� ī��Ʈ(��)")]
     [SerializeField] private float _searchingStopCount;
-
-
-
-    [Header("���� ��ȸ �� �̵� �Ÿ�(���� �� ����)")]
     [SerializeField] private float _roamRange;
-    [Header("���� ��ȸ �� �ּ� �̵��Ÿ�")]
     [SerializeField] private float _minRoamDistance;
-    [Header("���� ��ȸ �ִ� �̵� �Ÿ�(�� �� ������ ó����ġ��)")]
     [SerializeField] private float _maxRoamDistance;
-
     [SerializeField] private Transform _jumpSensor;
     [SerializeField] private Transform _groundSensor;
-
-    [Header("���� ���� �� ��ȸ Ƚ��")]
     [SerializeField] private float _chaseFailRoamCount;
-    [Header("���� ���� ��ȸ �� ���� ��ȸ���� �ɸ��� �ð�(��)")]
     [SerializeField] private float _chaseFailRoamCoolTime;
-
-    [Header("���� ������� �Ҹ� �ֱ�(��)")]
     [SerializeField] private float _cryingCycleTime;
-
-    [Header("����")]
     [SerializeField] private List<AudioClip> _crySounds = new();
     [SerializeField] private AudioClip JumpScare;
     [SerializeField] private AudioClip _screamingSound;
-
     [SerializeField] private AudioClip _headbuttSound;
-
-    [Header("����� ����")]
     [SerializeField][Range(0f, 1f)] private float CryVolume;
-    [Header("��� ����")]
     [SerializeField][Range(0f, 1f)] private float ScreamVolume;
-
-
-    //���Ͱ� ��ġ�� ��ġ
     public Vector2 InitPosition;
     private Vector3 _destination;
     private bool _IsSettedInitPosition;
@@ -83,8 +57,9 @@ public class Enemy : MonoBehaviour
     Animator _anim;
 
     private Player _player;
-    private FSM _fsm = new();
-    private BaseState _idleState, _roamState, _chaseState,_chaseFailState,_returnState ,_threteningHide;
+
+    public FSM _fsm = new();
+    public BaseState _idleState, _roamState, _chaseState,_chaseFailState,_returnState ,_threteningHide;
 
     // Start is called before the first frame update
     void Start()
@@ -98,7 +73,6 @@ public class Enemy : MonoBehaviour
         _idleState = new(   
         onEnter: () =>
         {
-            Debug.Log("idle ����");
 
             _anim.SetBool("IsWalking", false);
             _anim.SetBool("IsRunning", false);
@@ -138,7 +112,6 @@ public class Enemy : MonoBehaviour
         _roamState = new(
         onEnter: () =>
         {
-            //----��ǥ ����----
             float Distance = Random.Range(-_roamRange, _roamRange + 0.1f);
             if (Mathf.Abs(Distance) <= _minRoamDistance && Distance >= 0) Distance = _minRoamDistance;
             if (Mathf.Abs(Distance) <= _minRoamDistance && Distance < 0) Distance = -_minRoamDistance;
@@ -172,10 +145,11 @@ public class Enemy : MonoBehaviour
         _chaseState = new(
         onEnter: () =>
         {
+
             _isStartChasing = true;
 
+            Debug.Log("추적 상태");
             _encountco = StartCoroutine(EncountWithPlayer());
-            Debug.Log("�������� ����");
         },
         onUpdate: () =>
         {
