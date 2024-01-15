@@ -59,7 +59,7 @@ public class Believer : MonoBehaviour
     private Player _player;
 
     public FSM _fsm = new();
-    public BaseState _idleState, _roamState, _chaseState,_chaseFailState,_returnState ,_threteningHide;
+    public BaseState _idleState, _roamState, _chaseState,_chaseFailState,_returnState ,_threteningHide,_getOrdered;
 
     // Start is called before the first frame update
     void Start()
@@ -86,7 +86,8 @@ public class Believer : MonoBehaviour
                 StopCoroutine(_idleToRoamCo);
             }
         },
-        onExit: () =>{
+        onExit: () =>{ 
+            if(_idleToRoamCo != null) StopCoroutine(_idleToRoamCo);
         });
         
         _returnState = new(
@@ -208,6 +209,14 @@ public class Believer : MonoBehaviour
                     transform.rotation = Quaternion.Euler(0, 0, 0);
                 }
                 else transform.rotation = Quaternion.Euler(0, 180, 0);
+            },
+            onExit: () => {
+            });
+        _getOrdered = new(onEnter: () => {
+            
+        },
+            onUpdate: () => {
+                
             },
             onExit: () => {
             });
@@ -378,7 +387,6 @@ public class Believer : MonoBehaviour
         {
             if(_isOnGround && _fsm.CurrentState != _chaseState &&  _fsm.CurrentState != _threteningHide)
             {
-                Debug.Log("상시 전환 활성화");
                 _currentLocation = transform.position;
 
                 yield return new WaitForSeconds(0.05f);

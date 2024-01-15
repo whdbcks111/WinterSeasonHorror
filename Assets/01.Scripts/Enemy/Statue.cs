@@ -14,36 +14,97 @@ public class Statue : MonoBehaviour
     [SerializeField] private Vector2 _boxSize;
     [SerializeField] private Transform _boxPosition;
 
-    //public LayerMask layerMask;
+    [SerializeField] private GameObject _eyeSphere;
+    [SerializeField] private GameObject _pupil;
+
+
+    [Header("수녀상 종류")]
+    [SerializeField] GameObject[] _statuePresets;
+    private GameObject _selectedStatue;
+    [SerializeField] GameObject _statuePreview;
+
     private void Start()
     {
         _player = Player.Instance;
+
+        _selectedStatue = SelectPreset();
+        _statuePreview.SetActive(false);
+        
+        _pupil.SetActive(false);
+        
     }
     void Update()
     {
-        // 원형 캐스트 수행
-        if(Input.GetKeyDown(KeyCode.V))
+
+        if (Input.GetKeyDown(KeyCode.V))
         {
-            CircleCasting();
+            AttackOrder();
         }
+        if (Input.GetKeyDown(KeyCode.H))
+        {
+            ActivateEye();
+        }
+        if (Input.GetKeyDown(KeyCode.B))
+        {
+            DeactivateEye();
+        }
+
+
 
     }
     private void OnDrawGizmos()
     {
         Gizmos.color = Color.magenta;
-
         Gizmos.DrawWireCube(_boxPosition.position, _boxSize);
     }
-    void CircleCasting()
+
+    private void ActivateEye()
+    {
+        _pupil.SetActive(true);
+    }
+    private void DeactivateEye()
+    {
+        _pupil.SetActive(false);
+    }
+    void AttackOrder()
     {
         RaycastHit2D[] hits = Physics2D.BoxCastAll(_boxPosition.position, _boxSize,0,Vector2.zero);
         foreach(RaycastHit2D hit in hits)
         {
-            if(hit.collider.gameObject.TryGetComponent<Believer>(out Believer BelieverScript) && BelieverScript._fsm.CurrentState != BelieverScript._threteningHide)
+            if(hit.collider.gameObject.TryGetComponent<Believer>(out Believer BelieverScript) && BelieverScript._fsm.CurrentState != BelieverScript._threteningHide && BelieverScript._fsm.CurrentState != BelieverScript._chaseState)
             {
                 BelieverScript._fsm.CurrentState = BelieverScript._chaseState;
-                //플레이어가 시야안에 없어서 제대로 작동을 안함. 새로운 상태를 만들 것. Ordered 상태.
             }
         }
+    }
+    private GameObject SelectPreset()
+    {
+        int Selecter = Random.Range(0, _statuePresets.Length);
+        GameObject SelectedPreset = Instantiate(_statuePresets[Selecter],transform.position,Quaternion.identity);
+        SelectedPreset.transform.parent = gameObject.transform;
+
+        switch (Selecter) {
+            case 0:
+                Instantiate(_pupil, transform.position, Quaternion.identity);
+                Instantiate(_eyeSphere, transform.position, Quaternion.identity);
+                break;
+            case 1:
+                Instantiate(_pupil, transform.position, Quaternion.identity);
+                Instantiate(_eyeSphere, transform.position, Quaternion.identity);
+                break;
+            case 2:
+                Instantiate(_pupil, transform.position, Quaternion.identity);
+                Instantiate(_eyeSphere, transform.position, Quaternion.identity);
+                break;
+            case 3:
+                Instantiate(_pupil, transform.position, Quaternion.identity);
+                Instantiate(_eyeSphere, transform.position, Quaternion.identity);
+                break;
+            default:
+                break;
+        }
+
+
+        return SelectedPreset;
     }
 }
