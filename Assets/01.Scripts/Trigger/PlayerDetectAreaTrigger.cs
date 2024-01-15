@@ -1,53 +1,10 @@
 using UnityEngine;
 
-[RequireComponent (typeof(Collider2D))]
-public class PlayerDetectAreaTrigger : BaseTrigger
+[RequireComponent(typeof(Collider2D))]
+public class PlayerDetectAreaTrigger : DetectAreaTrigger
 {
-    public bool TriggerOnce = false;
-
-    private int _enterCount = 0;
-    private bool _isEntered = false;
-
-    public BaseTrigger[] TargetTriggers;
-
-    private void OnTriggerEnter2D(Collider2D collision)
+    protected override bool CheckCollision(Collider2D collider)
     {
-        if (collision.TryGetComponent(out Player _))
-        {
-            if (_enterCount > 0 && TriggerOnce) return;
-            if (_isEntered) return;
-
-            _enterCount++;
-            _isEntered = true;
-
-            Enter();
-        }
-    }
-    private void OnTriggerExit2D(Collider2D collision)
-    {
-        if (collision.TryGetComponent(out Player _))
-        {
-            _isEntered = false;
-
-            Exit();
-        }
-    }
-
-    public override void Enter()
-    {
-        foreach (var trigger in TargetTriggers)
-        {
-            trigger.Enter();
-        }
-
-    }
-
-    public override void Exit()
-    {
-        foreach (var trigger in TargetTriggers)
-        {
-            trigger.Exit();
-        }
-
+        return collider.TryGetComponent(out Player _);
     }
 }
