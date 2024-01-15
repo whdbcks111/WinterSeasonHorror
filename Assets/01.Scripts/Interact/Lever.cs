@@ -14,25 +14,26 @@ public class Lever : InteractableObject
     [SerializeField] private float interactRotationZ; //인터랙트 이후 각도 값
     [SerializeField] private Transform handleAxisTf; //핸들 축
     
-    private bool _isOn = false; // 레버 상태
+    //private bool _isOn = false; // 레버 상태
     public GameObject[] targetObjects;
     
     public override void OnInteract()
     {
-        _isOn = !_isOn;
+        //_isOn = !_isOn;
         //HandleBlockingObjects(_isOn);
         HandleTargetObjects();
         
         // 기타 레버 상호작용 로직
     }
-    protected override void ProvideVisualFeedback(bool isOn)
+    public override void ProvideVisualFeedback(bool isOn)
     {
-        GetComponent<Light2D>().enabled = _isOn;
-        StartCoroutine(RotateLever(duration, _isOn));
+        GetComponent<Light2D>().enabled = isOn;
+        //StartCoroutine(RotateLever(duration, isOn));
+        RotateLever(duration,isOn).Forget();
     }
 
 
-    IEnumerator RotateLever(float time, bool isOn)
+    /*IEnumerator RotateLever(float time, bool isOn)
     {
         GetComponent<BoxCollider2D>().enabled = false;
         var currentRot = handleAxisTf.eulerAngles.z;
@@ -49,7 +50,7 @@ public class Lever : InteractableObject
         }
 
         GetComponent<BoxCollider2D>().enabled = true;
-    }
+    }*/
     private void HandleTargetObjects()
     {
         foreach (var obj in targetObjects)
@@ -61,6 +62,24 @@ public class Lever : InteractableObject
             }
         }
     }
+    private async UniTask RotateLever(float time, bool isOn)
+    {
+        GetComponent<BoxCollider2D>().enabled = false;
+        var currentRot = handleAxisTf.eulerAngles.z;
+        var targetRot = isOn ? interactRotationZ : previousRotationZ;
+        
+
+        //첫번째 방법
+        for(float i = 0; i <= 1; i += Time.deltaTime / time)
+        {
+            handleAxisTf.eulerAngles = new(0, 0, Mathf.LerpAngle(
+                currentRot, targetRot, i
+            ));
+            await UniTask.Yield();
+        }
+
+        GetComponent<BoxCollider2D>().enabled = true;
+    }
     private async UniTask FadeObject(GameObject obj, float duration)
     {
         bool isActive = obj.activeSelf;
@@ -71,7 +90,6 @@ public class Lever : InteractableObject
         // Fade out logic
         while (counter < duration)
         {
-            print(counter / duration);
             counter += Time.deltaTime;
             float alpha = Mathf.Lerp(isActive ? 1 : 0, isActive ? 0 : 1, counter / duration);
             if (spriteRenderer != null)
@@ -82,7 +100,7 @@ public class Lever : InteractableObject
             }
             await UniTask.Yield();
         }
-
+        spriteRenderer.color = Color.white;
         obj.SetActive(!isActive);
     }
 }
