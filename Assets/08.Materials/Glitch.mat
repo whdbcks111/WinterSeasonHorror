@@ -42,11 +42,11 @@ Material:
     m_Ints: []
     m_Floats:
     - Vector1_2fa229cb86ea44b9a09c3c44e372c1f9: 10.9
-    - _Intensity: 0.2802953
+    - _Intensity: 0
     - _QueueControl: 0
     - _QueueOffset: 0
     - _Speed: 0.9
-    - _Threshold: 0.035036914
+    - _Threshold: 0
     - _speed: 0
     m_Colors: []
   m_BuildTextureStacks: []
