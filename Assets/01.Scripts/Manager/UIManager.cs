@@ -9,6 +9,7 @@ using UnityEditor.Searcher;
 
 public class UIManager : MonoBehaviour
 {
+         
     private static UIManager instance;
 
     // 2. Public static property
@@ -221,21 +222,17 @@ public class UIManager : MonoBehaviour
             }
             
             
-            List<Image> images = new List<Image>();
-            for (int i = 0; i < jumpScare.sprites.Length; i++)
+            Image image = InstantiateImage(jumpScare.ScareSpriteEntity[0].sprite, canvas.transform);
+            for (int i = 0; i < jumpScare.ScareSpriteEntity.Length; i++)
             {
-                Image image = InstantiateImage(jumpScare.sprites[i], canvas.transform);
+                image.sprite = jumpScare.ScareSpriteEntity[i].sprite;
                 ImageFit(image, jumpScare.screenFit);
-                images.Add(image);
-                yield return new WaitForSeconds(jumpScare.displayTimes[i]);
+                yield return new WaitForSeconds(jumpScare.ScareSpriteEntity[i].delayTime);
             }
 
             // 마지막 스프라이트 표시
             yield return new WaitForSeconds(jumpScare.lastSpriteDuration);
-            foreach (var i in images)
-            {
-                Destroy(i.gameObject);
-            }
+            image.gameObject.SetActive(false);
         }
 
         void ImageToFitScreen(PanelUI panelUI)

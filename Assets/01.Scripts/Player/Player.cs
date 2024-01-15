@@ -11,55 +11,55 @@ public class Player : MonoBehaviour
 {
     public static Player Instance { get; private set; }
 
-    [Header("Æ÷½ºÆ® ÇÁ·Î¼¼½Ì º¼·ı ÇÒ´ç")]
+    [Header("í¬ìŠ¤íŠ¸ í”„ë¡œì„¸ì‹± ë³¼ë¥¨ í• ë‹¹")]
     [SerializeField] private Volume _postProcessingVolume;
 
-    [Header("Äİ¶óÀÌ´õ(Ãæµ¹Ã¼) ÇÒ´ç")]
+    [Header("ì½œë¼ì´ë”(ì¶©ëŒì²´) í• ë‹¹")]
     [SerializeField] private Collider2D _feetCollider;
     [SerializeField] private Collider2D _bodyCollider;
 
-    [Header("¶óÀÌÆ® ÇÒ´ç")]
+    [Header("ë¼ì´íŠ¸ í• ë‹¹")]
     [SerializeField] private Light2D _handLight;
     [SerializeField] private Light2D _surroundLight;
 
-    [Header("»óÈ£ÀÛ¿ë ¾ÆÀÌÄÜ")]
+    [Header("ìƒí˜¸ì‘ìš© ì•„ì´ì½˜")]
     [SerializeField] private SpriteRenderer _bangMark;
 
-    [Header("Ä«¸Ş¶ó ¿ÀÇÁ¼Â")]
+    [Header("ì¹´ë©”ë¼ ì˜¤í”„ì…‹")]
     [SerializeField] private Vector2 _camOffset;
 
-    [Header("¼û¾úÀ» ¶§ »ö»ó")]
+    [Header("ìˆ¨ì—ˆì„ ë•Œ ìƒ‰ìƒ")]
     [SerializeField] private Color _hiddenColor;
-    [Header("¼û¾úÀ» ¶§ ·¹ÀÌ¾î ¿ì¼±¼øÀ§")]
+    [Header("ìˆ¨ì—ˆì„ ë•Œ ë ˆì´ì–´ ìš°ì„ ìˆœìœ„")]
     [SerializeField] private int _hiddenOrderInLayer = -50;
-    [Header("¼û°í ³ª¼­ ´Ù½Ã ¼û±â±îÁö ÄğÅ¸ÀÓ")]
+    [Header("ìˆ¨ê³  ë‚˜ì„œ ë‹¤ì‹œ ìˆ¨ê¸°ê¹Œì§€ ì¿¨íƒ€ì„")]
     [SerializeField] private float _hideCooldown = 3f;
 
-    [Header("ÇÃ·¹ÀÌ¾î ÀÌµ¿¼Óµµ")]
+    [Header("í”Œë ˆì´ì–´ ì´ë™ì†ë„")]
     [SerializeField] private float _moveSpeed = 5;
-    [Header("ÇÃ·¹ÀÌ¾î ¹æÇâÀüÈ¯ ½Ã°£")]
+    [Header("í”Œë ˆì´ì–´ ë°©í–¥ì „í™˜ ì‹œê°„")]
     [SerializeField] private float _moveShiftTime;
-    [Header("ÇÃ·¹ÀÌ¾î ´Ş¸®±â ¹è¼Ó")]
+    [Header("í”Œë ˆì´ì–´ ë‹¬ë¦¬ê¸° ë°°ì†")]
     [SerializeField] private float _runModifier = 1.3f;
-    [Header("ÇÃ·¹ÀÌ¾î ÀÏ¹İ Á¡ÇÁ·Â")]
+    [Header("í”Œë ˆì´ì–´ ì¼ë°˜ ì í”„ë ¥")]
     [SerializeField] private float _jumpForce = 5;
-    [Header("ÇÃ·¹ÀÌ¾î Àå¾Ö¹° ³Ñ´Â Á¡ÇÁ·Â")]
+    [Header("í”Œë ˆì´ì–´ ì¥ì• ë¬¼ ë„˜ëŠ” ì í”„ë ¥")]
     [SerializeField] private float _highJumpForce = 10;
-    [Header("ÇÃ·¹ÀÌ¾î Á¡ÇÁ °¡´É È½¼ö")]
+    [Header("í”Œë ˆì´ì–´ ì í”„ ê°€ëŠ¥ íšŸìˆ˜")]
     [SerializeField] private int _maxJumpCount = 1;
 
-    [Header("ÇÃ·¹ÀÌ¾î ¹ßÀÚ±¹ °£°İ (ÃÊ)")]
+    [Header("í”Œë ˆì´ì–´ ë°œìêµ­ ê°„ê²© (ì´ˆ)")]
     [SerializeField] private float _footStepAudioSpan = 1f;
 
-    [Header("ÇÃ·¹ÀÌ¾î ¼ÕÀüµî Àü·Â Áö¼Ó½Ã°£ (ÃÊ)")]
+    [Header("í”Œë ˆì´ì–´ ì†ì „ë“± ì „ë ¥ ì§€ì†ì‹œê°„ (ì´ˆ)")]
     public float MaxLightEnerge = 100;
     [HideInInspector] public float LightEnerge;
 
-    [Header("ÇÃ·¹ÀÌ¾î ´Ş¸®±â Áö¼Ó½Ã°£ (ÃÊ)")]
+    [Header("í”Œë ˆì´ì–´ ë‹¬ë¦¬ê¸° ì§€ì†ì‹œê°„ (ì´ˆ)")]
     public float MaxStamina = 20f;
     [HideInInspector] public float Stamina;
 
-    [Header("È¿°úÀ½ ÇÒ´ç")]
+    [Header("íš¨ê³¼ìŒ í• ë‹¹")]
     [SerializeField] private AudioClip _footStepClip;
     [SerializeField] private float _footStepVolume, _footStepPitch, _footStepPitchRandom;
     [SerializeField] private AudioClip _jumpClip;
@@ -71,7 +71,7 @@ public class Player : MonoBehaviour
     [SerializeField] private AudioClip _heartbeatClip;
     [SerializeField] private float _heartbeatPitch = 1f, _heartbeatMinVolume = 0.1f, _heartbeatMaxVolume = 2f;
 
-    [Header("°ÅÄ£ ¼û ½ºÅ©¸°")]
+    [Header("ê±°ì¹œ ìˆ¨ ìŠ¤í¬ë¦°")]
     [SerializeField] private Image _breatheScreenImage;
     [SerializeField] private float _maxBreatheScreenAlpha = 1f;
     [SerializeField] private float _breatheScreenBeatRate = 1f;
@@ -265,7 +265,7 @@ public class Player : MonoBehaviour
 
     private void MoveUpdate()
     {
-        // ¹æÇâÀüÈ¯ÁßÀÌ¸é _isLeftDirÀÇ ¹İ´ë·Î ¹Ì¸® ÀÌµ¿
+        // ë°©í–¥ì „í™˜ì¤‘ì´ë©´ _isLeftDirì˜ ë°˜ëŒ€ë¡œ ë¯¸ë¦¬ ì´ë™
         CameraController.Instance.SetOffset(_camOffset * new Vector2(_isLeftDir == _isShifting ? 1 : -1, 1), _moveShiftTime);
         if (_isShifting) return;
         if (_hideCannotMoveTimer > 0) return;

@@ -71,7 +71,6 @@ public class Lever : InteractableObject
         // Fade out logic
         while (counter < duration)
         {
-            print(counter / duration);
             counter += Time.deltaTime;
             float alpha = Mathf.Lerp(isActive ? 1 : 0, isActive ? 0 : 1, counter / duration);
             if (spriteRenderer != null)

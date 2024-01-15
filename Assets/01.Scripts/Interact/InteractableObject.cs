@@ -19,7 +19,7 @@ public abstract class InteractableObject : MonoBehaviour
 
     [SerializeField] public AudioClip DeInteractSound;
 
-    private bool isOn = false;
+    public bool isOn = false;
   
     
     
