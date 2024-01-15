@@ -2,11 +2,17 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Audio;
+using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
+using UnityEngine.UI;
 
 public class Player : MonoBehaviour
 {
     public static Player Instance { get; private set; }
+
+    [Header("포스트 프로세싱 볼륨 할당")]
+    [SerializeField] private Volume _postProcessingVolume;
 
     [Header("콜라이더(충돌체) 할당")]
     [SerializeField] private Collider2D _feetCollider;
@@ -58,6 +64,16 @@ public class Player : MonoBehaviour
     [SerializeField] private float _footStepVolume, _footStepPitch, _footStepPitchRandom;
     [SerializeField] private AudioClip _jumpClip;
     [SerializeField] private float _jumpVolume;
+    [SerializeField] private AudioMixerGroup _breatheGroup;
+    [SerializeField] private AudioClip _breatheClip;
+    [SerializeField] private float _breathePitch = 1f, _breatheMinVolume = 0.1f, 
+        _breatheMaxVolume = 2f, _breatheMinSpeed = 0.5f, _breatheMaxSpeed = 2f;
+    [SerializeField] private AudioClip _heartbeatClip;
+    [SerializeField] private float _heartbeatPitch = 1f, _heartbeatMinVolume = 0.1f, _heartbeatMaxVolume = 2f;
+
+    [Header("거친 숨 스크린 이미지")]
+    [SerializeField] private Image _breatheScreenImage;
+    [SerializeField] private float _maxBreatheScreenAlpha = 1f;
 
     private Rigidbody2D _rigid;
     private Animator _animator;
@@ -80,9 +96,12 @@ public class Player : MonoBehaviour
     private bool _isHidden = false;
     private int _defaultOrderInLayer;
     private float _hideTimer = 0f;
+    private float _hideCannotMoveTimer = 0f;
 
     private bool _isControllable = true;
     private float _footStepAudioTimer = 0f;
+
+    private SFXController _breatheController, _heartbeatController;
 
     private readonly Dictionary<string, Action> _onFootStepListeners = new();
 
@@ -118,6 +137,10 @@ public class Player : MonoBehaviour
     private void Start()
     {
         CameraController.Instance.SetFocus(transform, 0.5f);
+        _breatheController = SoundManager.Instance.PlayLoopSFX(_breatheClip, transform.position,
+            _breatheMaxVolume, _breatheMaxSpeed, transform, _breatheGroup);
+        _heartbeatController = SoundManager.Instance.PlayLoopSFX(_heartbeatClip, transform.position,
+            _heartbeatMaxVolume, _breatheMaxSpeed, transform, _breatheGroup);
     }
 
     private void Update()
@@ -127,10 +150,49 @@ public class Player : MonoBehaviour
         MoveUpdate();
         MoveShiftUpdate();
         HiddenViewUpdate();
+        BreatheUpdate();
 
         if(Input.GetKeyDown(KeyCode.S))
         {
             CameraController.Instance.Shake(0.1f, 1f);
+        }
+    }
+
+    private void BreatheUpdate()
+    {
+        const float blurThreshold = 0.7f, screenPanelThreshold = 0.3f;
+        var progress = 1 - Stamina / MaxStamina;
+        _breatheController.Pitch = Mathf.Lerp(_breatheMinSpeed, _breatheMaxSpeed, progress);
+        _breatheController.Volume = Mathf.Lerp(_breatheMinVolume, _breatheMaxVolume, progress);
+        _heartbeatController.Pitch = Mathf.Lerp(_breatheMinSpeed, _breatheMaxSpeed, progress);
+        _heartbeatController.Volume = Mathf.Lerp(_heartbeatMinVolume, _heartbeatMaxVolume, progress);
+        _breatheGroup.audioMixer.SetFloat("BreathePitch", _breathePitch / _breatheController.Pitch);
+
+        var breatheScreenColor = _breatheScreenImage.color;
+        if (progress < screenPanelThreshold)
+        {
+            breatheScreenColor.a = 0f;
+        }
+        else
+        {
+            var screenProgress = (progress - screenPanelThreshold) / (1 - screenPanelThreshold);
+            breatheScreenColor.a = Mathf.Lerp(0f, _maxBreatheScreenAlpha, screenProgress);
+        }
+        _breatheScreenImage.color = breatheScreenColor;
+
+        if (_postProcessingVolume.profile.TryGet<DepthOfField>(out var depthOfField))
+        {
+            if(progress < blurThreshold)
+            {
+                depthOfField.mode.Override(DepthOfFieldMode.Off);
+            }
+            else
+            {
+                var blurProgress = (progress - blurThreshold) / (1 - blurThreshold);
+                depthOfField.mode.Override(DepthOfFieldMode.Gaussian);
+
+                depthOfField.gaussianMaxRadius.Override(Mathf.Lerp(0.5f, 1.5f, blurProgress));
+            }
         }
     }
 
@@ -139,6 +201,7 @@ public class Player : MonoBehaviour
         if (_isHidden) return;
         if (_hideTimer > 0f) return;
         _isHidden = true;
+        _hideCannotMoveTimer = 0.5f;
     }
 
     public void Reveal() {
@@ -160,9 +223,10 @@ public class Player : MonoBehaviour
     private void HiddenViewUpdate()
     {
         if(_hideTimer > 0f)
-        {
             _hideTimer -= Time.deltaTime;
-        }
+        if(_hideCannotMoveTimer > 0f)
+            _hideCannotMoveTimer -= Time.deltaTime;
+
         _spriteRenderer.sortingOrder = IsHidden ? _hiddenOrderInLayer : _defaultOrderInLayer;
         _spriteRenderer.color = IsHidden ? _hiddenColor : Color.white;
     }
@@ -199,6 +263,7 @@ public class Player : MonoBehaviour
         // 방향전환중이면 _isLeftDir의 반대로 미리 이동
         CameraController.Instance.SetOffset(_camOffset * new Vector2(_isLeftDir == _isShifting ? 1 : -1, 1), _moveShiftTime);
         if (_isShifting) return;
+        if (_hideCannotMoveTimer > 0) return;
 
         var xAxis = IsControllable ? Input.GetAxisRaw("Horizontal") : 0;
         if(_isJumping && (xAxis > 0f && _isLeftJump || xAxis < 0f && !_isLeftJump))
@@ -261,11 +326,11 @@ public class Player : MonoBehaviour
         }
         else if (Stamina < MaxStamina)
         {
-            Stamina += Time.deltaTime / 2f;
+            Stamina += Time.deltaTime;
         }
 
 
-        transform.Translate(velX * Time.deltaTime * Vector2.right);
+        _rigid.velocity = new(velX, _rigid.velocity.y);
 
         _animator.SetBool("IsRunning", _isRunning && !_isShifting);
         _animator.SetBool("IsWalking", isMoving && !_isShifting);
