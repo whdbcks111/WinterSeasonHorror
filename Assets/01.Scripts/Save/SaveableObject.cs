@@ -10,7 +10,18 @@ public class SaveableObject : MonoBehaviour
 
     private void Awake()
     {
-        UUID ??= GUID.Generate().ToString();
+        
+        
+        
     }
+
+    public void GenerateUniqueID()
+    {
+        //UUID ??= GUID.Generate().ToString();
+        UUID ??= GUID.Generate().ToString();
+        //Debug.Log("InstanceID: " + UUID);
+    }
+
+    
 
 }

@@ -2,14 +2,13 @@
 public class PlayerData
 {
     public float[] position;
-    public int health;
-
+    public float light ;
     public float stamina;
     // 추가적으로 저장할 변수들을 선언합니다.
 
     public PlayerData(Player player)
     {
-        
+        light = player.LightEnerge;
         var playerPos = player.transform.position;
         stamina = player.Stamina;
         position = new float[3];

@@ -8,18 +8,14 @@ public class InteractableObjectData
     public bool isActive;
     public float[] position;
     public bool isOn;
+    public string uniqueId;
     
-    public GameObject[] targetObjects;
 
     // 추가적으로 저장할 변수들을 선언합니다.
 
     public InteractableObjectData(InteractableObject obj)
     {
-        targetObjects = null;
-        if (obj.TryGetComponent<Lever>(out Lever l))
-        {
-            targetObjects = l.targetObjects;
-        }
+        uniqueId = obj.GetComponent<SaveableObject>().UUID;
         isOn = obj.isOn;
         var objPos = obj.transform.position;
         isActive = obj.gameObject.activeSelf;

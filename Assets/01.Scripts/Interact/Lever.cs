@@ -14,21 +14,21 @@ public class Lever : InteractableObject
     [SerializeField] private float interactRotationZ; //인터랙트 이후 각도 값
     [SerializeField] private Transform handleAxisTf; //핸들 축
     
-    private bool _isOn = false; // 레버 상태
+    //private bool _isOn = false; // 레버 상태
     public GameObject[] targetObjects;
     
     public override void OnInteract()
     {
-        _isOn = !_isOn;
+        //_isOn = !_isOn;
         //HandleBlockingObjects(_isOn);
         HandleTargetObjects();
         
         // 기타 레버 상호작용 로직
     }
-    protected override void ProvideVisualFeedback(bool isOn)
+    public override void ProvideVisualFeedback(bool isOn)
     {
-        GetComponent<Light2D>().enabled = _isOn;
-        StartCoroutine(RotateLever(duration, _isOn));
+        GetComponent<Light2D>().enabled = isOn;
+        StartCoroutine(RotateLever(duration, isOn));
     }
 
 

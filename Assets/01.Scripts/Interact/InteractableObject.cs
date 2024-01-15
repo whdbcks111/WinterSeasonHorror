@@ -61,7 +61,7 @@ public abstract class InteractableObject : MonoBehaviour
         }
     }
 
-    protected virtual void ProvideVisualFeedback(bool isInteract)
+    public virtual void ProvideVisualFeedback(bool isInteract)
     {
         if(_image)
             _image.sprite = isInteract ? interactSprite : originSprite;
@@ -79,7 +79,7 @@ public abstract class InteractableObject : MonoBehaviour
             isOn = !isOn;   
             OnInteract();
             PlayInteractionSound();
-            ProvideVisualFeedback(true);
+            ProvideVisualFeedback(isOn);
             
             if(!isReusable)
                 isInteractable = false;
@@ -88,10 +88,7 @@ public abstract class InteractableObject : MonoBehaviour
 
     protected virtual void PlayerTrigger(bool isOn)
     {
-        if (Player.Instance.IsInHideCooldown)
-        {
-            return;
-        }
+        
         isInteractable = isOn;
         SetBangMark(isOn);
     }
