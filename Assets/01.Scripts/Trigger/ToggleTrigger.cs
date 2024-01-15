@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class ToggleTrigger : BaseTrigger
 {
-    [Header("¾×Æ¼ºê Åä±Û ´ë»ó ¿ÀºêÁ§Æ®µé")]
+    [Header("ì•¡í‹°ë¸Œ í† ê¸€ ëŒ€ìƒ ì˜¤ë¸Œì íŠ¸ë“¤")]
     public GameObject[] TargetObjects;
 
     public override void Enter()
