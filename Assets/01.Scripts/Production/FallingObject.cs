@@ -18,7 +18,7 @@ public class FallingObject : MonoBehaviour
 
     private void Update()
     {
-        if(_rigid.velocity.y >= -0.1f && _beforeVelocity.y < -0.1f)
+        if(_rigid.velocity.y >= 0f && _beforeVelocity.y < 0f)
         {
             SoundManager.Instance.PlaySFX(FallClip, transform.position, VolumeMultiplier * -_beforeVelocity.y, 1f);
         }

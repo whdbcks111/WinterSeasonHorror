@@ -71,9 +71,11 @@ public class Player : MonoBehaviour
     [SerializeField] private AudioClip _heartbeatClip;
     [SerializeField] private float _heartbeatPitch = 1f, _heartbeatMinVolume = 0.1f, _heartbeatMaxVolume = 2f;
 
-    [Header("거친 숨 스크린 이미지")]
+    [Header("거친 숨 스크린")]
     [SerializeField] private Image _breatheScreenImage;
     [SerializeField] private float _maxBreatheScreenAlpha = 1f;
+    [SerializeField] private float _breatheScreenBeatRate = 1f;
+    [SerializeField] private float _breatheScreenBeatScale = 1.5f;
 
     private Rigidbody2D _rigid;
     private Animator _animator;
@@ -176,7 +178,10 @@ public class Player : MonoBehaviour
         else
         {
             var screenProgress = (progress - screenPanelThreshold) / (1 - screenPanelThreshold);
-            breatheScreenColor.a = Mathf.Lerp(0f, _maxBreatheScreenAlpha, screenProgress);
+            breatheScreenColor.a = Mathf.Clamp01(
+                Mathf.Lerp(0f, _maxBreatheScreenAlpha, screenProgress) 
+                * (Mathf.Sin(Time.time * Mathf.PI * _breatheScreenBeatRate) + 2f) * 0.5f * _breatheScreenBeatScale
+                );
         }
         _breatheScreenImage.color = breatheScreenColor;
 
@@ -265,11 +270,14 @@ public class Player : MonoBehaviour
         if (_isShifting) return;
         if (_hideCannotMoveTimer > 0) return;
 
-        var xAxis = IsControllable ? Input.GetAxisRaw("Horizontal") : 0;
-        if(_isJumping && (xAxis > 0f && _isLeftJump || xAxis < 0f && !_isLeftJump))
+        var xAxis = Input.GetAxisRaw("Horizontal");
+        if (!IsControllable || 
+            Stamina < 0f ||
+            (_isJumping && (xAxis > 0f && _isLeftJump || xAxis < 0f && !_isLeftJump)))
         {
             xAxis = 0f;
         }
+
         var nextIsLeftDir = xAxis < 0f;
         var isMoving = !Mathf.Approximately(xAxis, 0f);
         var isInRunningKey = IsControllable && Input.GetKey(KeyCode.LeftShift);

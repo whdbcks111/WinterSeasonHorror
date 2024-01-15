@@ -13,12 +13,12 @@ public class ZoomTrigger : BaseTrigger
     public override void Enter()
     {
         _beforeZoom = CameraController.Instance.ZoomSize;
+        print(_beforeZoom);
         CameraController.Instance.Zoom(ZoomSize, ZoomTime);
     }
 
     public override void Exit()
     {
         CameraController.Instance.Zoom(_beforeZoom, ZoomTime);
-        _beforeZoom = -1;
     }
 }

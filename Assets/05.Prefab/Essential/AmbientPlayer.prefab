@@ -52,5 +52,5 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 9a1f3ef760cda86478bfc86a36ccbba0, type: 3}
   _delay: 10
   _randomDelay: 10
-  _volume: 1.46
+  _volume: 1
   Timer: 0

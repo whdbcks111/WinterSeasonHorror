@@ -3,7 +3,7 @@
 using System;
 using UnityEngine;
 
-public class ChatTrigger : BaseTrigger
+public class DialogueTrigger : BaseTrigger
 {
     public ChatScript ChatScript;
 
