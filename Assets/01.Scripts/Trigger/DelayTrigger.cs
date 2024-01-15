@@ -25,7 +25,7 @@ public class DelayTrigger : BaseTrigger
     }
 
     public override void Exit()
-    {
+    { 
     }
 }
 
