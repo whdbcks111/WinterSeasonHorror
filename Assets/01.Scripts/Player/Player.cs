@@ -107,6 +107,8 @@ public class Player : MonoBehaviour
 
     private readonly Dictionary<string, Action> _onFootStepListeners = new();
 
+    public Vector2 Velocity { get => _rigid.velocity;  }
+    public float FeetPositionY { get => _feetCollider.bounds.min.y; }
     public bool IsControllable { get => _isControllable; set => _isControllable = value; }
     public bool IsLeftDir { get => _isLeftDir; }
     public bool IsHidden { get => _isHidden; }
@@ -157,6 +159,8 @@ public class Player : MonoBehaviour
         if(Input.GetKeyDown(KeyCode.S))
         {
             CameraController.Instance.Shake(0.1f, 1f);
+
+
         }
     }
 
@@ -164,11 +168,11 @@ public class Player : MonoBehaviour
     {
         const float blurThreshold = 0.7f, screenPanelThreshold = 0.3f;
         var progress = 1 - Stamina / MaxStamina;
-        _breatheController.Pitch = Mathf.Lerp(_breatheMinSpeed, _breatheMaxSpeed, progress);
+        _breatheController.Pitch = Mathf.Lerp(_breatheMinSpeed, _breatheMaxSpeed, progress) * _breathePitch;
         _breatheController.Volume = Mathf.Lerp(_breatheMinVolume, _breatheMaxVolume, progress);
-        _heartbeatController.Pitch = Mathf.Lerp(_breatheMinSpeed, _breatheMaxSpeed, progress);
+        _heartbeatController.Pitch = Mathf.Lerp(_breatheMinSpeed, _breatheMaxSpeed, progress) * _heartbeatPitch;
         _heartbeatController.Volume = Mathf.Lerp(_heartbeatMinVolume, _heartbeatMaxVolume, progress);
-        _breatheGroup.audioMixer.SetFloat("BreathePitch", _breathePitch / _breatheController.Pitch);
+        _breatheGroup.audioMixer.SetFloat("BreathePitch", 1 / _breatheController.Pitch);
 
         var breatheScreenColor = _breatheScreenImage.color;
         if (progress < screenPanelThreshold)
