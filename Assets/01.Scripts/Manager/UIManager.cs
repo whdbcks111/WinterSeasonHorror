@@ -36,6 +36,7 @@ public class UIManager : MonoBehaviour
     public Canvas canvas; 
     public Image imagePrefab;
     private Transform parentImageTf;
+    public JumpScare jumpScare;
 
     [SerializeField] private int maxImageCount = 3;
     private Camera cam;
@@ -81,6 +82,12 @@ public class UIManager : MonoBehaviour
             Debug.Log("FitImage");
             ImageToFitScreen(testSprite, screenFit);
 
+        }
+        if (Input.GetKeyDown(KeyCode.J))
+        {
+            Debug.Log("FitImage");
+            //ImageToFitScreen(testSprite, screenFit);
+            StartCoroutine(PlayJumpScare(jumpScare));
         }
 
 
@@ -208,6 +215,12 @@ public class UIManager : MonoBehaviour
 
         IEnumerator PlayJumpScare(JumpScare jumpScare)
         {
+            foreach (var a in jumpScare.jumpScareSounds )
+            {
+                SoundManager.Instance.PlaySFX(a, Player.Instance.transform.position);
+            }
+            
+            
             List<Image> images = new List<Image>();
             for (int i = 0; i < jumpScare.sprites.Length; i++)
             {

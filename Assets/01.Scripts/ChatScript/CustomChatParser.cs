@@ -115,4 +115,4 @@ public class CustomChatParser : MonoBehaviour
             return result.ToString();
         }
     }
-}
+
