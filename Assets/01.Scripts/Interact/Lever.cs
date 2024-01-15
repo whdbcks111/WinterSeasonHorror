@@ -28,11 +28,12 @@ public class Lever : InteractableObject
     public override void ProvideVisualFeedback(bool isOn)
     {
         GetComponent<Light2D>().enabled = isOn;
-        StartCoroutine(RotateLever(duration, isOn));
+        //StartCoroutine(RotateLever(duration, isOn));
+        RotateLever(duration,isOn).Forget();
     }
 
 
-    IEnumerator RotateLever(float time, bool isOn)
+    /*IEnumerator RotateLever(float time, bool isOn)
     {
         GetComponent<BoxCollider2D>().enabled = false;
         var currentRot = handleAxisTf.eulerAngles.z;
@@ -49,7 +50,7 @@ public class Lever : InteractableObject
         }
 
         GetComponent<BoxCollider2D>().enabled = true;
-    }
+    }*/
     private void HandleTargetObjects()
     {
         foreach (var obj in targetObjects)
@@ -60,6 +61,24 @@ public class Lever : InteractableObject
                 //obj.SetActive(!obj.activeSelf); // 레버가 활성화되면 Active 상태가 반대로 변화
             }
         }
+    }
+    private async UniTask RotateLever(float time, bool isOn)
+    {
+        GetComponent<BoxCollider2D>().enabled = false;
+        var currentRot = handleAxisTf.eulerAngles.z;
+        var targetRot = isOn ? interactRotationZ : previousRotationZ;
+        
+
+        //첫번째 방법
+        for(float i = 0; i <= 1; i += Time.deltaTime / time)
+        {
+            handleAxisTf.eulerAngles = new(0, 0, Mathf.LerpAngle(
+                currentRot, targetRot, i
+            ));
+            await UniTask.Yield();
+        }
+
+        GetComponent<BoxCollider2D>().enabled = true;
     }
     private async UniTask FadeObject(GameObject obj, float duration)
     {
@@ -81,7 +100,7 @@ public class Lever : InteractableObject
             }
             await UniTask.Yield();
         }
-
+        spriteRenderer.color = Color.white;
         obj.SetActive(!isActive);
     }
 }

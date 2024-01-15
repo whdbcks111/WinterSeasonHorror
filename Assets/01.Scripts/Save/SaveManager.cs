@@ -1,6 +1,8 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
+using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
 using Unity.VisualScripting;
 [ExecuteAlways]
@@ -69,22 +71,104 @@ public class SaveManager : MonoBehaviour
         var formatter = new BinaryFormatter();
         var path = Application.persistentDataPath + "/GameData.save";
         var stream = new FileStream(path, FileMode.Create);
-        
+
         var playerData = SavePlayer(Player.Instance);
         var targetData = SaveTargetObjects();
         var interactData = SaveInteractableObjects();
+        var triggerData = SaveTriggerData(); // TriggerData 저장
+        var enemyData = SaveEnemyData();
 
-        var gameData = new GameData(interactData, playerData,targetData);
+        var gameData = new GameData(enemyData,interactData, playerData, targetData, triggerData);
         formatter.Serialize(stream, gameData);
         stream.Close();
     }
 
+    public static EnemyData SaveEnemyData()
+    {
+        Believer enemy = null;
+        foreach (var s in _saveableObjects)
+        {
+            if (s.TryGetComponent(out Believer b))
+            {
+                enemy = b;
+            }
+        }
+        
+        if (!enemy) return null;
+        return new EnemyData(enemy);
+
+    }
+
+    public static void LoadEnemy(EnemyData data)
+    {
+        if (data != null)
+        {
+            
+            var position = new Vector3(data.position[0], data.position[1], data.position[2]);
+            Believer enemy = null;
+            foreach (var s in _saveableObjects)
+            {
+                if (s.TryGetComponent(out Believer b))
+                {
+                    enemy = b;
+                }
+            }
+            enemy.transform.position = position;
+        }
+    }
+    public static TriggerData[] SaveTriggerData()
+    {
+        var triggers = FindObjectsOfType<DetectAreaTrigger>();
+        var triggerList = new List<DetectAreaTrigger>();
+        
+        for (int i = 0; i < triggers.Length; i++)
+        {
+            if (triggers[i].TriggerOnce)
+            {
+                triggerList.Add(triggers[i]);
+                //triggerDatas[i] = new TriggerData(triggers[i]);
+            }
+        }
+        var triggerDatas = new TriggerData[triggerList.Count];
+        for (int i = 0; i < triggerDatas.Length; i++)
+        {
+            
+            
+                triggerDatas[i] = new TriggerData(triggerList[i]);
+            
+        }
+        return triggerDatas;
+    }
+
+
     public static void LoadGameData()
     {
         GameData data = LoadData();
-        LoadTargetObjects(data.TargetObjectsData);
-        LoadInteractableObjects(data.InterObjData);
-        LoadPlayer(data.PlayerData);
+        if (data != null)
+        {
+            LoadTargetObjects(data.TargetObjectsData);
+            LoadInteractableObjects(data.InterObjData);
+            LoadTriggerData(data.TriggerData); // TriggerData 로드
+            LoadPlayer(data.PlayerData);
+            LoadEnemy(data.EnemyData);
+        }
+    }
+    public static void LoadTriggerData(TriggerData[] data)
+    {
+        var triggers = FindObjectsOfType<DetectAreaTrigger>();
+
+        foreach (var dataItem in data)
+        {
+            foreach (var trigger in triggers)
+            {
+                var saveable = trigger.GetComponent<SaveableObject>();
+                if (saveable != null && saveable.UUID == dataItem.uniqueId)
+                {
+                    trigger.EnterCount = dataItem.enterCount;
+                    break; // UUID가 일치하는 트리거를 찾았으므로 내부 루프를 종료합니다.
+                }
+            }
+        }
     }
     public static void LoadTargetObjects(TargetObjectData[] data)
     {

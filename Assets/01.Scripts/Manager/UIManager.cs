@@ -62,9 +62,9 @@ public class UIManager : MonoBehaviour
 
     void Start()
     {
+        canvas = GetComponentInChildren<Canvas>();
         parentImageTf = imagePrefab.transform;
         originColor = Color.white;
-        canvas = imagePrefab.GetComponentInParent<Canvas>();
         cam = Camera.main;
 
     }
