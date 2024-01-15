@@ -147,7 +147,7 @@ Rigidbody2D:
   m_Mass: 5
   m_LinearDrag: 0
   m_AngularDrag: 0.05
-  m_GravityScale: 3
+  m_GravityScale: 2
   m_Material: {fileID: 6200000, guid: 8fd5015e7a92cc34aaaf7cf854690639, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
@@ -158,7 +158,7 @@ Rigidbody2D:
   m_Interpolate: 0
   m_SleepingMode: 1
   m_CollisionDetection: 1
-  m_Constraints: 0
+  m_Constraints: 4
 --- !u!114 &2671150442069835372
 MonoBehaviour:
   m_ObjectHideFlags: 0
