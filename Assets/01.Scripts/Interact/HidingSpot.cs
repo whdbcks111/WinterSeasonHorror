@@ -29,16 +29,13 @@ public class HidingSpot : InteractableObject
     {
         if (isInteractable)
         {
-            Debug.Log("스테이;");
             if(Player.Instance.IsInHideCooldown&& Player.Instance.BangMarkVisible)
             {
-                Debug.Log("말풍선 오프;");
                 SetBangMark(false);
                 
             }
             else if(!Player.Instance.IsInHideCooldown&&! Player.Instance.BangMarkVisible)
             {
-                Debug.Log("말풍선 온;");
                 SetBangMark(true);
             }
             
