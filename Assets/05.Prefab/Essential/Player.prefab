@@ -423,7 +423,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.24528301, g: 0.24528301, b: 0.24528301, a: 0}
+  m_Color: {r: 0.41509432, g: 0.24083303, b: 0.24083303, a: 0}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -576,30 +576,36 @@ MonoBehaviour:
   _hideCooldown: 3
   _moveSpeed: 3
   _moveShiftTime: 0.5
-  _runModifier: 2
+  _runModifier: 1.6
   _jumpForce: 7
   _highJumpForce: 8.5
   _maxJumpCount: 1
   _footStepAudioSpan: 0.65
   MaxLightEnerge: 200
   LightEnerge: 0
-  MaxStamina: 20
+  MaxStamina: 15
   Stamina: 0
   _footStepClip: {fileID: 8300000, guid: 96109309400c8e7449616fb2b0c9f2b4, type: 3}
-  _footStepVolume: 0.43
+  _footStepVolume: 0.2
   _footStepPitch: 0.38
   _footStepPitchRandom: 0.03
   _jumpClip: {fileID: 8300000, guid: 0b5281096911eca4e9ecbd5a53a22172, type: 3}
   _jumpVolume: 1
   _breatheGroup: {fileID: -4515295581559082115, guid: bf18c4d5651acc74a85007e4e524483a, type: 2}
-  _breatheClip: {fileID: 8300000, guid: 70cdd3fcbcea5b04e91d8bb32c8d8078, type: 3}
-  _breathePitch: 1.5
-  _breatheMinVolume: 0.05
-  _breatheMaxVolume: 2
-  _breatheMinSpeed: 0.5
-  _breatheMaxSpeed: 2
+  _breatheClip: {fileID: 8300000, guid: e88ab251d3ee668438b60959af9d9490, type: 3}
+  _breathePitch: 1
+  _breatheMinVolume: 0.1
+  _breatheMaxVolume: 0.6
+  _breatheMinSpeed: 0.4
+  _breatheMaxSpeed: 1.2
+  _heartbeatClip: {fileID: 8300000, guid: 57a54f6497676b64b920d7764e629cc1, type: 3}
+  _heartbeatPitch: 2
+  _heartbeatMinVolume: 0.1
+  _heartbeatMaxVolume: 4
   _breatheScreenImage: {fileID: 4291344793627711687}
   _maxBreatheScreenAlpha: 1
+  _breatheScreenBeatRate: 1
+  _breatheScreenBeatScale: 1.5
 --- !u!114 &8797065832281766964
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -24,7 +24,7 @@ public class FootStepTrigger : BaseTrigger
 
     public override void Enter()
     {
-        _key = "foot_step_" + UnityEngine.Random.Range(0, 1000);
+        _key = GetHashCode().ToString();
         Player.Instance.AddFootStepListener(_key, () =>
         {
             PlayDelayedFootStep().Forget();
