@@ -19,11 +19,11 @@ public class CentipedeHead : MonoBehaviour
     {
         for(int i = 0; i < _bodyCount; i++)
         {
-            var body = Instantiate(_bodyPrefab, transform.position + _bodyDistance * -i * transform.up, 
+            var body = Instantiate(_bodyPrefab, transform.position, 
                 Quaternion.identity);
             _children.Add(body);
         }
-        _children.Add(Instantiate(_tailPrefab, transform.position + _bodyDistance * -_bodyCount * transform.up,
+        _children.Add(Instantiate(_tailPrefab, transform.position,
             Quaternion.identity));
         _beforePos = transform.position;
         _targetAngle = transform.eulerAngles.z;
@@ -42,8 +42,9 @@ public class CentipedeHead : MonoBehaviour
         var before = gameObject;
         foreach(var child in _children)
         {
-            child.transform.up = (before.transform.position - child.transform.position).normalized;
-            child.transform.position = before.transform.position + _bodyDistance * -child.transform.up;
+            var distance = (before.transform.position - child.transform.position);
+            child.transform.up = distance.normalized;
+            child.transform.position = before.transform.position + Mathf.Clamp(distance.magnitude, 0, _bodyDistance) * -child.transform.up;
             before = child;
         }
     }

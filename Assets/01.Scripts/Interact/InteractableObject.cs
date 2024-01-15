@@ -112,8 +112,6 @@ public abstract class InteractableObject : MonoBehaviour
 
     private void OnTriggerStay2D(Collider2D other)
     {
-        
-        Debug.Log(other.name);
         if (other.TryGetComponent(out Player p))
         {
             
