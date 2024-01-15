@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class ActiveTrigger : BaseTrigger
 {
-    [Header("¾×Æ¼ºê ´ë»ó ¿ÀºêÁ§Æ®µé")]
+    [Header("ì•¡í‹°ë¸Œ ëŒ€ìƒ ì˜¤ë¸Œì íŠ¸ë“¤")]
     public GameObject[] TargetObjects;
 
     public override void Enter()

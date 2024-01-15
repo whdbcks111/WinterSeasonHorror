@@ -17,7 +17,7 @@ public class EyeMoving : MonoBehaviour
     private void Update()
     {
         var playerDir = (Player.Instance.transform.position - transform.position);
-        var targetPos = playerDir.normalized * Mathf.Clamp(playerDir.magnitude / (_detectRange * _maxDistance), 0, _maxDistance);
+        var targetPos = playerDir.normalized * Mathf.Clamp(playerDir.magnitude, 0, _maxDistance);
 
         _pupil.transform.localPosition = Vector3.SmoothDamp(_pupil.transform.localPosition,
             targetPos,
