@@ -11,6 +11,8 @@ public class Player : MonoBehaviour
 {
     public static Player Instance { get; private set; }
 
+    [SerializeField] private SpriteRenderer _reflectionSpriteRenderer;
+
     [Header("포스트 프로세싱 볼륨 할당")]
     [SerializeField] private Volume _postProcessingVolume;
 
@@ -105,6 +107,8 @@ public class Player : MonoBehaviour
     private bool _isControllable = true;
     private float _footStepAudioTimer = 0f;
 
+    private float _lightKeyHoldingTimer = 0f;
+
     private SFXController _breatheController, _heartbeatController;
 
     private readonly Dictionary<string, Action> _onFootStepListeners = new();
@@ -114,6 +118,7 @@ public class Player : MonoBehaviour
     public bool IsControllable { get => _isControllable; set => _isControllable = value; }
     public bool IsLeftDir { get => _isLeftDir; }
     public bool IsHidden { get => _isHidden; }
+    public float LightHoldingTime { get => _lightKeyHoldingTimer; }
     public bool IsInHideCooldown { get => _hideTimer > 0f; }
     public bool IsLightOn { get => _handLight.gameObject.activeSelf; }
     public bool IsOnGround { get => _steppingGrounds.Count > 0; }
@@ -157,13 +162,13 @@ public class Player : MonoBehaviour
         MoveShiftUpdate();
         HiddenViewUpdate();
         BreatheUpdate();
+        ReflectUpdate();
+    }
 
-        if(Input.GetKeyDown(KeyCode.S))
-        {
-            CameraController.Instance.Shake(0.1f, 1f);
-
-
-        }
+    private void ReflectUpdate()
+    {
+        _reflectionSpriteRenderer.sprite = _spriteRenderer.sprite;
+        _reflectionSpriteRenderer.flipX = _spriteRenderer.flipX;
     }
 
     private void BreatheUpdate()
@@ -353,11 +358,19 @@ public class Player : MonoBehaviour
 
     private void LightUpdate()
     {
-        if(IsControllable && Input.GetKeyDown(KeyCode.W))
+        const KeyCode LightKey = KeyCode.W;
+
+        if(IsControllable && Input.GetKeyUp(LightKey) && _lightKeyHoldingTimer < 1f)
         {
             _isLighting = !_isLighting;
         }
         _handLight.gameObject.SetActive(_isLighting && LightEnerge > 0f && !_isShifting);
+
+        if (Input.GetKey(LightKey))
+        {
+            _lightKeyHoldingTimer += Time.deltaTime;
+        }
+        else _lightKeyHoldingTimer = 0f;
 
         if (IsLightOn) LightEnerge -= Time.deltaTime;
 
