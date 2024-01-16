@@ -39,6 +39,8 @@ public class Player : MonoBehaviour
     [SerializeField] private float _moveSpeed = 5;
     [Header("플레이어 방향전환 시간")]
     [SerializeField] private float _moveShiftTime;
+    [Header("플레이어 달리기 방향전환 관성")]
+    [SerializeField] private float _runShiftInertia = 3f;
     [Header("플레이어 달리기 배속")]
     [SerializeField] private float _runModifier = 1.3f;
     [Header("플레이어 일반 점프력")]
@@ -242,7 +244,7 @@ public class Player : MonoBehaviour
 
     private void StartMoveShift(bool isRunning)
     {
-        if(isRunning) _rigid.AddForce((_isLeftDir ? 1 : -1) * 6 * Vector3.left, ForceMode2D.Impulse);
+        if(isRunning) _rigid.AddForce((_isLeftDir ? 1 : -1) * _runShiftInertia * Vector3.left, ForceMode2D.Impulse);
         _isShifting = true;
         _moveShiftTimer = _moveShiftTime;
         _animator.SetBool(isRunning ? "IsRunShifting" : "IsWalkShifting", true);

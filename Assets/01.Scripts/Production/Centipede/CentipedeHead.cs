@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class CentipedeHead : MonoBehaviour
 {
+    [SerializeField] private AudioClip _movingSound;
+    [SerializeField] private float _volume, _pitch;
+
     [SerializeField] private GameObject _bodyPrefab;
     [SerializeField] private GameObject _tailPrefab;
 
@@ -14,6 +17,9 @@ public class CentipedeHead : MonoBehaviour
     private Vector3 _beforePos;
 
     private float _targetAngle;
+
+    private SFXController _moveSoundController;
+    private float _moveSoundTimer = 0f;
 
     private void Awake()
     {
@@ -29,6 +35,11 @@ public class CentipedeHead : MonoBehaviour
         _targetAngle = transform.eulerAngles.z;
     }
 
+    private void Start()
+    {
+        _moveSoundController = SoundManager.Instance.PlayLoopSFX(_movingSound, transform.position, 0f, _pitch, transform);
+    }
+
     private void Update() 
     {
         var headDir = transform.position - _beforePos;
@@ -36,8 +47,19 @@ public class CentipedeHead : MonoBehaviour
         {
             _targetAngle = Mathf.Atan2(headDir.y, headDir.x) * Mathf.Rad2Deg - 90f;
             _beforePos = transform.position;
+            _moveSoundTimer = 0.5f;
         }
         transform.eulerAngles = new(0, 0, Mathf.MoveTowardsAngle(transform.eulerAngles.z, _targetAngle, Time.deltaTime * 360f));
+
+        if(_moveSoundTimer > 0f)
+        {
+            _moveSoundTimer -= Time.deltaTime;
+            _moveSoundController.Volume = _volume;
+        }
+        else
+        {
+            _moveSoundController.Volume = 0;
+        }
 
         var before = gameObject;
         foreach(var child in _children)
