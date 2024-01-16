@@ -101213,6 +101213,42 @@ PrefabInstance:
       propertyPath: m_Name
       value: Player
       objectReference: {fileID: 0}
+    - target: {fileID: 7376044069771670832, guid: 27354b5c7d1bd5b40aebaa5c954399f1, type: 3}
+      propertyPath: _sectionColors.Array.data[0].b
+      value: 0.48490566
+      objectReference: {fileID: 0}
+    - target: {fileID: 7376044069771670832, guid: 27354b5c7d1bd5b40aebaa5c954399f1, type: 3}
+      propertyPath: _sectionColors.Array.data[0].g
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7376044069771670832, guid: 27354b5c7d1bd5b40aebaa5c954399f1, type: 3}
+      propertyPath: _sectionColors.Array.data[0].r
+      value: 0.5148468
+      objectReference: {fileID: 0}
+    - target: {fileID: 7376044069771670832, guid: 27354b5c7d1bd5b40aebaa5c954399f1, type: 3}
+      propertyPath: _sectionColors.Array.data[1].b
+      value: 0.3339622
+      objectReference: {fileID: 0}
+    - target: {fileID: 7376044069771670832, guid: 27354b5c7d1bd5b40aebaa5c954399f1, type: 3}
+      propertyPath: _sectionColors.Array.data[1].g
+      value: 0.97719485
+      objectReference: {fileID: 0}
+    - target: {fileID: 7376044069771670832, guid: 27354b5c7d1bd5b40aebaa5c954399f1, type: 3}
+      propertyPath: _sectionColors.Array.data[1].r
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7376044069771670832, guid: 27354b5c7d1bd5b40aebaa5c954399f1, type: 3}
+      propertyPath: _sectionColors.Array.data[2].b
+      value: 0.2584905
+      objectReference: {fileID: 0}
+    - target: {fileID: 7376044069771670832, guid: 27354b5c7d1bd5b40aebaa5c954399f1, type: 3}
+      propertyPath: _sectionColors.Array.data[2].g
+      value: 0.7101448
+      objectReference: {fileID: 0}
+    - target: {fileID: 7376044069771670832, guid: 27354b5c7d1bd5b40aebaa5c954399f1, type: 3}
+      propertyPath: _sectionColors.Array.data[2].r
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
