@@ -26,9 +26,6 @@ public class GazingEye : MonoBehaviour
     void Update()
     {
         GazingPlayer();
-
-        Debug.Log(_eyeMaxDistance * _scaleValue);
-
     }
     void GazingPlayer()
     {

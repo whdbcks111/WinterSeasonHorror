@@ -5,15 +5,18 @@ using UnityEngine;
 
 public class Statue : MonoBehaviour
 {
-    public float radius = 1.0f;
-    public float maxDistance = 5.0f;
-
-
     Believer _believer;
     Player _player;
+    [Header("적 어그로 범위. 직접 지정할 것")]
     [SerializeField] private Vector2 _alarmBoxSize;
+    [Header("적 어그로 범위의 위치. 하이어라키에서 찾을 것")]
     [SerializeField] private Transform _alarmBoxPosition;
+    [Header("플레이어 감지 범위의 위치. 하이어라키에서 찾을 것")]
     [SerializeField] private Transform _searchBoxPosition;
+
+    [Header("공격 명령 유예시간(초)")]
+    [SerializeField] private float _maxSecond;
+    private float _currentSecond;
 
     [Header("수녀상 외양 프리셋")]
     [SerializeField] GameObject[] _statuePresets;
@@ -21,6 +24,10 @@ public class Statue : MonoBehaviour
     [Header("수녀상 눈 프리셋")]
     [SerializeField] GameObject[] _eyePresets;
     private GameObject _selectedEyePreset;
+
+    private bool _canOrder;
+
+
 
     [SerializeField] GameObject _statuePreview;
 
@@ -34,6 +41,7 @@ public class Statue : MonoBehaviour
     {
         _player = Player.Instance;
 
+        _canOrder = false;
         _selectedStatue = SelectPreset();
         _statuePreview.SetActive(false);
         _boxCollider = GetComponent<BoxCollider2D>();
@@ -47,17 +55,19 @@ public class Statue : MonoBehaviour
             AttackOrder();
         }
 
-        if (_playerIsInRange)
+        if (_playerIsInRange && !Player.Instance.IsHidden)
         {
-            if ((transform.position.x > Player.Instance.transform.position.x) == Player.Instance.IsLeftDir) //플레이어가 등지고 있음
+            if ((transform.position.x > Player.Instance.transform.position.x) == Player.Instance.IsLeftDir && _canOrder) //플레이어가 등지고 있음
             {
                 ActivateEye();
+                if(_currentSecond >= _maxSecond || Player.Instance.LightEnerge <= 0)
+                {
+                    AttackOrder();
+                }
             }
-            if ((transform.position.x > Player.Instance.transform.position.x) != Player.Instance.IsLeftDir) //플레이어가 바라보고 있음
-            {
-                DeactivateEye();
-            }
+            else DeactivateEye();
         }
+        else DeactivateEye();
     }
     private void OnDrawGizmos()
     {
@@ -75,14 +85,23 @@ public class Statue : MonoBehaviour
                 BelieverScript._fsm.CurrentState = BelieverScript._chaseState;
             }
         }
+
+        _canOrder = false;
     }
     void ActivateEye()
     {
         _selectedEyePreset.SetActive(true);
+        _currentSecond += Time.deltaTime;
+
+        _canOrder = true;
     }
     void DeactivateEye()
     {
         _selectedEyePreset.SetActive(false);
+
+        _currentSecond = 0;
+
+        _canOrder = false;
     }
     private GameObject SelectPreset()
     {
