@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 8400543496688625825}
   - component: {fileID: 1936241441706542738}
   - component: {fileID: 8450029466872804846}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: GlobalChaseEnemy
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -283,7 +283,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5335339067385959479}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: JumpSensor
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -314,7 +314,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6180487576649767511}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: GroundSensor
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -346,7 +346,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7539476640886922094}
   - component: {fileID: 3571676025272027081}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Light
   m_TagString: Untagged
   m_Icon: {fileID: 0}
