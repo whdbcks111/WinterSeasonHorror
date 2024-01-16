@@ -370,6 +370,7 @@ public class Player : MonoBehaviour
         _rigid.velocity = new(velX, _rigid.velocity.y);
 
         _animator.SetBool("IsRunning", _isRunning && !_isShifting);
+        _animator.SetBool("IsResting", Stamina <= 0f);
         _animator.SetBool("IsWalking", isMoving && !_isShifting);
     }
 
@@ -382,7 +383,7 @@ public class Player : MonoBehaviour
         {
             _isLighting = !_isLighting;
         }
-        _handLight.gameObject.SetActive(_isLighting && LightEnerge > 0f && !_isShifting);
+        _handLight.gameObject.SetActive(_isLighting && LightEnerge > 0f && !_isShifting && Stamina > 0f);
 
         if (Input.GetKey(LightKey))
         {
