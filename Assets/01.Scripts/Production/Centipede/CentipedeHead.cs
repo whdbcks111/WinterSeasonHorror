@@ -33,6 +33,11 @@ public class CentipedeHead : MonoBehaviour
             Quaternion.identity));
         _beforePos = transform.position;
         _targetAngle = transform.eulerAngles.z;
+
+        foreach(var child in _children)
+        {
+            child.transform.localScale = transform.localScale;
+        }
     }
 
     private void Start()
@@ -66,7 +71,7 @@ public class CentipedeHead : MonoBehaviour
         {
             var distance = (before.transform.position - child.transform.position);
             child.transform.up = distance.normalized;
-            child.transform.position = before.transform.position + Mathf.Clamp(distance.magnitude, 0, _bodyDistance) * -child.transform.up;
+            child.transform.position = before.transform.position + Mathf.Clamp(distance.magnitude, 0, _bodyDistance * transform.localScale.x) * -child.transform.up;
             before = child;
         }
     }
