@@ -1,27 +1,28 @@
 using UnityEngine;
 
-[RequireComponent (typeof(Rigidbody2D))]
 public class FallingObject : MonoBehaviour
 {
     public AudioClip FallClip;
     public float VolumeMultiplier = 1f;
 
 
-    private Rigidbody2D _rigid;
-    private Vector2 _beforeVelocity;
+    private Vector3 _beforePos;
+    private Vector3 _velocity, _beforeVelocity;
 
     private void Awake()
     {
-        _rigid = GetComponent<Rigidbody2D>();
-        _beforeVelocity = _rigid.velocity;
     }
 
-    private void Update()
+    private void FixedUpdate()
     {
-        if(_rigid.velocity.y >= 0f && _beforeVelocity.y < 0f)
+        _beforeVelocity = _velocity;
+        _velocity = (transform.position - _beforePos) / Time.fixedDeltaTime;
+        _beforePos = transform.position;
+
+        print($"Vel {_velocity}");
+        if(_velocity.y >= 0f && _beforeVelocity.y < 0f)
         {
             SoundManager.Instance.PlaySFX(FallClip, transform.position, VolumeMultiplier * -_beforeVelocity.y, 1f);
         }
-        _beforeVelocity = _rigid.velocity;
     }
 }
