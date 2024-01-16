@@ -182,7 +182,7 @@ MonoBehaviour:
   boxSize: {x: 0.54, y: 0.79, z: 0}
   _groundBox: {x: 0.52, y: 0.28, z: 0}
   _idleMoveSpeed: 2
-  _chaseMoveSpeed: 5
+  _chaseMoveSpeed: 3
   _jumpForce: 6
   _forwardForce: 1
   _searchingRange: 0
