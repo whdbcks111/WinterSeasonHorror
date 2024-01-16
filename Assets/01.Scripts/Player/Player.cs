@@ -89,6 +89,7 @@ public class Player : MonoBehaviour
     private bool _isLeftDir = false;
     private bool _isShifting = false;
     private bool _isRunning = false;
+    private float _runningTime = 0f;
 
     private int _jumpCount = 0;
     private bool _isJumping = false;
@@ -249,7 +250,7 @@ public class Player : MonoBehaviour
 
     private void StartMoveShift(bool isRunning)
     {
-        if(isRunning) _rigid.AddForce((_isLeftDir ? 1 : -1) * _runShiftInertia * Vector3.left, ForceMode2D.Impulse);
+        if(_runningTime > 2f) _rigid.velocity = (_isLeftDir ? 1 : -1) * _runShiftInertia * Vector3.left;
         _isShifting = true;
         _moveShiftTimer = _moveShiftTime;
         _animator.SetBool(isRunning ? "IsRunShifting" : "IsWalkShifting", true);
@@ -286,7 +287,7 @@ public class Player : MonoBehaviour
             Stamina < 0f ||
             (_isJumping && (xAxis > 0f && _isLeftJump || xAxis < 0f && !_isLeftJump)))
         {
-            xAxis = 0f;
+            xAxis = 0f; 
         }
 
         var nextIsLeftDir = xAxis < 0f;
@@ -299,6 +300,15 @@ public class Player : MonoBehaviour
             _footStepAudioTimer = 0f;
         }
         _isRunning = nextIsRunning;
+
+        if(_isRunning)
+        {
+            _runningTime += Time.deltaTime;
+        }
+        else
+        {
+            _runningTime = 0f;
+        }
 
         if (isMoving)
         {
