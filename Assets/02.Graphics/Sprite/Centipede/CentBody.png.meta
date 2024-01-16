@@ -43,7 +43,7 @@ TextureImporter:
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
-  spriteMode: 1
+  spriteMode: 2
   spriteExtrude: 1
   spriteMeshType: 1
   alignment: 7
@@ -121,7 +121,133 @@ TextureImporter:
     forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
-    sprites: []
+    sprites:
+    - serializedVersion: 2
+      name: CentBody_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 489
+        height: 218
+      alignment: 9
+      pivot: {x: 0.5, y: 0.17}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6057f0fe496322e4ca877ae365fe0a1a
+      internalID: -1904448528
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CentBody_1
+      rect:
+        serializedVersion: 2
+        x: 489
+        y: 0
+        width: 489
+        height: 218
+      alignment: 9
+      pivot: {x: 0.5, y: 0.17}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b1c6a8618b98a2d4bad2e6724f69e470
+      internalID: 862978084
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CentBody_2
+      rect:
+        serializedVersion: 2
+        x: 978
+        y: 0
+        width: 489
+        height: 218
+      alignment: 9
+      pivot: {x: 0.5, y: 0.17}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: acd9db17bbb29fc4f9da16dda6cd6aa6
+      internalID: 471490072
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CentBody_3
+      rect:
+        serializedVersion: 2
+        x: 1467
+        y: 0
+        width: 489
+        height: 218
+      alignment: 9
+      pivot: {x: 0.5, y: 0.17}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8cc61882bba9dcb4bb65e182019fa4cd
+      internalID: -1316522036
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CentBody_4
+      rect:
+        serializedVersion: 2
+        x: 1954
+        y: 0
+        width: 489
+        height: 218
+      alignment: 9
+      pivot: {x: 0.5, y: 0.17}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a4abfb39df6793e4ba5312c5d1cf6a20
+      internalID: 1536030501
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CentBody_5
+      rect:
+        serializedVersion: 2
+        x: 2445
+        y: 0
+        width: 489
+        height: 218
+      alignment: 9
+      pivot: {x: 0.5, y: 0.17}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fce9f6d29a7aa5c449cd0bb0bb1004a8
+      internalID: 62477061
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     outline: []
     physicsShape: []
     bones: []
@@ -132,7 +258,13 @@ TextureImporter:
     edges: []
     weights: []
     secondaryTextures: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      CentBody_0: -1904448528
+      CentBody_1: 862978084
+      CentBody_2: 471490072
+      CentBody_3: -1316522036
+      CentBody_4: 1536030501
+      CentBody_5: 62477061
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

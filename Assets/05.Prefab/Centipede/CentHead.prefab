@@ -97,6 +97,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 89bdc6e16ad7da0438f40c17f3c8ef1c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _movingSound: {fileID: 8300000, guid: 4aadd2cd7cf8ee64c89acf0faf05d30d, type: 3}
+  _volume: 0.52
+  _pitch: 1.5
   _bodyPrefab: {fileID: 2475651744422473781, guid: 97c46b5c37fbd8543826f3b798f30186, type: 3}
   _tailPrefab: {fileID: 8408103217101350219, guid: f709f0b106482f74fa46bb32562da92d, type: 3}
   _bodyCount: 20
