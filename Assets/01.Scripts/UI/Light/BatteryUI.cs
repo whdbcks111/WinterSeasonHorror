@@ -10,8 +10,14 @@ public class BatteryUI : MonoBehaviour
     [SerializeField] private Color[] _sectionColors;
     [SerializeField] private float _min, _max;
 
+    private float _beforeEnerge;
+
     private void Update()
     {
+        if(Player.Instance.LightEnerge > _beforeEnerge)
+        {
+            _filledImage.color = SetAlpha(_filledImage.color, 1f);
+        }
 
         var progress = Player.Instance.LightEnerge / Player.Instance.MaxLightEnerge;
         _filledImage.fillAmount = progress * (_max - _min) + _min;
@@ -22,6 +28,8 @@ public class BatteryUI : MonoBehaviour
         var speed = alphaAxis / _showTime * Time.deltaTime;
         _frame.color = SetAlpha(_frame.color, _frame.color.a + speed);
         _filledImage.color = SetAlpha(_filledImage.color, _filledImage.color.a + speed);
+
+        _beforeEnerge = Player.Instance.LightEnerge;
     }
 
     private Color SetRGB(Color target, Color color)
