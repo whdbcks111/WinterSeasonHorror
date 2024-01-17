@@ -44,4 +44,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d63613d56580d134a98eab6f6a2df3b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  PerlinXScale: 58.349243
+  PerlinYScale: 336.6234
   LoopPrefab: {fileID: 1577492325938261962, guid: fb3e53a365eff754eb882d0e5d7a7ffe, type: 3}
+  RandomSprites:
+  - Sprite: {fileID: 21300000, guid: c4236dd29d064d7478f8a8c0c7638ece, type: 3}
+    ChanceWeight: 6
+  - Sprite: {fileID: 21300000, guid: 40ef9eead8e8e5148b013c9d9c8ebae6, type: 3}
+    ChanceWeight: 2
+  - Sprite: {fileID: 21300000, guid: e8c69e76d170f7546a43c2f7a4306ce5, type: 3}
+    ChanceWeight: 2
+  Exceptions: []
