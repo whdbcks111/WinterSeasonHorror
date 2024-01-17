@@ -114,6 +114,7 @@ public class SaveManager : MonoBehaviour
                 }
             }
             enemy.transform.position = position;
+            enemy.gameObject.SetActive(data.isActive);
         }
     }
     public static TriggerData[] SaveTriggerData()
