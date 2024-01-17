@@ -16,7 +16,9 @@ public class Believer : MonoBehaviour
     [SerializeField] private float _chaseMoveSpeed;
     [SerializeField] private float _jumpForce;
     [SerializeField] private float _forwardForce;
-    [SerializeField] private float _searchingRange;
+
+
+    [SerializeField] private float _threatMaxDistance;
     public bool _isChasing;
     public bool _isInSight;
     [SerializeField] private float _searchingStopCount;
@@ -47,11 +49,15 @@ public class Believer : MonoBehaviour
     private float SavedDir;
     private bool _isLeftDir;
     private bool _isOnGround;
+    private bool Jumpable;
 
     private Coroutine _roamco;
     private Coroutine _encountco;
     private Coroutine _threatco;
     private Coroutine _idleToRoamCo;
+
+    private Camera _camera;
+    private Vector2 _objScreenPoint;
 
     Rigidbody2D _rigid2d;
     Animator _anim;
@@ -64,6 +70,7 @@ public class Believer : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        Jumpable = true;
         _isOnGround = true;
         _isLeftDir = false;
 
@@ -133,11 +140,6 @@ public class Believer : MonoBehaviour
             {
                 _fsm.CurrentState = _chaseState;
             }
-
-            if(_isOnGround && _fsm.CurrentState != _roamState)
-            {
-                
-            }
         },
         onExit: () => {
             
@@ -146,17 +148,27 @@ public class Believer : MonoBehaviour
         _chaseState = new(
         onEnter: () =>
         {
-
             _isStartChasing = true;
-
-            Debug.Log("추적 상태");
             _encountco = StartCoroutine(EncountWithPlayer());
         },
         onUpdate: () =>
         {
             if (_player.IsHidden)
             {
-                _fsm.CurrentState = _threteningHide;
+                if(Mathf.Abs(_player.transform.position.x -transform.position.x) <= _threatMaxDistance)
+                {
+                    _fsm.CurrentState = _threteningHide;
+                }
+                if(Mathf.Abs(_player.transform.position.x - transform.position.x) > _threatMaxDistance)
+                {
+                    _fsm.CurrentState = _chaseFailState;
+                }
+
+                if (_objScreenPoint.x < 0 || _objScreenPoint.x > Screen.width)
+                {
+                    // 오브젝트가 화면 밖으로 나갔을 때
+                    TeleportToInitposition();
+                }
             }
             else
             {
@@ -171,23 +183,30 @@ public class Believer : MonoBehaviour
         },
         onExit: () =>
         {
+            if (_encountco != null) StopCoroutine(_encountco);
             _isStartChasing = false;
         });
 
-        /*
         _chaseFailState = new(                                
             onEnter: () => {
                 _chaseFailPosition = transform.position;
+                _roamco = StartCoroutine(RoamNear());
             },
             onUpdate: () => {
-            if (!_player.IsHidden && _isInSight && _fsm.CurrentState != _chaseState)     //�þ� ������ ���� �ʾ��� ��.
+            if (!_player.IsHidden && _isInSight && _fsm.CurrentState != _chaseState)   
                 {
                     _fsm.CurrentState = _chaseState;
+                    if(_roamco != null)
+                    {
+                        StopCoroutine(_roamco);
+                    }
                 }
+            
             },
             onExit: () => {
+                if(_roamco != null) StopCoroutine(_roamco);
             });
-        */
+        
         _threteningHide = new(onEnter: () => {
             _threatco = StartCoroutine(Threatening());
         },
@@ -211,6 +230,9 @@ public class Believer : MonoBehaviour
                 else transform.rotation = Quaternion.Euler(0, 180, 0);
             },
             onExit: () => {
+                Jumpable = true;
+                _rigid2d.constraints = RigidbodyConstraints2D.None;
+                _rigid2d.constraints = RigidbodyConstraints2D.FreezeRotation;
             });
         _getOrdered = new(onEnter: () => {
             
@@ -219,12 +241,15 @@ public class Believer : MonoBehaviour
                 
             },
             onExit: () => {
+                if(_threatco != null)
+                {
+                    StopCoroutine(_threatco);
+                }
             });
 
 
+        _camera = Camera.main;
         _isStartChasing = false;
-
-        
         _anim = GetComponent<Animator>();
         _rigid2d = GetComponent<Rigidbody2D>();
 
@@ -232,17 +257,25 @@ public class Believer : MonoBehaviour
         _IsSettedInitPosition = false;
         _isChasing = false;
         StartCoroutine(SetDirection());
-
+        StartCoroutine(StuckCheck());
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+        _objScreenPoint = _camera.WorldToScreenPoint(transform.position);
         HandleState();
 
+        
+        if(Player.Instance.IsHidden)
+        {
+            Physics2D.IgnoreLayerCollision(LayerMask.NameToLayer("Enemy"), LayerMask.NameToLayer("Player"));
+        }
+        else Physics2D.IgnoreLayerCollision(LayerMask.NameToLayer("Enemy"), LayerMask.NameToLayer("Player"),false);
+
+
         RaycastHit2D hit = Physics2D.BoxCast(_jumpSensor.position, boxSize, 0f, Vector2.zero, 0f, LayerMask.GetMask("Pushable", "Wall"));
-        if (hit.collider != null  && _isOnGround)
+        if (hit.collider != null  && _isOnGround && Jumpable)
         {
             Jump();
         }
@@ -339,11 +372,11 @@ public class Believer : MonoBehaviour
                 MoveToDestination(_destination, _idleMoveSpeed);
                 yield return null;
             }
-            Debug.Log(i);
             yield return new WaitUntil(() => transform.position == _destination);
             yield return new WaitForSeconds(_chaseFailRoamCoolTime);
         }
         yield return new WaitForSeconds(1);
+
         TeleportToInitposition();
 
     }
@@ -409,7 +442,7 @@ public class Believer : MonoBehaviour
             yield return new WaitForSeconds(0.05f);
         }
     }
-    private IEnumerator IdleToRoam()    //idle���¿��� roam ���·� �̵�.
+    private IEnumerator IdleToRoam() 
     {
         yield return new WaitForSeconds(2);
         _fsm.CurrentState = _roamState;
@@ -429,11 +462,16 @@ public class Believer : MonoBehaviour
         }
 
         _anim.SetBool("IsWalking",false);
+        _rigid2d.constraints = RigidbodyConstraints2D.FreezePositionX;
         yield return new WaitForSeconds(2);
 
+        Jumpable = false;
         _anim.SetBool("IsWalking", false);
+        _rigid2d.constraints = RigidbodyConstraints2D.None;
+        _rigid2d.constraints = RigidbodyConstraints2D.FreezeRotation;
         for (int i = 0; i < 3; i++)
         {
+            
             _anim.SetBool("IsHeadButt", true);
             SoundManager.Instance.PlaySFX(_headbuttSound, transform.position, 1, 1);
             yield return new WaitForSeconds(1f);
@@ -445,6 +483,9 @@ public class Believer : MonoBehaviour
         SoundManager.Instance.PlaySFX(_screamingSound, transform.position, CryVolume, 1);
         yield return new WaitForSeconds(1);
         _anim.SetBool("IsScreaming", false);
+
+        Jumpable = true;
+        _fsm.CurrentState = _chaseFailState;
     }
     private void MoveToDestination(Vector3 Destination , float MoveSpeed)
     {
@@ -511,6 +552,22 @@ public class Believer : MonoBehaviour
         {
             Debug.Log("chasefail");
             _fsm.CurrentState = _chaseFailState;
+        }
+    }
+    
+    private IEnumerator StuckCheck()
+    {
+        while (true)
+        {
+            if(_fsm.CurrentState == _roamState || _fsm.CurrentState == _chaseFailState)
+            {
+                float PrevLocation = transform.position.x;
+                yield return new WaitForSeconds(1.5f);
+                float CurrentLocation = transform.position.x;
+
+                if (Mathf.Abs(PrevLocation - CurrentLocation) <= 0.5f) _destination = transform.position;
+            }
+            yield return null;
         }
     }
     private void OnDrawGizmos()
