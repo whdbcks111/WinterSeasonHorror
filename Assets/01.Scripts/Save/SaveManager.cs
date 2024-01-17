@@ -8,11 +8,11 @@ using System.Runtime.Serialization.Formatters.Binary;
 [ExecuteAlways]
 public class SaveManager : MonoBehaviour
 {
-    private Player player;
-    private static SaveableObject[] _saveableObjects;
-    
-    
+    public static SaveManager Instance {  get; private set; }
 
+    private SaveableObject[] _saveableObjects;
+
+#if UNITY_EDITOR
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.S))
@@ -25,29 +25,15 @@ public class SaveManager : MonoBehaviour
         }
         
     }
-
-    public void SaveGame()
-    {
-        SavePlayer(player);
-    }
-
-    public void LoadGame()
-    {
-        /*PlayerData data = LoadData();
-        if (data != null)
-        {
-            LoadPlayer(data);
-        }*/
-    }
+#endif
 
     private void Awake()
     {
-        
+        Instance = this;
     }
 
     private void Start()
     {
-        //_saveableObjects = Resources.FindObjectsOfTypeAll<SaveableObject>();
         _saveableObjects = Resources.FindObjectsOfTypeAll<SaveableObject>();
         foreach (var a in _saveableObjects )
         {
@@ -58,15 +44,14 @@ public class SaveManager : MonoBehaviour
             if(!temp) a.gameObject.SetActive(false);
             
         }
-        player = Player.Instance;
     }
 
     public static PlayerData SavePlayer(Player player)
     {
-        PlayerData playerData = new PlayerData(player);
+        PlayerData playerData = new(player);
         return playerData;
     }
-    public static void SaveGameData()
+    public void SaveGameData()
     {
         var formatter = new BinaryFormatter();
         var path = Application.persistentDataPath + "/GameData.save";
@@ -83,7 +68,7 @@ public class SaveManager : MonoBehaviour
         stream.Close();
     }
 
-    public static EnemyData SaveEnemyData()
+    public EnemyData SaveEnemyData()
     {
         Believer enemy = null;
         foreach (var s in _saveableObjects)
@@ -99,7 +84,7 @@ public class SaveManager : MonoBehaviour
 
     }
 
-    public static void LoadEnemy(EnemyData data)
+    public void LoadEnemy(EnemyData data)
     {
         if (data != null)
         {
@@ -117,7 +102,7 @@ public class SaveManager : MonoBehaviour
             enemy.gameObject.SetActive(data.isActive);
         }
     }
-    public static TriggerData[] SaveTriggerData()
+    public TriggerData[] SaveTriggerData()
     {
         var triggers = FindObjectsOfType<DetectAreaTrigger>();
         var triggerList = new List<DetectAreaTrigger>();
@@ -142,7 +127,7 @@ public class SaveManager : MonoBehaviour
     }
 
 
-    public static void LoadGameData()
+    public void LoadGameData()
     {
         GameData data = LoadData();
         if (data != null)
@@ -154,7 +139,7 @@ public class SaveManager : MonoBehaviour
             LoadEnemy(data.EnemyData);
         }
     }
-    public static void LoadTriggerData(TriggerData[] data)
+    public void LoadTriggerData(TriggerData[] data)
     {
         var triggers = FindObjectsOfType<DetectAreaTrigger>();
 
@@ -171,7 +156,7 @@ public class SaveManager : MonoBehaviour
             }
         }
     }
-    public static void LoadTargetObjects(TargetObjectData[] data)
+    public void LoadTargetObjects(TargetObjectData[] data)
     {
         var saveableObjects =_saveableObjects;
 
@@ -193,7 +178,7 @@ public class SaveManager : MonoBehaviour
     
   
 
-    public static TargetObjectData[] SaveTargetObjects()
+    public TargetObjectData[] SaveTargetObjects()
     {
         
         var targetObjs = _saveableObjects;
@@ -205,7 +190,7 @@ public class SaveManager : MonoBehaviour
 
         return targetObjectDatas;
     }
-    public static void LoadInteractableObjects(InteractableObjectData[] data)
+    public void LoadInteractableObjects(InteractableObjectData[] data)
     {
         var interactableObjects = Resources.FindObjectsOfTypeAll<InteractableObject>();
 
@@ -227,7 +212,7 @@ public class SaveManager : MonoBehaviour
             }
         }
     }
-    public static InteractableObjectData[] SaveInteractableObjects()
+    public InteractableObjectData[] SaveInteractableObjects()
     {
         
         var interactableObjects = FindObjectsOfType<InteractableObject>();
@@ -240,7 +225,7 @@ public class SaveManager : MonoBehaviour
         return interactableObjectDatas;
     }
     
-    public static void LoadPlayer(PlayerData data)
+    public void LoadPlayer(PlayerData data)
     {
         var position = new Vector3(data.position[0], data.position[1], data.position[2]);
         // 추가적으로 필요한 데이터를 로드합니다.
@@ -249,7 +234,7 @@ public class SaveManager : MonoBehaviour
         Player.Instance.Stamina = data.stamina;
     }
 
-    public static GameData LoadData()
+    public GameData LoadData()
     {
         string path = Application.persistentDataPath + "/GameData.save";
         if (File.Exists(path))

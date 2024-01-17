@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.Audio;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class Player : MonoBehaviour
@@ -108,6 +109,8 @@ public class Player : MonoBehaviour
     private bool _isControllable = true;
     private float _footStepAudioTimer = 0f;
 
+    private bool _isDead = false;
+
     private float _lightKeyHoldingTimer = 0f;
 
     private SFXController _breatheController, _heartbeatController;
@@ -164,6 +167,15 @@ public class Player : MonoBehaviour
         HiddenViewUpdate();
         BreatheUpdate();
         ReflectUpdate();
+    }
+
+    private void OnDeath()
+    {
+        UIManager.Instance.PlayJumpScare(UIManager.Instance.jumpScare, 
+            onFinish: () =>
+            {
+                SceneManager.LoadScene("GameOverScene");
+            });
     }
 
     private void ReflectUpdate()
@@ -446,6 +458,11 @@ public class Player : MonoBehaviour
 
         }
 
+        if(!_isDead && collision.collider.TryGetComponent(out Believer _))
+        {
+            _isDead = true;
+            OnDeath();
+        }
     }
 
     private void OnCollisionExit2D(Collision2D collision)
