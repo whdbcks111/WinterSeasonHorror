@@ -41,14 +41,14 @@ public class Statue : MonoBehaviour
     {
         _player = Player.Instance;
 
-        _canOrder = false;
+        _canOrder = true;
         _selectedStatue = SelectPreset();
         _statuePreview.SetActive(false);
         _boxCollider = GetComponent<BoxCollider2D>();
     }
     void Update()
     {
-        _boxCollider.offset = new Vector2(_searchBoxPosition.localPosition.x,_searchBoxPosition.localPosition.y);
+        
 
         if (Input.GetKeyDown(KeyCode.V))
         {
@@ -57,10 +57,10 @@ public class Statue : MonoBehaviour
 
         if (_playerIsInRange && !Player.Instance.IsHidden)
         {
-            if ((transform.position.x > Player.Instance.transform.position.x) == Player.Instance.IsLeftDir && _canOrder) //플레이어가 등지고 있음
+            if ((transform.position.x > Player.Instance.transform.position.x) == Player.Instance.IsLeftDir) //플레이어가 등지고 있음
             {
                 ActivateEye();
-                if(_currentSecond >= _maxSecond || Player.Instance.LightEnerge <= 0)
+                if((_currentSecond >= _maxSecond || Player.Instance.LightEnerge <= 0) && _canOrder)
                 {
                     AttackOrder();
                 }
