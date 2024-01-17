@@ -143,7 +143,7 @@ public class Player : MonoBehaviour
         _defaultOrderInLayer = _spriteRenderer.sortingOrder;
         _isLighting = _handLight.gameObject.activeSelf;
         _handLightOffsetX = _handLight.transform.position.x - transform.position.x;
-        _surroundLightOffsetX = _surroundLight.transform.position.x - transform.position.x;
+        _surroundLightOffsetX = _surroundLight.transform.position.x - transform.position.x;   
     }
 
     private void Start()

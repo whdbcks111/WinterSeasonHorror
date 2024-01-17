@@ -167,6 +167,7 @@ public class UIManager : MonoBehaviour
     private void ImageFit(Image image, ScreenFit fitType)
     {
         
+        
         Sprite sprite = image.sprite;
         RectTransform rectTransform = image.GetComponent<RectTransform>();
         float screenWidth = Screen.width;
