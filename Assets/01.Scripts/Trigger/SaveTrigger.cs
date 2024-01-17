@@ -8,6 +8,7 @@ public class SaveTrigger : BaseTrigger
 
     public override void Enter()
     {
+        Debug.Log("Save");
         SaveManager.Instance.SaveGameData();
     }
 
