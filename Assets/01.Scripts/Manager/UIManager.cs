@@ -9,7 +9,7 @@ using UnityEditor.Searcher;
 
 public class UIManager : MonoBehaviour
 {
-         
+
     private static UIManager instance;
 
     // 2. Public static property
@@ -30,11 +30,11 @@ public class UIManager : MonoBehaviour
             return instance;
         }
     }
-    
-    private Dictionary<string, List<Image>> imageDictionary = new ();
+
+    private Dictionary<string, List<Image>> imageDictionary = new();
 
     public Sprite testSprite;
-    public Canvas canvas; 
+    public Canvas canvas;
     public Image imagePrefab;
     private Transform parentImageTf;
     public JumpScare jumpScare;
@@ -71,7 +71,7 @@ public class UIManager : MonoBehaviour
 
     private void Update()
     {
-        
+
         if (Input.GetKeyDown(KeyCode.I))
         {
             Debug.Log("FitImage");
@@ -88,23 +88,23 @@ public class UIManager : MonoBehaviour
         {
             Debug.Log("FitImage");
             //ImageToFitScreen(testSprite, screenFit);
-            StartCoroutine(PlayJumpScare(jumpScare));
+            StartCoroutine(PlayJumpScareRoutine(jumpScare));
         }
 
 
     }
-    
-    
+
+
     public List<Image> FindGetListContainingImage(Image targetImage)
     {
         foreach (var pair in imageDictionary)
         {
-            
+
             if (pair.Key.Equals(targetImage.sprite.name)) // 이미지 비교
             {
                 return pair.Value;
             }
-            
+
         }
         // 매치되는 이미지 리스트가 없는 경우 만들어서 리턴
         Debug.Log("딕션어리에 없어서 만들었엉");
@@ -113,7 +113,7 @@ public class UIManager : MonoBehaviour
         imageDictionary.Add(targetImage.sprite.name, imageList);
         i.transform.localPosition = Vector3.zero;
         imageList.Add(i);
-        return imageList; 
+        return imageList;
     }
 
     void ImageToFitScreen(Sprite sprite, ScreenFit fitType)
@@ -149,7 +149,7 @@ public class UIManager : MonoBehaviour
             /*GameObject obj = new GameObject();
             obj.AddComponent<Image>().sprite = imagePrefab.sprite*/
             ;
-            _image = Instantiate(imagePrefab, Vector3.zero, quaternion.identity,canvas.transform);
+            _image = Instantiate(imagePrefab, Vector3.zero, quaternion.identity, canvas.transform);
             _image.transform.localPosition = Vector3.zero;
             images.Add(_image);
 
@@ -163,10 +163,10 @@ public class UIManager : MonoBehaviour
         StartCoroutine(FadeOutImage(_image));
     }
 
-    
+
     private void ImageFit(Image image, ScreenFit fitType)
     {
-        
+
         Sprite sprite = image.sprite;
         RectTransform rectTransform = image.GetComponent<RectTransform>();
         float screenWidth = Screen.width;
@@ -211,156 +211,164 @@ public class UIManager : MonoBehaviour
         Image image = obj.AddComponent<Image>();
         image.sprite = sprite;
         image.transform.localPosition = Vector3.zero;
-        return Instantiate(image,parent);
+        return Instantiate(image, parent);
     }
 
-        IEnumerator PlayJumpScare(JumpScare jumpScare)
-        {
-            foreach (var a in jumpScare.jumpScareSounds )
-            {
-                SoundManager.Instance.PlaySFX(a, Player.Instance.transform.position);
-            }
-            
-            
-            Image image = InstantiateImage(jumpScare.ScareSpriteEntity[0].sprite, canvas.transform);
-            for (int i = 0; i < jumpScare.ScareSpriteEntity.Length; i++)
-            {
-                image.sprite = jumpScare.ScareSpriteEntity[i].sprite;
-                ImageFit(image, jumpScare.screenFit);
-                yield return new WaitForSeconds(jumpScare.ScareSpriteEntity[i].delayTime);
-            }
+    public void PlayJumpScare(JumpScare jumpScare, Action onFinish = null)
+    {
+        StartCoroutine(PlayJumpScareRoutine(jumpScare, onFinish));
+    }
 
-            // 마지막 스프라이트 표시
-            yield return new WaitForSeconds(jumpScare.lastSpriteDuration);
-            image.gameObject.SetActive(false);
+    IEnumerator PlayJumpScareRoutine(JumpScare jumpScare, Action onFinish = null)
+    {
+        foreach (var a in jumpScare.jumpScareSounds)
+        {
+            SoundManager.Instance.PlaySFX(a, Player.Instance.transform.position);
         }
 
-        void ImageToFitScreen(PanelUI panelUI)
+
+        Image image = InstantiateImage(jumpScare.ScareSpriteEntity[0].sprite, canvas.transform);
+        for (int i = 0; i < jumpScare.ScareSpriteEntity.Length; i++)
         {
-            Sprite sprite = panelUI.image.sprite;
-            imagePrefab.sprite = panelUI.image.sprite;
-            var images = FindGetListContainingImage(imagePrefab);
-
-            Image _image = null;
-
-
-            foreach (var i in images)
-            {
-
-                if (!i.IsActive())
-                {
-                    _image = i;
-                    break;
-                }
-            }
-
-            if (!_image)
-            {
-
-                if (images.Count > maxImageCount)
-                {
-
-                    flag = true;
-                    return;
-                }
-
-                Debug.Log("Instantiate");
-                /*GameObject obj = new GameObject();
-                obj.AddComponent<Image>().sprite = imagePrefab.sprite*/
-                ;
-                _image = Instantiate(imagePrefab, Vector3.zero, quaternion.identity, canvas.transform);
-                _image.transform.localPosition = Vector3.zero;
-                images.Add(_image);
-
-            }
-
-            if (_image == null) return;
-            _image.color = originColor;
-            _image.gameObject.SetActive(true);
-            RectTransform rectTransform = _image.GetComponent<RectTransform>();
-            float screenWidth = Screen.width;
-            float screenHeight = Screen.height;
-
-            switch (panelUI.fitType)
-            {
-                case ScreenFit.Fill:
-                    rectTransform.sizeDelta = new Vector2(screenWidth, screenHeight);
-                    break;
-                case ScreenFit.Width:
-                    rectTransform.sizeDelta = new Vector2(screenWidth,
-                        screenWidth / sprite.bounds.size.x * sprite.bounds.size.y);
-                    break;
-                case ScreenFit.Height:
-                    rectTransform.sizeDelta =
-                        new Vector2(screenHeight / sprite.bounds.size.y * sprite.bounds.size.x,
-                            screenHeight);
-                    break;
-            }
-
-            StartCoroutine(FadeOutImage(_image));
+            image.sprite = jumpScare.ScareSpriteEntity[i].sprite;
+            ImageFit(image, jumpScare.screenFit);
+            yield return new WaitForSeconds(jumpScare.ScareSpriteEntity[i].delayTime);
         }
 
-        IEnumerator FadeOutImage(Image image)
+        // 마지막 스프라이트 표시
+        yield return new WaitForSeconds(jumpScare.lastSpriteDuration);
+
+        onFinish?.Invoke();
+        yield return null;
+        image.gameObject.SetActive(false);
+    }
+
+    void ImageToFitScreen(PanelUI panelUI)
+    {
+        Sprite sprite = panelUI.image.sprite;
+        imagePrefab.sprite = panelUI.image.sprite;
+        var images = FindGetListContainingImage(imagePrefab);
+
+        Image _image = null;
+
+
+        foreach (var i in images)
         {
 
-            if (image == null) yield break;
-            flag = true;
-
-            float elapsedTime = 0.0f;
-            Color originalColor = image.color;
-            var p = image.GetComponent<PanelUI>();
-            if (p)
+            if (!i.IsActive())
             {
-                yield return new WaitForSeconds(displayImageTime);
-                while (elapsedTime < p.fadeOutTime)
-                {
-                    if (flag && image.sprite.name.Equals(imagePrefab.sprite.name))
-                    {
-                        elapsedTime = 0;
-                        flag = false;
-                    }
-                    elapsedTime += Time.deltaTime;
-                    float alpha = Mathf.Clamp01(1.0f - (elapsedTime / p.fadeOutTime));
-                    image.color = new Color(originalColor.r, originalColor.g, originalColor.b, alpha);
-                    yield return null;
-                }
+                _image = i;
+                break;
             }
-            else
-            {
-                yield return new WaitForSeconds(displayImageTime);
-                while (elapsedTime < fadeOutTime)
-                {
-                    if (flag && image.sprite.name.Equals(imagePrefab.sprite.name))
-                    {
-                        elapsedTime = 0;
-                        flag = false;
-                    }
-
-                    elapsedTime += Time.deltaTime;
-                    float alpha = Mathf.Clamp01(1.0f - (elapsedTime / fadeOutTime));
-                    image.color = new Color(originalColor.r, originalColor.g, originalColor.b, alpha);
-                    yield return null;
-                }
-            }
-
-            flag = false;
-            image.color = originalColor;
-            image.gameObject.SetActive(false); // 이미지 비활성화
         }
 
-        private void Awake()
+        if (!_image)
         {
-            if (instance == null)
+
+            if (images.Count > maxImageCount)
             {
-                instance = this;
-                DontDestroyOnLoad(this.gameObject); // 4. 인스턴스 유지
+
+                flag = true;
+                return;
             }
-            else
+
+            Debug.Log("Instantiate");
+            /*GameObject obj = new GameObject();
+            obj.AddComponent<Image>().sprite = imagePrefab.sprite*/
+            ;
+            _image = Instantiate(imagePrefab, Vector3.zero, quaternion.identity, canvas.transform);
+            _image.transform.localPosition = Vector3.zero;
+            images.Add(_image);
+
+        }
+
+        if (_image == null) return;
+        _image.color = originColor;
+        _image.gameObject.SetActive(true);
+        RectTransform rectTransform = _image.GetComponent<RectTransform>();
+        float screenWidth = Screen.width;
+        float screenHeight = Screen.height;
+
+        switch (panelUI.fitType)
+        {
+            case ScreenFit.Fill:
+                rectTransform.sizeDelta = new Vector2(screenWidth, screenHeight);
+                break;
+            case ScreenFit.Width:
+                rectTransform.sizeDelta = new Vector2(screenWidth,
+                    screenWidth / sprite.bounds.size.x * sprite.bounds.size.y);
+                break;
+            case ScreenFit.Height:
+                rectTransform.sizeDelta =
+                    new Vector2(screenHeight / sprite.bounds.size.y * sprite.bounds.size.x,
+                        screenHeight);
+                break;
+        }
+
+        StartCoroutine(FadeOutImage(_image));
+    }
+
+    IEnumerator FadeOutImage(Image image)
+    {
+
+        if (image == null) yield break;
+        flag = true;
+
+        float elapsedTime = 0.0f;
+        Color originalColor = image.color;
+        var p = image.GetComponent<PanelUI>();
+        if (p)
+        {
+            yield return new WaitForSeconds(displayImageTime);
+            while (elapsedTime < p.fadeOutTime)
             {
-                if (this != instance)
+                if (flag && image.sprite.name.Equals(imagePrefab.sprite.name))
                 {
-                    Destroy(this.gameObject);
+                    elapsedTime = 0;
+                    flag = false;
                 }
+                elapsedTime += Time.deltaTime;
+                float alpha = Mathf.Clamp01(1.0f - (elapsedTime / p.fadeOutTime));
+                image.color = new Color(originalColor.r, originalColor.g, originalColor.b, alpha);
+                yield return null;
+            }
+        }
+        else
+        {
+            yield return new WaitForSeconds(displayImageTime);
+            while (elapsedTime < fadeOutTime)
+            {
+                if (flag && image.sprite.name.Equals(imagePrefab.sprite.name))
+                {
+                    elapsedTime = 0;
+                    flag = false;
+                }
+
+                elapsedTime += Time.deltaTime;
+                float alpha = Mathf.Clamp01(1.0f - (elapsedTime / fadeOutTime));
+                image.color = new Color(originalColor.r, originalColor.g, originalColor.b, alpha);
+                yield return null;
+            }
+        }
+
+        flag = false;
+        image.color = originalColor;
+        image.gameObject.SetActive(false); // 이미지 비활성화
+    }
+
+    private void Awake()
+    {
+        if (instance == null)
+        {
+            instance = this;
+            DontDestroyOnLoad(this.gameObject); // 4. 인스턴스 유지
+        }
+        else
+        {
+            if (this != instance)
+            {
+                Destroy(this.gameObject);
             }
         }
     }
+}
