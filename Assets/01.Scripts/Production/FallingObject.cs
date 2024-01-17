@@ -19,7 +19,6 @@ public class FallingObject : MonoBehaviour
         _velocity = (transform.position - _beforePos) / Time.fixedDeltaTime;
         _beforePos = transform.position;
 
-        print($"Vel {_velocity}");
         if(_velocity.y >= 0f && _beforeVelocity.y < 0f)
         {
             SoundManager.Instance.PlaySFX(FallClip, transform.position, VolumeMultiplier * -_beforeVelocity.y, 1f);
