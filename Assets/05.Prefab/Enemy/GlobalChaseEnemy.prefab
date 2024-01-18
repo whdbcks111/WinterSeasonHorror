@@ -38,6 +38,7 @@ Transform:
   - {fileID: 5335339067385959479}
   - {fileID: 6180487576649767511}
   - {fileID: 7539476640886922094}
+  - {fileID: 6795599809183639130}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &4052553378550021394
@@ -182,11 +183,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   boxSize: {x: 0.54, y: 0.49, z: 0}
   _groundBox: {x: 0.52, y: 0.28, z: 0}
+  _wallSensorSize: {x: 0.3, y: 0.28}
   _idleMoveSpeed: 2
   _chaseMoveSpeed: 5.8
   _jumpForce: 6
   _forwardForce: 1
-  _searchingRange: 0
+  _threatMaxDistance: 0
   _isChasing: 0
   _isInSight: 0
   _searchingStopCount: 0
@@ -195,6 +197,7 @@ MonoBehaviour:
   _maxRoamDistance: 5
   _jumpSensor: {fileID: 5335339067385959479}
   _groundSensor: {fileID: 6180487576649767511}
+  _wallSensor: {fileID: 6795599809183639130}
   _chaseFailRoamCount: 3
   _chaseFailRoamCoolTime: 3
   _cryingCycleTime: 3
@@ -274,6 +277,37 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 0.4411354, y: 1.7899014}
   m_EdgeRadius: 0
+--- !u!1 &4097287530107497772
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6795599809183639130}
+  m_Layer: 0
+  m_Name: WallSensor
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6795599809183639130
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4097287530107497772}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 1.204, y: 1.57, z: 0.12435788}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7710831585635442308}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &5147814122734698561
 GameObject:
   m_ObjectHideFlags: 0
