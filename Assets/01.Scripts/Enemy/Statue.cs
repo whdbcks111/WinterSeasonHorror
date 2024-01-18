@@ -2,11 +2,14 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.Burst.CompilerServices;
 using UnityEngine;
+using UnityEngine.Rendering.Universal;
 
 public class Statue : MonoBehaviour
 {
     Believer _believer;
     Player _player;
+    Light2D _light;
+
     [Header("적 어그로 범위. 직접 지정할 것")]
     [SerializeField] private Vector2 _alarmBoxSize;
     [Header("적 어그로 범위의 위치. 하이어라키에서 찾을 것")]
@@ -27,29 +30,33 @@ public class Statue : MonoBehaviour
 
     private bool _canOrder;
 
+    [SerializeField] float _tartgetIntensity;
+    [SerializeField] float _targetRaduis;
 
+    [SerializeField] float _intensitySmoothTime;
+    [SerializeField] float _raduisSmoothTime;
 
     [SerializeField] GameObject _statuePreview;
 
-
+    private float _vel;
 
     BoxCollider2D _boxCollider;
     private bool _playerIsInRange;
-
+    private bool _canChangeLight;
     private Vector3 _velocity = Vector3.zero;
     private void Start()
     {
         _player = Player.Instance;
 
         _canOrder = true;
+        _canChangeLight = true;
         _selectedStatue = SelectPreset();
         _statuePreview.SetActive(false);
         _boxCollider = GetComponent<BoxCollider2D>();
+        _light = GetComponent<Light2D>();
     }
     void Update()
     {
-        
-
         if (Input.GetKeyDown(KeyCode.V))
         {
             AttackOrder();
@@ -60,9 +67,19 @@ public class Statue : MonoBehaviour
             if ((transform.position.x > Player.Instance.transform.position.x) == Player.Instance.IsLeftDir) //플레이어가 등지고 있음
             {
                 ActivateEye();
-                if((_currentSecond >= _maxSecond || Player.Instance.LightEnerge <= 0) && _canOrder)
+                if((_currentSecond >= _maxSecond || Player.Instance.LightEnerge <= 0))
                 {
-                    AttackOrder();
+                    
+                    if(_canOrder)
+                    {
+                        AttackOrder();
+                        StartCoroutine(Light());
+                    }
+                    if(_canChangeLight)
+                    {
+                        _light.intensity = Mathf.SmoothDamp(_light.intensity, _tartgetIntensity, ref _vel, _intensitySmoothTime);
+                        _light.pointLightOuterRadius = Mathf.SmoothDamp(_light.pointLightOuterRadius, _targetRaduis, ref _vel, _raduisSmoothTime);
+                    }
                 }
             }
             else DeactivateEye();
@@ -85,15 +102,29 @@ public class Statue : MonoBehaviour
                 BelieverScript._fsm.CurrentState = BelieverScript._chaseState;
             }
         }
-
         _canOrder = false;
+    }
+    
+
+    private IEnumerator Light()
+    {
+
+        yield return new WaitForSeconds(1);
+        _canChangeLight = false;
+        while (_light.intensity >= 0)
+        {
+            _light.intensity = Mathf.SmoothDamp(_light.intensity, 0, ref _vel, _intensitySmoothTime);
+            _light.pointLightOuterRadius = Mathf.SmoothDamp(_light.pointLightOuterRadius, 0, ref _vel, _raduisSmoothTime);
+            yield return null;
+        }
+        _light.intensity = 0;
+        _light.pointLightOuterRadius = 0;
     }
     void ActivateEye()
     {
         _selectedEyePreset.SetActive(true);
         _currentSecond += Time.deltaTime;
 
-        _canOrder = true;
     }
     void DeactivateEye()
     {
@@ -101,7 +132,8 @@ public class Statue : MonoBehaviour
 
         _currentSecond = 0;
 
-        _canOrder = false;
+        _canOrder = true;
+        _canChangeLight = true;
     }
     private GameObject SelectPreset()
     {

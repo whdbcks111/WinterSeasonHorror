@@ -4,6 +4,7 @@ using System.Linq.Expressions;
 
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Rendering.Universal;
 using UnityEngine.UIElements;
 
 public class Believer : MonoBehaviour
@@ -62,6 +63,9 @@ public class Believer : MonoBehaviour
     private Coroutine _encountco;
     private Coroutine _threatco;
     private Coroutine _idleToRoamCo;
+    private Coroutine _fLCo;
+    private Coroutine _cLCo;
+    private Coroutine _hLCo;
 
     private Camera _camera;
     private Vector2 _objScreenPoint;
@@ -74,11 +78,20 @@ public class Believer : MonoBehaviour
     public FSM _fsm = new();
     public BaseState _idleState, _roamState, _chaseState,_chaseFailState,_returnState ,_threteningHide,_getOrdered;
 
+
+    Light2D _light2d;
+    [SerializeField] private float _findLightIntensity;
+    [SerializeField] private float _chaseLightIntensity;
+    private float _vel;
+    [SerializeField] private float _findSmoothTime;
+    [SerializeField] private float _chaseSmoothTime;
+
     // Start is called before the first frame update
     void Start()
     {
         _jumpable = true;
         _isOnGround = true;
+        _light2d = GetComponentInChildren<Light2D>();
 
         _player = Player.Instance;
         _fsm.CurrentState = _idleState;
@@ -159,6 +172,17 @@ public class Believer : MonoBehaviour
                 _fsm.CurrentState = _idleState;
             }
 
+            RaycastHit2D WallHit = Physics2D.BoxCast(_wallSensor.position, _wallSensorSize, 0f, Vector2.zero, 0f, LayerMask.GetMask("Pushable", "Wall"));
+            if (WallHit.collider != null)
+            {
+                //앞에 벽이 있음. 
+                _jumpable = false;
+            }
+            if(WallHit.collider == null)
+            {
+                _jumpable = true;
+            }
+
 
             if (_isInSight && !_player.IsHidden && _fsm.CurrentState != _chaseState)
             {
@@ -172,7 +196,7 @@ public class Believer : MonoBehaviour
         _chaseState = new(
         onEnter: () =>
         {
-
+            _fLCo = StartCoroutine(FindLight());
             _encountco = StartCoroutine(EncountWithPlayer());
         },
         onUpdate: () =>
@@ -208,6 +232,12 @@ public class Believer : MonoBehaviour
         onExit: () =>
         {
             if (_encountco != null) StopCoroutine(_encountco);
+
+            if(_cLCo != null) StopCoroutine(_cLCo);
+            if(_fLCo != null) StopCoroutine(_fLCo);
+
+            _light2d.intensity = 0;
+
         });
 
         _chaseFailState = new(                                
@@ -232,6 +262,7 @@ public class Believer : MonoBehaviour
         
         _threteningHide = new(onEnter: () => {
             _threatco = StartCoroutine(Threatening());
+            _hLCo = StartCoroutine(HeadButtLight());
         },
             onUpdate: () => {
                 if(!_player.IsHidden && _isInSight &&  _fsm.CurrentState != _chaseState)
@@ -256,6 +287,8 @@ public class Believer : MonoBehaviour
                 _jumpable = true;
                 _rigid2d.constraints = RigidbodyConstraints2D.None;
                 _rigid2d.constraints = RigidbodyConstraints2D.FreezeRotation;
+
+                if(_hLCo != null) { StopCoroutine(_hLCo); }
             });
 
 
@@ -275,7 +308,9 @@ public class Believer : MonoBehaviour
     {
         _objScreenPoint = _camera.WorldToScreenPoint(transform.position);
         HandleState();
-
+        if(Input.GetKeyDown(KeyCode.Q)) {
+            _light2d.intensity += 10;
+        }
         
         if(Player.Instance.IsHidden)
         {
@@ -296,16 +331,6 @@ public class Believer : MonoBehaviour
             _anim.SetBool("IsJumping", false);
         }
 
-        RaycastHit2D WallHit = Physics2D.BoxCast(_wallSensor.position, _wallSensorSize, 0f, Vector2.zero, 0f, LayerMask.GetMask("Pushable", "Wall"));
-        if (WallHit.collider != null)
-        {
-            //앞에 벽이 있음. 
-            _jumpable = false;
-        }
-        if (WallHit.collider == null)
-        {
-            _jumpable = true;//벽이 없음
-        }
 
 
 
@@ -317,71 +342,6 @@ public class Believer : MonoBehaviour
         if (!_IsSettedInitPosition) StartCoroutine(SetInitPosition());
         //if (collision.gameObject == wall)
     }
-    /* //����-���� �ڷ�ƾ
-    private IEnumerator Searching_2()
-    {
-        int Selecter = Random.Range(0, 2);
-
-        Vector2 FirstSearchDestination = _searchDesntinationLeft;
-        Vector2 SecondSearchDesntination = _searchDesntinationRight;
-
-        _destination = new Vector3(FirstSearchDestination.x,FirstSearchDestination.y,0);
-        yield return Moving(_destination);
-        yield return new WaitUntil(() => new Vector2(transform.position.x, transform.position.y) == FirstSearchDestination); // �븮��, ���ٽ�.
-
-        
-        
-
-        yield return new WaitForSeconds(_searchWaitTime);
-        _destination = new Vector3(SecondSearchDesntination.x,SecondSearchDesntination.y,0);
-        yield return Moving(_destination);
-
-        yield return new WaitUntil(() => new Vector2(transform.position.x, transform.position.y) == SecondSearchDesntination); // �븮��, ���ٽ�.
-        
-        yield return new WaitForSeconds(_searchWaitTime);
-        ReturnToInitPosition();
-    } //����-����*/
-    /* //��ȸ �ڷ�ƾ
-    private IEnumerator Searching_1() // ��ȸ
-    {
-        
-        while(_currentState == State.Walk)
-        {
-
-            float Distance = Random.Range(-_roamRange, _roamRange + 0.1f);
-            if (Mathf.Abs(Distance) <= _minRoamDistance && Distance >= 0)
-            {
-                Distance = _minRoamDistance;
-            }
-            if (Mathf.Abs(Distance) <= _minRoamDistance && Distance < 0)
-            {
-                Distance = -_minRoamDistance;
-            }
-
-            if (Mathf.Abs(transform.position.x - InitPosition.x) <= _maxRoamDistance)
-            {
-                _destination = new Vector3(transform.position.x + Distance, transform.position.y, 0);
-                StartCoroutine(Moving(_destination));
-            }
-            if (Mathf.Abs(transform.position.x - InitPosition.x) >= _maxRoamDistance) { ReturnToInitPosition(); }
-
-            yield return new WaitUntil(() => _destination == transform.position);
-
-
-        }
-    }
-    */
-    /* //�̵� �ڷ�ƾ
-    private IEnumerator Moving(Vector3 Destination)
-    {
-        while (Destination != transform.position)
-        {
-            transform.position = Vector3.MoveTowards(transform.position, Destination, _moveSpeed * Time.deltaTime);
-
-            yield return null;
-        }
-    }
-    */
     private IEnumerator RoamNear()
     {
         for(int i= 0; i < _chaseFailRoamCount; i++)
@@ -423,20 +383,21 @@ public class Believer : MonoBehaviour
     }
     public IEnumerator EncountWithPlayer()
     {
-        _anim.SetBool("IsScreaming", true);
 
+        _anim.SetBool("IsScreaming", true);
         SoundManager.Instance.PlaySFX(JumpScare, transform.position, CryVolume, 1);
         SoundManager.Instance.PlaySFX(_screamingSound, Camera.main.transform.position, ScreamVolume, 1, Camera.main.transform);
         _chasable = false;
 
         _chaseMoveSpeed = 0;
         yield return new WaitForSeconds(1.7f);
+
+
+
         _chaseMoveSpeed = 5;
 
         _anim.SetBool("IsScreaming", false);
         _anim.SetBool("IsRunning", true);
-
-        // _chaseMoveSpeed = SavedMoveSpeed;
         yield return new WaitForSeconds(3);
         _chasable = true;
     }
@@ -598,6 +559,32 @@ public class Believer : MonoBehaviour
 
                 if (Mathf.Abs(PrevLocation - CurrentLocation) <= 0.5f) _destination = transform.position;
             }
+            yield return null;
+        }
+    }
+    private IEnumerator FindLight()
+    {
+        while (_light2d.intensity <= _findLightIntensity)
+        {
+            _light2d.intensity = Mathf.SmoothDamp(_light2d.intensity, _findLightIntensity,ref _vel, _findSmoothTime);
+            yield return null;
+        }
+        _cLCo = StartCoroutine(chaseLight());
+    }
+
+    private IEnumerator chaseLight()
+    {
+        while (_light2d.intensity <= _chaseLightIntensity)
+        {
+            _light2d.intensity = Mathf.SmoothDamp(_light2d.intensity, _chaseLightIntensity, ref _vel, _chaseSmoothTime);
+            yield return null;
+        }
+    }
+    private IEnumerator HeadButtLight()
+    {
+        while (_light2d.intensity >= 0)
+        {
+            _light2d.intensity = Mathf.SmoothDamp(_light2d.intensity, 0, ref _vel, _chaseSmoothTime);
             yield return null;
         }
     }
