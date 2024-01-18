@@ -53,8 +53,10 @@ public class SaveManager : MonoBehaviour
         {
             var temp = a.gameObject.activeSelf;
             if(!temp) a.gameObject.SetActive(true);
+#if UNITY_EDITOR
             a.GenerateUniqueID();
-            Debug.Log("result" + " " + a.name + " " + a.UUID);
+            #endif
+//            Debug.Log("result" + " " + a.name + " " + a.UUID);
             if(!temp) a.gameObject.SetActive(false);
             
         }

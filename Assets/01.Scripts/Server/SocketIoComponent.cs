@@ -6,7 +6,7 @@ using BestHTTP.JSON;
 
 public class SocketIoComponent : MonoBehaviour
 {
-    [SerializeField]
+    [SerializeField] private Vector3 tempPos;
     private string Address = "ws://localhost:3000";
     private SocketManager socketManager = null;
     private bool isConnected = false;
@@ -17,15 +17,9 @@ public class SocketIoComponent : MonoBehaviour
 
     private void Update()
     {
-        Test test = new Test()
-        {
-            x = Player.Instance.transform.position.x,
-            y = Player.Instance.transform.position.y,
-            z = Player.Instance.transform.position.z
-        };
         
-        if(isConnected)
-         socketManager.Socket.Emit("playerPos", JsonUtility.ToJson(test));
+        
+        
     }
 
     private void SocketIO3Connect()
@@ -37,9 +31,7 @@ public class SocketIoComponent : MonoBehaviour
         socketManager.Open();
         socketManager.Socket.On<ConnectResponse>(SocketIOEventTypes.Connect, OnConnected);
         
-        socketManager.Socket.On("playerPos", (string data) => {
-            Debug.Log(data);
-        });
+       
     }
 
     private void OnConnected(ConnectResponse res)

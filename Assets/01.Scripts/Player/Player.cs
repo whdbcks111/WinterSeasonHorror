@@ -10,6 +10,7 @@ using UnityEngine.UI;
 public class Player : MonoBehaviour
 {
     public static Player Instance { get; private set; }
+    public string userId;
 
     [SerializeField] private SpriteRenderer _reflectionSpriteRenderer;
 
@@ -83,7 +84,7 @@ public class Player : MonoBehaviour
 
     private Rigidbody2D _rigid;
     private Animator _animator;
-    private SpriteRenderer _spriteRenderer;
+    public SpriteRenderer _spriteRenderer;
 
     private readonly HashSet<Collider2D> _steppingGrounds = new();
     private bool _isLeftDir = false;
@@ -321,7 +322,7 @@ public class Player : MonoBehaviour
         {
             // moving
             if(_isLeftDir != nextIsLeftDir)
-            {
+            { 
                 print(_runningTime);
                 StartMoveShift(_isRunning);
                 return;

@@ -1,11 +1,10 @@
-using System;
+
 using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.Mathematics;
-using Unity.VisualScripting;
-using UnityEditor.Searcher;
+
 
 public class UIManager : MonoBehaviour
 {
