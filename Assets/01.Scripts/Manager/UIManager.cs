@@ -4,8 +4,6 @@ using UnityEngine.UI;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.Mathematics;
-using Unity.VisualScripting;
-using UnityEditor.Searcher;
 
 public class UIManager : MonoBehaviour
 {
@@ -34,18 +32,19 @@ public class UIManager : MonoBehaviour
     private Dictionary<string, List<Image>> imageDictionary = new();
 
     public Sprite testSprite;
-    public Canvas canvas;
+    public Canvas imageCanvas, mainCanvas;
     public Image imagePrefab;
-    private Transform parentImageTf;
     public JumpScare jumpScare;
+    public GameObject settingUI;
 
     [SerializeField] private int maxImageCount = 3;
-    private Camera cam;
     private Color originColor;
 
     private bool flag = false;
     [Range(0f, 3f)] public float displayImageTime = 0f; // 이미지가 사라지는 데 걸리는 시간
     [Range(0f, 3f)] public float fadeOutTime = 2.0f; // 이미지가 사라지는 데 걸리는 시간
+
+    private GameObject _currentUIPanel = null;
 
     //public List<Image> images = new List<Image>();
 
@@ -62,11 +61,7 @@ public class UIManager : MonoBehaviour
 
     void Start()
     {
-        canvas = GetComponentInChildren<Canvas>();
-        parentImageTf = imagePrefab.transform;
         originColor = Color.white;
-        cam = Camera.main;
-
     }
 
     private void Update()
@@ -91,7 +86,27 @@ public class UIManager : MonoBehaviour
             StartCoroutine(PlayJumpScareRoutine(jumpScare));
         }
 
+        if(_currentUIPanel != null && Input.GetKeyDown(KeyCode.Escape)) CloseUIPanel();
+        else
+        {
+            // UI Panels
 
+            if (Input.GetKeyDown(KeyCode.Escape)) ShowUIPanel(settingUI);
+        }
+    }
+
+    public void ShowUIPanel(GameObject ui)
+    {
+        CloseUIPanel();
+        _currentUIPanel = ui;
+        ui.SetActive(true);
+    }
+
+    public void CloseUIPanel()
+    {
+        if (_currentUIPanel == null) return;
+        _currentUIPanel.SetActive(false);
+        _currentUIPanel = null;
     }
 
 
@@ -109,7 +124,7 @@ public class UIManager : MonoBehaviour
         // 매치되는 이미지 리스트가 없는 경우 만들어서 리턴
         Debug.Log("딕션어리에 없어서 만들었엉");
         var imageList = new List<Image>();
-        var i = Instantiate(targetImage, Vector3.zero, quaternion.identity, canvas.transform);
+        var i = Instantiate(targetImage, Vector3.zero, quaternion.identity, imageCanvas.transform);
         imageDictionary.Add(targetImage.sprite.name, imageList);
         i.transform.localPosition = Vector3.zero;
         imageList.Add(i);
@@ -149,7 +164,7 @@ public class UIManager : MonoBehaviour
             /*GameObject obj = new GameObject();
             obj.AddComponent<Image>().sprite = imagePrefab.sprite*/
             ;
-            _image = Instantiate(imagePrefab, Vector3.zero, quaternion.identity, canvas.transform);
+            _image = Instantiate(imagePrefab, Vector3.zero, quaternion.identity, imageCanvas.transform);
             _image.transform.localPosition = Vector3.zero;
             images.Add(_image);
 
@@ -171,6 +186,7 @@ public class UIManager : MonoBehaviour
         RectTransform rectTransform = image.GetComponent<RectTransform>();
         float screenWidth = Screen.width;
         float screenHeight = Screen.height;
+        var canvasScale = imageCanvas.transform.localScale;
 
         switch (fitType)
         {
@@ -185,7 +201,7 @@ public class UIManager : MonoBehaviour
             case ScreenFit.Height:
                 rectTransform.sizeDelta =
                     new Vector2(screenHeight / sprite.bounds.size.y * sprite.bounds.size.x,
-                        screenHeight);
+                        screenHeight) / canvasScale;
                 break;
             // 오토
             case ScreenFit.Auto:
@@ -195,11 +211,11 @@ public class UIManager : MonoBehaviour
                 }
                 else
                 {
-                    rectTransform.sizeDelta = (Screen.height > Screen.width)
+                    rectTransform.sizeDelta = ((Screen.height > Screen.width)
                         ? new Vector2(screenHeight / sprite.bounds.size.y * sprite.bounds.size.x,
                             screenHeight)
                         : new Vector2(screenWidth,
-                            screenWidth / sprite.bounds.size.x * sprite.bounds.size.y);
+                            screenWidth / sprite.bounds.size.x * sprite.bounds.size.y));
                 }
 
                 break;
@@ -227,7 +243,7 @@ public class UIManager : MonoBehaviour
         }
 
 
-        Image image = InstantiateImage(jumpScare.ScareSpriteEntity[0].sprite, canvas.transform);
+        Image image = InstantiateImage(jumpScare.ScareSpriteEntity[0].sprite, imageCanvas.transform);
         for (int i = 0; i < jumpScare.ScareSpriteEntity.Length; i++)
         {
             image.sprite = jumpScare.ScareSpriteEntity[i].sprite;
@@ -276,7 +292,7 @@ public class UIManager : MonoBehaviour
             /*GameObject obj = new GameObject();
             obj.AddComponent<Image>().sprite = imagePrefab.sprite*/
             ;
-            _image = Instantiate(imagePrefab, Vector3.zero, quaternion.identity, canvas.transform);
+            _image = Instantiate(imagePrefab, Vector3.zero, quaternion.identity, imageCanvas.transform);
             _image.transform.localPosition = Vector3.zero;
             images.Add(_image);
 

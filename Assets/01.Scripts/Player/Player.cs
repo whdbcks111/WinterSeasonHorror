@@ -292,7 +292,11 @@ public class Player : MonoBehaviour
         // 방향전환중이면 _isLeftDir의 반대로 미리 이동
         CameraController.Instance.SetOffset(_camOffset * new Vector2(_isLeftDir == _isShifting ? 1 : -1, 1), _moveShiftTime);
         if (_isShifting) return;
-        if (_hideCannotMoveTimer > 0) return;
+        if (_hideCannotMoveTimer > 0)
+        {
+            _rigid.velocity = new(0, _rigid.velocity.y);
+            return;
+        }
 
         var xAxis = Input.GetAxisRaw("Horizontal");
         if (!IsControllable || 
