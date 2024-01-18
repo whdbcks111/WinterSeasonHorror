@@ -13,6 +13,8 @@ public class GazingEye : MonoBehaviour
     private float _scaleValue;
 
     // Start is called before the first frame update
+
+    
     void Start()
     {
         _eyeSphere = gameObject;
