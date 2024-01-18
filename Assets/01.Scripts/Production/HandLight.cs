@@ -13,14 +13,14 @@ public class HandLight : MonoBehaviour
     private List<GameObject> objList = new List<GameObject>();
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Y))
+        /*if (Input.GetKeyDown(KeyCode.Y))
         {
             foreach (var o in objList)
             {
                 o.SetActive(true);
                 //objList.Remove(o);
             }
-        }
+        }*/
 
         _light.intensity = Random.Range(_minIntensity, _maxIntensity);
     }
@@ -28,8 +28,9 @@ public class HandLight : MonoBehaviour
     private void OnTriggerEnter2D(Collider2D other)
     {
         
+        /*
         if(other.transform.gameObject.layer == LayerMask.NameToLayer("Wall") ) return;
         objList.Add(other.transform.gameObject);
-        other.transform.gameObject.SetActive(false);
+        other.transform.gameObject.SetActive(false);*/
     }
 }

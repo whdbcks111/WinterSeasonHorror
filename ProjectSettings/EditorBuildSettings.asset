@@ -8,7 +8,4 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/01.Scripts/Server/ServerTest.unity
     guid: 571a4c7b498f6a6428cc61e60af22e08
-  - enabled: 1
-    path: Assets/00.Scenes/PreviewScene.unity
-    guid: 305e04e4ee3fded4f84e01317cf9ed7a
   m_configObjects: {}

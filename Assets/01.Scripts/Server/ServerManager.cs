@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Security.Cryptography;
 using BestHTTP.JSON;
 using BestHTTP.SocketIO;
 using TMPro;
@@ -11,7 +12,7 @@ using SocketOptions = BestHTTP.SocketIO3.SocketOptions;
 
 public class ServerManager : MonoBehaviour
 {
-
+    public Dictionary<string, Sprite> spriteDictionary = new Dictionary<string, Sprite>();
     public List<OtherPlayer> otherPlayers = new List<OtherPlayer>();
     public GameObject userPrefab;
     public static ServerManager Instance { get; private set; }
@@ -34,6 +35,7 @@ public class ServerManager : MonoBehaviour
         {
             Destroy(gameObject);
         }
+        Application.runInBackground = true;
     }
 
 
@@ -74,8 +76,10 @@ public class ServerManager : MonoBehaviour
     }
     private void OnPlayerMove(string data)
     {
-        Debug.Log(data);
+        //Debug.Log(data);
         PlayerData playerData = JsonUtility.FromJson<PlayerData>(data);
+        //Debug.Log(playerData.playerID);
+        //Debug.Log(playerData.stamina);
         //Debug.Log(JsonUtility.);
         //Debug.Log("playerMove");
         //Debug.Log(data.ToString());
@@ -92,6 +96,7 @@ public class ServerManager : MonoBehaviour
 
     private void OnConnection(string playerID)
     {
+        
         Player.Instance.userId = playerID;
         currentPlayerId = playerID;
         Debug.Log("Player ID 부여: " + playerID);
@@ -99,12 +104,14 @@ public class ServerManager : MonoBehaviour
     
     public void OnUserJoined(string userID)
     {
-        Debug.Log("user 입장!: " + userID);
-        if (userID == Player.Instance.userId) return;
-        otherPlayers.Add(CreateOtherPlayer(userID).GetComponent<OtherPlayer>());
-        
-        //var obj = CreateOtherPlayer(userID);
-       
+        Debug.Log("User joined: " + userID);
+        if (userID == currentPlayerId) return;
+
+        var existingPlayer = FindOtherPlayerInList(userID);
+        if (existingPlayer == null)
+        {
+            otherPlayers.Add(CreateOtherPlayer(userID).GetComponent<OtherPlayer>());
+        }
     }
     public void CreateRoom(string roomID)
     {
@@ -145,7 +152,19 @@ public class ServerManager : MonoBehaviour
 
         return null;
     }
-    
+
+    private void Start()
+    {
+        LoadSprites();
+    }
+    void LoadSprites()
+    {
+        Sprite[] sprites = Resources.LoadAll<Sprite>("Player");
+        foreach (Sprite sprite in sprites)
+        {
+            spriteDictionary[sprite.name] = sprite;
+        }
+    }
 
     public void CreateOtherPlayer(string[] userIds)
     {
@@ -166,20 +185,27 @@ public class ServerManager : MonoBehaviour
             if (!otherPlayer)
             {
                 var obj = Instantiate(userPrefab);
+                obj.GetComponent<OtherPlayer>().userId = id;
                 obj.transform.position = Player.Instance.transform.position;
+                
                 return obj;
             }
 
             return otherPlayer;
     }
 
-    private void OnJoinedRoom(RoomInfo roomID)
+    private void OnJoinedRoom(RoomInfo roomInfo)
     {
-        
-        Debug.Log("방 접속 완료!" + roomID);
-       // string roomID = args[0] as string;
-       // Debug.Log("Joined Room: " + roomID);
-        // 방 참여 로직
+        Debug.Log("Joined room: " + roomInfo.roomID);
+        curRoomInfo = roomInfo;
+
+        foreach (var userID in roomInfo.playersID)
+        {
+            if (userID != currentPlayerId && FindOtherPlayerInList(userID) == null)
+            {
+                otherPlayers.Add(CreateOtherPlayer(userID).GetComponent<OtherPlayer>());
+            }
+        }
     }
 
     private void OnDestroy()
@@ -196,15 +222,18 @@ public class ServerManager : MonoBehaviour
         Vector3 pos = Player.Instance.transform.position;
         if (Vector3.Distance(pos, tempPos) > 0.1f)
         {
+            tempPos = Player.Instance.transform.position;
             PlayerData data = new PlayerData(Player.Instance);
             socketManager.Socket.Emit("playerMove", JsonUtility.ToJson(data));
         }
         else
         {
-            return;
+            /*PlayerData data = new PlayerData(Player.Instance);
+            socketManager.Socket.Emit("playerMove", JsonUtility.ToJson(data));*/
         }
+        
 
-        tempPos = Player.Instance.transform.position;
+        
     }
 }
 

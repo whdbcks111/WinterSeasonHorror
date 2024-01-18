@@ -274,6 +274,7 @@ public class Player : MonoBehaviour
             _animator.SetBool("IsWalkShifting", false);
             _spriteRenderer.flipX = _isLeftDir;
         }
+        
     }
 
     private void MoveUpdate()

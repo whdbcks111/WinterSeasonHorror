@@ -10,6 +10,7 @@ public class PlayerData
     public float light ;
     public float[] position;
     public float stamina;
+    public string spriteName;
 
 
 
@@ -32,7 +33,8 @@ public class PlayerData
         position[0] = playerPos.x;
         position[1] = playerPos.y;
         position[2] = playerPos.z;
-        
+        spriteName = player._spriteRenderer.sprite.name;
+
     }
 }
 
