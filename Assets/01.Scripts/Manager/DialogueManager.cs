@@ -164,9 +164,8 @@ public class DialougManager : MonoBehaviour
         chatCount = 0;
         chatScript = null;
         textBox.enabled = false;
-        textBox = null;
+        //textBox = null;
         isTalking = false;
-
         Player.Instance.IsControllable = true;
     }
     public void SetTarget(SpeakerType speaker)
