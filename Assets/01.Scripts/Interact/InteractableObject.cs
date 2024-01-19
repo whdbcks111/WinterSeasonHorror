@@ -8,8 +8,11 @@ public abstract class InteractableObject : MonoBehaviour
 {
     [SerializeField]
     protected bool isInteractable = false; // 상호작용 가능 여부
-    [SerializeField] private bool isReusable = false;
-    
+    private bool isReusable = false;
+
+    public bool isReuse = false;
+    public bool canUse = true;
+
 
     [SerializeField] public Sprite originSprite;
     
@@ -76,6 +79,7 @@ public abstract class InteractableObject : MonoBehaviour
     {
         if (isInteractable)
         {
+            if (isReuse) canUse = false;
             isOn = !isOn;   
             OnInteract();
             PlayInteractionSound();
@@ -89,6 +93,7 @@ public abstract class InteractableObject : MonoBehaviour
     protected virtual void PlayerTrigger(bool isOn)
     {
         
+        if(canUse)
         isInteractable = isOn;
         SetBangMark(isOn);
     }
@@ -103,6 +108,7 @@ public abstract class InteractableObject : MonoBehaviour
 
         if (other.TryGetComponent(out Player p))
         {
+            if(canUse)
             PlayerTrigger(true);
         }
     }
