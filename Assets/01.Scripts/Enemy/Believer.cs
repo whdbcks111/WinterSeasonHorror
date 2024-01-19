@@ -92,8 +92,6 @@ public class Believer : MonoBehaviour
         _jumpable = true;
         _isOnGround = true;
         _light2d = GetComponentInChildren<Light2D>();
-
-        _player = Player.Instance;
         _fsm.CurrentState = _idleState;
 
         _idleState = new(   
@@ -106,11 +104,7 @@ public class Believer : MonoBehaviour
         },
         onUpdate: () =>
         {
-            if(_isInSight && !_player.IsHidden && _fsm.CurrentState != _chaseState && _idleToRoamCo != null)
-            {
-                _fsm.CurrentState = _chaseState;
-                StopCoroutine(_idleToRoamCo);
-            }
+            SearchingPlayer();
         },
         onExit: () =>{ 
             if(_idleToRoamCo != null) StopCoroutine(_idleToRoamCo);
@@ -121,11 +115,6 @@ public class Believer : MonoBehaviour
         onUpdate: () =>
         {
             MoveToDestination(InitPosition, _idleMoveSpeed);
-            if(Mathf.Abs(InitPosition.x - transform.position.x) < 0.1f)
-            {
-                _fsm.CurrentState = _idleState;
-            }
-
 
             if (_objScreenPoint.x < 0 || _objScreenPoint.x > Screen.width)
             {
@@ -143,14 +132,8 @@ public class Believer : MonoBehaviour
                 }
                 else MoveToDestination(new Vector2(Mathf.Abs(InitPosition.x + 1000), transform.position.y), _idleMoveSpeed);
             }
-
-
-
-
-            if (_isInSight && !_player.IsHidden && _fsm.CurrentState != _chaseState)
-            {
-                _fsm.CurrentState = _chaseState;
-            }
+            ArriveCheck();
+            SearchingPlayer();
         },
         onExit: () =>{});
         
@@ -167,27 +150,10 @@ public class Believer : MonoBehaviour
         onUpdate: () =>
         {
             MoveToDestination(_destination, _idleMoveSpeed);
-            if(Mathf.Abs(_destination.x - transform.position.x) < 0.1f)
-            {
-                _fsm.CurrentState = _idleState;
-            }
 
-            RaycastHit2D WallHit = Physics2D.BoxCast(_wallSensor.position, _wallSensorSize, 0f, Vector2.zero, 0f, LayerMask.GetMask("Pushable", "Wall"));
-            if (WallHit.collider != null)
-            {
-                //앞에 벽이 있음. 
-                _jumpable = false;
-            }
-            if(WallHit.collider == null)
-            {
-                _jumpable = true;
-            }
-
-
-            if (_isInSight && !_player.IsHidden && _fsm.CurrentState != _chaseState)
-            {
-                _fsm.CurrentState = _chaseState;
-            }
+            ArriveCheck();
+            JumpCheck();
+            SearchingPlayer();
         },
         onExit: () => {
             
@@ -201,13 +167,13 @@ public class Believer : MonoBehaviour
         },
         onUpdate: () =>
         {
-            if (_player.IsHidden)
+            if (Player.Instance.IsHidden)
             {
-                if(Mathf.Abs(_player.transform.position.x -transform.position.x) <= _threatMaxDistance)
+                if(Mathf.Abs(Player.Instance.transform.position.x -transform.position.x) <= _threatMaxDistance)
                 {
                     _fsm.CurrentState = _threteningHide;
                 }
-                if(Mathf.Abs(_player.transform.position.x - transform.position.x) > _threatMaxDistance)
+                if(Mathf.Abs(Player.Instance.transform.position.x - transform.position.x) > _threatMaxDistance)
                 {
                     _fsm.CurrentState = _chaseFailState;
                 }
@@ -220,9 +186,9 @@ public class Believer : MonoBehaviour
             }
             else
             {
-                MoveToDestination(_player.transform.position, _chaseMoveSpeed);
+                MoveToDestination(Player.Instance.transform.position, _chaseMoveSpeed);
 
-                if((_player.transform.position.x - transform.position.x) > 0)
+                if((Player.Instance.transform.position.x - transform.position.x) > 0)
                 {
                     transform.rotation = Quaternion.Euler(0, 0, 0);
                 }
@@ -246,15 +212,7 @@ public class Believer : MonoBehaviour
                 _roamco = StartCoroutine(RoamNear());
             },
             onUpdate: () => {
-            if (!_player.IsHidden && _isInSight && _fsm.CurrentState != _chaseState)   
-                {
-                    _fsm.CurrentState = _chaseState;
-                    if(_roamco != null)
-                    {
-                        StopCoroutine(_roamco);
-                    }
-                }
-            
+                SearchingPlayer();
             },
             onExit: () => {
                 if(_roamco != null) StopCoroutine(_roamco);
@@ -265,7 +223,7 @@ public class Believer : MonoBehaviour
             _hLCo = StartCoroutine(HeadButtLight());
         },
             onUpdate: () => {
-                if(!_player.IsHidden && _isInSight &&  _fsm.CurrentState != _chaseState)
+                if(!Player.Instance.IsHidden && _isInSight &&  _fsm.CurrentState != _chaseState)
                 {
                     if(_threatco != null)
                     {
@@ -277,7 +235,7 @@ public class Believer : MonoBehaviour
                     }
                 }
 
-                if ((_player.transform.position.x - transform.position.x) > 0)
+                if ((Player.Instance.transform.position.x - transform.position.x) > 0)
                 {
                     transform.rotation = Quaternion.Euler(0, 0, 0);
                 }
@@ -439,17 +397,11 @@ public class Believer : MonoBehaviour
         yield return new WaitForSeconds(2);
         _fsm.CurrentState = _roamState;
     }
-    private IEnumerator roamToIoam()    
-    {
-        yield return new WaitForSeconds(2);
-        _fsm.CurrentState = _idleState;
-    }
-
     private IEnumerator Threatening()
     {
-        while(Mathf.Abs(transform.position.x - _player.transform.position.x) >= 1.2f)
+        while(Mathf.Abs(transform.position.x - Player.Instance.transform.position.x) >= 1.2f)
         {
-            MoveToDestination(_player.transform.position, 2);
+            MoveToDestination(Player.Instance.transform.position, 2);
             yield return null;
         }
 
@@ -549,9 +501,29 @@ public class Believer : MonoBehaviour
 
     private void SearchingPlayer()
     {
-        if (_isInSight && !_player.IsHidden && _fsm.CurrentState != _chaseState)
+        if (_isInSight && !Player.Instance.IsHidden && _fsm.CurrentState != _chaseState)
         {
             _fsm.CurrentState = _chaseState;
+        }
+    }
+    private void JumpCheck()
+    {
+        RaycastHit2D WallHit = Physics2D.BoxCast(_wallSensor.position, _wallSensorSize, 0f, Vector2.zero, 0f, LayerMask.GetMask("Pushable", "Wall"));
+        if (WallHit.collider != null)
+        {
+            //앞에 벽이 있음. 
+            _jumpable = false;
+        }
+        if (WallHit.collider == null)
+        {
+            _jumpable = true;
+        }
+    }
+    private void ArriveCheck()
+    {
+        if (Mathf.Abs(_destination.x - transform.position.x) < 0.1f)
+        {
+            _fsm.CurrentState = _idleState;
         }
     }
     
@@ -570,6 +542,7 @@ public class Believer : MonoBehaviour
             yield return null;
         }
     }
+    
     private IEnumerator FindLight()
     {
         while (_light2d.intensity <= _findLightIntensity)
@@ -579,7 +552,6 @@ public class Believer : MonoBehaviour
         }
         _cLCo = StartCoroutine(chaseLight());
     }
-
     private IEnumerator chaseLight()
     {
         while (_light2d.intensity <= _chaseLightIntensity)
@@ -605,11 +577,11 @@ public class Believer : MonoBehaviour
     }
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if(collision.gameObject == _player.gameObject)
+        if(collision.gameObject == Player.Instance.gameObject)
         {
             _isInSight = true;
         }
-        if (collision.gameObject == _player.gameObject && !_player.IsHidden && _fsm.CurrentState != _chaseState && _chasable && !_isChasing)
+        if (collision.gameObject == Player.Instance.gameObject && !Player.Instance.IsHidden && _fsm.CurrentState != _chaseState && _chasable && !_isChasing)
         {
             _isChasing = true;
             _fsm.CurrentState = _chaseState;
@@ -623,10 +595,9 @@ public class Believer : MonoBehaviour
     }
     private void OnTriggerExit2D(Collider2D collision)
     {
-        if(_player != null && collision.gameObject == _player.gameObject)
+        if(collision.gameObject == Player.Instance.gameObject)
         {
             _isInSight = false;
-            
         }
     }
 
