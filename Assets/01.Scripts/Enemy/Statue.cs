@@ -40,7 +40,6 @@ public class Statue : MonoBehaviour
 
     private float _vel;
 
-    BoxCollider2D _boxCollider;
     private bool _playerIsInRange;
     private bool _canChangeLight;
     private Vector3 _velocity = Vector3.zero;
@@ -52,7 +51,6 @@ public class Statue : MonoBehaviour
         _canChangeLight = true;
         _selectedStatue = SelectPreset();
         _statuePreview.SetActive(false);
-        _boxCollider = GetComponent<BoxCollider2D>();
         _light = GetComponent<Light2D>();
     }
     void Update()
@@ -69,7 +67,6 @@ public class Statue : MonoBehaviour
                 ActivateEye();
                 if((_currentSecond >= _maxSecond || Player.Instance.LightEnerge <= 0))
                 {
-                    
                     if(_canOrder)
                     {
                         AttackOrder();
@@ -90,7 +87,6 @@ public class Statue : MonoBehaviour
     {
         Gizmos.color = Color.magenta;
         Gizmos.DrawWireCube(_alarmBoxPosition.position, _alarmBoxSize);
-        //Gizmos.DrawWireCube(_searchBoxPosition.position, _boxCollider.size);
     }
     private void AttackOrder()
     {
@@ -144,21 +140,6 @@ public class Statue : MonoBehaviour
         SelectedPreset.transform.parent = gameObject.transform;
         _selectedEyePreset.transform.parent = gameObject.transform;
 
-
-        /*
-        switch (Selecter) {
-            case 0:
-                break;
-            case 1:
-                break;
-            case 2:
-                break;
-            case 3:
-                break;
-            default:
-                break;
-        }
-        *///½ºÀ§Ä¡
         return SelectedPreset;
     }
 
