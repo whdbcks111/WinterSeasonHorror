@@ -305,6 +305,7 @@ MonoBehaviour:
   _roamRange: 4
   _minRoamDistance: 2
   _maxRoamDistance: 5
+  _footstepTime: 2
   _jumpSensor: {fileID: 8504655979831284118}
   _groundSensor: {fileID: 4903325365488736006}
   _wallSensor: {fileID: 2938215720653796100}
@@ -318,9 +319,16 @@ MonoBehaviour:
   JumpScare: {fileID: 8300000, guid: f95a6913f0ef1b147a668337f4cc232e, type: 3}
   _screamingSound: {fileID: 8300000, guid: 4c2bac383bd49104c97c6df0009ff15f, type: 3}
   _headbuttSound: {fileID: 8300000, guid: 508899088d97c4e4ca5cfce218cf77a8, type: 3}
+  _footsteopSound: {fileID: 8300000, guid: 49a834408e7919d498f497bea9a3588d, type: 3}
   CryVolume: 0.5
   ScreamVolume: 0.7
   InitPosition: {x: 0, y: 0}
+  _idlebool: 0
+  _roambool: 0
+  _chasebool: 0
+  _chasefailool: 0
+  _returnbool: 0
+  _threteningbool: 0
   _findLightIntensity: 20
   _chaseLightIntensity: 5
   _findSmoothTime: 0.7
