@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq.Expressions;
-
+using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Rendering.Universal;
@@ -30,6 +30,9 @@ public class Believer : MonoBehaviour
     [SerializeField] private float _minRoamDistance;
     [SerializeField] private float _maxRoamDistance;
 
+    [SerializeField] private float _footstepTime;
+    private float _curtTime;
+
     [SerializeField] private Transform _jumpSensor;
     [SerializeField] private Transform _groundSensor;
     [SerializeField] private Transform _wallSensor;
@@ -41,6 +44,7 @@ public class Believer : MonoBehaviour
     [SerializeField] private AudioClip JumpScare;
     [SerializeField] private AudioClip _screamingSound;
     [SerializeField] private AudioClip _headbuttSound;
+    [SerializeField] private AudioClip _footsteopSound;
     [SerializeField][Range(0f, 1f)] private float CryVolume;
     [SerializeField][Range(0f, 1f)] private float ScreamVolume;
     public Vector2 InitPosition;
@@ -76,8 +80,14 @@ public class Believer : MonoBehaviour
     private Player _player;
 
     public FSM _fsm = new();
-    public BaseState _idleState, _roamState, _chaseState,_chaseFailState,_returnState ,_threteningHide,_getOrdered;
+    public BaseState _idleState, _roamState, _chaseState,_chaseFailState,_returnState ,_threteningHide;
 
+    [SerializeField] private bool _idlebool;
+    [SerializeField] private bool _roambool;
+    [SerializeField] private bool _chasebool;
+    [SerializeField] private bool _chasefailool;
+    [SerializeField] private bool _returnbool;
+    [SerializeField] private bool _threteningbool;
 
     Light2D _light2d;
     [SerializeField] private float _findLightIntensity;
@@ -97,21 +107,33 @@ public class Believer : MonoBehaviour
         _idleState = new(   
         onEnter: () =>
         {
+            _idlebool = true;
 
             _anim.SetBool("IsWalking", false);
             _anim.SetBool("IsRunning", false);
+            _anim.SetBool("IsScreaming", false);
+            _anim.SetBool("IsHeadButt", false);
+
+
             _idleToRoamCo = StartCoroutine(IdleToRoam());
         },
         onUpdate: () =>
         {
+            _jumpable = false;
             SearchingPlayer();
         },
-        onExit: () =>{ 
-            if(_idleToRoamCo != null) StopCoroutine(_idleToRoamCo);
+        onExit: () =>{
+            _idlebool = false; /////////////////////////////
+
+
+            if (_idleToRoamCo != null) StopCoroutine(_idleToRoamCo);
+            _jumpable = true;
         });
         
         _returnState = new(
-        onEnter: () =>{},
+        onEnter: () =>{
+            _returnbool = true;
+        },
         onUpdate: () =>
         {
             MoveToDestination(InitPosition, _idleMoveSpeed);
@@ -132,14 +154,19 @@ public class Believer : MonoBehaviour
                 }
                 else MoveToDestination(new Vector2(Mathf.Abs(InitPosition.x + 1000), transform.position.y), _idleMoveSpeed);
             }
+
             ArriveCheck();
             SearchingPlayer();
         },
-        onExit: () =>{});
+        onExit: () =>{
+            _returnbool = false;
+        });
         
         _roamState = new(
         onEnter: () =>
         {
+            _roambool = true;
+
             float Distance = Random.Range(-_roamRange, _roamRange + 0.1f);
             if (Mathf.Abs(Distance) <= _minRoamDistance && Distance >= 0) Distance = _minRoamDistance;
             if (Mathf.Abs(Distance) <= _minRoamDistance && Distance < 0) Distance = -_minRoamDistance;
@@ -156,12 +183,13 @@ public class Believer : MonoBehaviour
             SearchingPlayer();
         },
         onExit: () => {
-            
+            _roambool = false;
         });
 
         _chaseState = new(
         onEnter: () =>
         {
+            _chasebool = true;
             _fLCo = StartCoroutine(FindLight());
             _encountco = StartCoroutine(EncountWithPlayer());
         },
@@ -204,21 +232,29 @@ public class Believer : MonoBehaviour
 
             _light2d.intensity = 0;
 
+            _chasebool = false;
         });
 
-        _chaseFailState = new(                                
-            onEnter: () => {
+        _chaseFailState = new(
+            onEnter: () =>
+            {
+                _chasefailool = true;
+
                 _chaseFailPosition = transform.position;
                 _roamco = StartCoroutine(RoamNear());
             },
-            onUpdate: () => {
+            onUpdate: () =>
+            {
                 SearchingPlayer();
             },
-            onExit: () => {
-                if(_roamco != null) StopCoroutine(_roamco);
+            onExit: () =>
+            {
+                _chasefailool = false;
+                if (_roamco != null) StopCoroutine(_roamco);
             });
         
         _threteningHide = new(onEnter: () => {
+            _threteningbool = true;
             _threatco = StartCoroutine(Threatening());
             _hLCo = StartCoroutine(HeadButtLight());
         },
@@ -242,6 +278,7 @@ public class Believer : MonoBehaviour
                 else transform.rotation = Quaternion.Euler(0, 180, 0);
             },
             onExit: () => {
+                _threteningbool = false;
                 _jumpable = true;
                 _rigid2d.constraints = RigidbodyConstraints2D.None;
                 _rigid2d.constraints = RigidbodyConstraints2D.FreezeRotation;
@@ -266,10 +303,6 @@ public class Believer : MonoBehaviour
     {
         _objScreenPoint = _camera.WorldToScreenPoint(transform.position);
         HandleState();
-        if(Input.GetKeyDown(KeyCode.Q)) {
-            _light2d.intensity += 10;
-        }
-        
         if(Player.Instance.IsHidden)
         {
             Physics2D.IgnoreLayerCollision(LayerMask.NameToLayer("Enemy"), LayerMask.NameToLayer("Player"));
@@ -288,11 +321,6 @@ public class Believer : MonoBehaviour
             _isOnGround = true;
             _anim.SetBool("IsJumping", false);
         }
-
-
-
-
-
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
@@ -432,8 +460,17 @@ public class Believer : MonoBehaviour
         _fsm.CurrentState = _chaseFailState;
     }
     private void MoveToDestination(Vector3 Destination , float MoveSpeed)
-    {
-        if(MoveSpeed <3)
+    {   
+        if (_footstepTime <= _curtTime)
+        {
+            SoundManager.Instance.PlaySFX(_footsteopSound, transform.position, 1, 1);
+            _curtTime = 0;
+        }
+        _curtTime += MoveSpeed * Time.deltaTime;
+
+
+
+            if (MoveSpeed <3)
         {
             _anim.SetBool("IsWalking", true);
             _anim.SetBool("IsRunning", false);
@@ -466,37 +503,13 @@ public class Believer : MonoBehaviour
             _anim.SetBool("IsRunning", false);
         }
 
+        
+
         _rigid2d.velocity = new Vector3(_savedDir * MoveSpeed, _rigid2d.velocity.y);
     }
     private void HandleState()
     {
         _fsm.Update();
-
-        if (Input.GetKeyDown("1"))
-        {
-            Debug.Log("idle");
-            _fsm.CurrentState = _idleState;
-        }
-        if (Input.GetKeyDown("2"))
-        {
-            Debug.Log("roam");
-            _fsm.CurrentState = _roamState;
-        }
-        if (Input.GetKeyDown("3"))
-        {
-            Debug.Log("chase");
-            _fsm.CurrentState = _chaseState;
-        }
-        if (Input.GetKeyDown("4"))
-        {
-            Debug.Log("return");
-            _fsm.CurrentState = _returnState;
-        }
-        if (Input.GetKeyDown("5"))
-        {
-            Debug.Log("chasefail");
-            _fsm.CurrentState = _chaseFailState;
-        }
     }
 
     private void SearchingPlayer()
@@ -506,7 +519,7 @@ public class Believer : MonoBehaviour
             _fsm.CurrentState = _chaseState;
         }
     }
-    private void JumpCheck()
+    private void JumpCheck() //벽 체크
     {
         RaycastHit2D WallHit = Physics2D.BoxCast(_wallSensor.position, _wallSensorSize, 0f, Vector2.zero, 0f, LayerMask.GetMask("Pushable", "Wall"));
         if (WallHit.collider != null)
@@ -526,7 +539,6 @@ public class Believer : MonoBehaviour
             _fsm.CurrentState = _idleState;
         }
     }
-    
     private IEnumerator StuckCheck()
     {
         while (true)
@@ -534,7 +546,7 @@ public class Believer : MonoBehaviour
             if(_fsm.CurrentState == _roamState || _fsm.CurrentState == _chaseFailState || _fsm.CurrentState == _idleState)
             {
                 float PrevLocation = transform.position.x;
-                yield return new WaitForSeconds(1.5f);
+                yield return new WaitForSeconds(5f);
                 float CurrentLocation = transform.position.x;
 
                 if (Mathf.Abs(PrevLocation - CurrentLocation) <= 0.5f) _destination = transform.position;
@@ -542,7 +554,6 @@ public class Believer : MonoBehaviour
             yield return null;
         }
     }
-    
     private IEnumerator FindLight()
     {
         while (_light2d.intensity <= _findLightIntensity)
