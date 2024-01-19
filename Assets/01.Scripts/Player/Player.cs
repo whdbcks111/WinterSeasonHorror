@@ -1,3 +1,4 @@
+using Cysharp.Threading.Tasks;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -158,6 +159,18 @@ public class Player : MonoBehaviour
             _breatheMaxVolume, _breatheMaxSpeed, transform, _breatheGroup);
         _heartbeatController = SoundManager.Instance.PlayLoopSFX(_heartbeatClip, transform.position,
             _heartbeatMaxVolume, _breatheMaxSpeed, transform, _breatheGroup);
+        
+        StandUp().Forget();
+    }
+
+    private async UniTask StandUp()
+    {
+        _animator.SetBool("IsStandingUp", true);
+        IsMoveable = false;
+        await UniTask.Yield();
+        await UniTask.WaitUntil(() => _animator.GetCurrentAnimatorStateInfo(0).normalizedTime >= 1f);
+        _animator.SetBool("IsStandingUp", false);
+        IsMoveable = true;
     }
 
     private void Update()
