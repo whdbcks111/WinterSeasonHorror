@@ -6,13 +6,13 @@ using UnityEngine.SceneManagement;
 
 public class GameOverSceneManager : MonoBehaviour
 {
-    public int GameSceneIdx = 0;
+    public string GameSceneName;
 
     private bool _isLoading = false;
 
     private void Update()
     {
-        if(Input.anyKey)
+        if(Input.anyKeyDown && !Input.GetMouseButton(0))
         {
             LoadGame().Forget();
         }
@@ -23,7 +23,7 @@ public class GameOverSceneManager : MonoBehaviour
         if (_isLoading) return;
         _isLoading = true;
 
-        await SceneManager.LoadSceneAsync(GameSceneIdx);
+        await SceneManager.LoadSceneAsync(GameSceneName);
         await UniTask.WaitUntil(() => SaveManager.Instance != null);
         await UniTask.Yield();
         SaveManager.Instance.LoadGameData();
