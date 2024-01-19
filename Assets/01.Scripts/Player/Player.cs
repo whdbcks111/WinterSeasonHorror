@@ -167,10 +167,14 @@ public class Player : MonoBehaviour
     {
         _animator.SetBool("IsStandingUp", true);
         IsMoveable = false;
+        _handLight.gameObject.SetActive(false);
+
         await UniTask.Yield();
         await UniTask.WaitUntil(() => _animator.GetCurrentAnimatorStateInfo(0).normalizedTime >= 1f);
+
         _animator.SetBool("IsStandingUp", false);
         IsMoveable = true;
+        _handLight.gameObject.SetActive(true);
     }
 
     private void Update()
