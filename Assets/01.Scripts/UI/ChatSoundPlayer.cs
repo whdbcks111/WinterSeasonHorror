@@ -5,15 +5,16 @@ using UnityEngine;
 
 public class ChatSoundPlayer : MonoBehaviour
 {
-    public AudioSource Source;
-    public float MaxVolume, Pitch, PlayTime = 0.1f;
+    public AudioClip Clip;
+    public float Volume = 1f, Pitch = 1f, PlayTime = 0.1f, Delay = 0.2f;
 
-    private float _timer = 0f;
+    private float _timer = 0f, _delayTimer = 0f;
     
 
-    public void OnChat()
+    public void OnChat(char ch)
     {
-        _timer = PlayTime;
+        if(ch != '.' && ch != ' ')
+            _timer = PlayTime;
     }
 
     private void Update()
@@ -21,8 +22,20 @@ public class ChatSoundPlayer : MonoBehaviour
         if (_timer > 0f)
         {
             _timer -= Time.deltaTime;
-        }
 
-        Source.volume = _timer > 0f ? MaxVolume : 0f;
+            if(_delayTimer > 0f) 
+            { 
+                _delayTimer -= Time.deltaTime;
+            }
+            else
+            {
+                _delayTimer += Delay;
+                SoundManager.Instance.PlaySFX(Clip, Player.Instance.transform.position, Volume, Pitch);
+            }
+        }
+        else
+        {
+            _delayTimer = 0f;
+        }
     }
 }
