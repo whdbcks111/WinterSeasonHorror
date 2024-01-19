@@ -35,8 +35,8 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 8504655979831284118}
   - {fileID: 4903325365488736006}
+  - {fileID: 8504655979831284118}
   - {fileID: 2938215720653796100}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -210,6 +210,10 @@ MonoBehaviour:
   CryVolume: 0.5
   ScreamVolume: 0.7
   InitPosition: {x: 0, y: 0}
+  _findLightIntensity: 0
+  _chaseLightIntensity: 0
+  _findSmoothTime: 0
+  _chaseSmoothTime: 0
 --- !u!95 &8127622864234346677
 Animator:
   serializedVersion: 5
@@ -363,7 +367,7 @@ Transform:
   m_GameObject: {fileID: 9174639033601787108}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.935, y: 1.52, z: 0}
+  m_LocalPosition: {x: 0.935, y: 1.883, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
