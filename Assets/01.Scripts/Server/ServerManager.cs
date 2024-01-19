@@ -8,6 +8,7 @@ using UnityEngine;
 using UnityEngine.UIElements;
 using Socket = BestHTTP.SocketIO3.Socket;
 using SocketManager = BestHTTP.SocketIO3.SocketManager;
+
 using SocketOptions = BestHTTP.SocketIO3.SocketOptions;
 
 public class ServerManager : MonoBehaviour
@@ -51,16 +52,18 @@ public class ServerManager : MonoBehaviour
         // 서버 연결
         socketManager.Open();
 
-        // 이벤트 리스너 설정
-        //socketManager.Socket.On<Socket><BestHTTP.SocketIO.Packet>("RoomCreated",OnRoomCreated);
-        socketManager.Socket.On<string>("Connection", OnConnection);
-        
-        socketManager.Socket.On<string>("RoomCreated", OnRoomCreated);
-        socketManager.Socket.On<RoomInfo>("joinedRoom", OnJoinedRoom);
-        socketManager.Socket.On<string>("userJoined", OnUserJoined);
 
+        socketManager.Socket.On<string>("Connection", OnConnection);
+        socketManager.Socket.On<string>("playerTrigger", OnPlayerTrigger);
         socketManager.Socket.On<string>("playerMove", OnPlayerMove);
-        // 여기에 더 많은 이벤트 리스너를 추가할 수 있습니다.
+    }
+
+
+    
+
+    private void OnPlayerTrigger(string obj)
+    {
+        throw new NotImplementedException();
     }
 
     private OtherPlayer FindOtherPlayerInList(string id)
@@ -78,13 +81,7 @@ public class ServerManager : MonoBehaviour
     {
         //Debug.Log(data);
         PlayerData playerData = JsonUtility.FromJson<PlayerData>(data);
-        //Debug.Log(playerData.playerID);
-        //Debug.Log(playerData.stamina);
-        //Debug.Log(JsonUtility.);
-        //Debug.Log("playerMove");
-        //Debug.Log(data.ToString());
-        
-        //Debug.Log(JsonUtility.FromJson(data));
+      
         if (otherPlayers.Count > 0)
         {
             var obj = FindOtherPlayerInList(playerData.playerID);
@@ -93,6 +90,7 @@ public class ServerManager : MonoBehaviour
         }
 
     }
+    
 
     private void OnConnection(string playerID)
     {
@@ -102,39 +100,10 @@ public class ServerManager : MonoBehaviour
         Debug.Log("Player ID 부여: " + playerID);
     }
     
-    public void OnUserJoined(string userID)
-    {
-        Debug.Log("User joined: " + userID);
-        if (userID == currentPlayerId) return;
 
-        var existingPlayer = FindOtherPlayerInList(userID);
-        if (existingPlayer == null)
-        {
-            otherPlayers.Add(CreateOtherPlayer(userID).GetComponent<OtherPlayer>());
-        }
-    }
-    public void CreateRoom(string roomID)
-    {
 
-        var roomData = new RoomInfo(roomID, null);
-        socketManager.Socket.Emit("createRoom",JsonUtility.ToJson(roomData));
-        curRoomInfo = roomData;
-    }
 
-    public void JoinRoom(string roomID)
-    {
-        socketManager.Socket.Emit("joinRoom", roomID);
-    }
 
-    private void OnRoomCreated(string roomID)
-    {
-        //socketManager.Socket.Emit("joinRoom", roomID);
-        Debug.Log("방 생성 완료!" + roomID);
-        
-        //string roomID = args[0] as string;
-        //Debug.Log("Room Created: " + roomID);
-        // 방 생성 로직
-    }
 
     public GameObject FindPlayerById(string playerID)
     {
@@ -193,20 +162,9 @@ public class ServerManager : MonoBehaviour
 
             return otherPlayer;
     }
+    
 
-    private void OnJoinedRoom(RoomInfo roomInfo)
-    {
-        Debug.Log("Joined room: " + roomInfo.roomID);
-        curRoomInfo = roomInfo;
-
-        foreach (var userID in roomInfo.playersID)
-        {
-            if (userID != currentPlayerId && FindOtherPlayerInList(userID) == null)
-            {
-                otherPlayers.Add(CreateOtherPlayer(userID).GetComponent<OtherPlayer>());
-            }
-        }
-    }
+ 
 
     private void OnDestroy()
     {
@@ -216,6 +174,8 @@ public class ServerManager : MonoBehaviour
             socketManager = null;
         }
     }
+
+
 
     private void Update()
     {
@@ -238,30 +198,14 @@ public class ServerManager : MonoBehaviour
 }
 
 [Serializable]
-public class RoomInfo
+public class TriggerEvent
 {
-    public string roomID;
-    public string[] playersID;
+    public string Id;
+    public bool isOn;
 
-    public RoomInfo(string roomID, OtherPlayer[] otherPlayers)
+    public TriggerEvent()
     {
-        this.roomID = roomID;
-        if (otherPlayers != null)
-        {
-            playersID = new string[otherPlayers.Length + 1];
-            playersID[0] = Player.Instance.userId;
-            var count = 1;
-            foreach (var other in otherPlayers)
-            {
-                playersID[count] = other.userId;
-                count++;
-            }
-        }
-        else
-        {
-            playersID = new string[1];
-            playersID[0] = Player.Instance.userId;
-        }
         
     }
 }
+

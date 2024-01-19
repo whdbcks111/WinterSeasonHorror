@@ -21,7 +21,7 @@ public class SaveManager : MonoBehaviour
         }
         if (Input.GetKeyDown(KeyCode.L))
         {
-            LoadGameData();
+            LoadGameData(LoadData());
         }
         
     }
@@ -84,6 +84,23 @@ public class SaveManager : MonoBehaviour
         formatter.Serialize(stream, gameData);
         stream.Close();
     }
+    public static GameData GetGameData()
+    {
+        var formatter = new BinaryFormatter();
+        var path = Application.persistentDataPath + "/GameData.save";
+        var stream = new FileStream(path, FileMode.Create);
+
+        var playerData = SavePlayer(Player.Instance);
+        var targetData = SaveTargetObjects();
+        var interactData = SaveInteractableObjects();
+        var triggerData = SaveTriggerData(); // TriggerData 저장
+        var enemyData = SaveEnemyData();
+
+        var gameData = new GameData(enemyData,interactData, playerData, targetData, triggerData);
+        formatter.Serialize(stream, gameData);
+        stream.Close();
+        return gameData;
+    }
 
     public static EnemyData SaveEnemyData()
     {
@@ -144,9 +161,9 @@ public class SaveManager : MonoBehaviour
     }
 
 
-    public static void LoadGameData()
+    public static void LoadGameData(GameData data)
     {
-        GameData data = LoadData();
+        //GameData data = LoadData();
         if (data != null)
         {
             LoadTargetObjects(data.TargetObjectsData);
