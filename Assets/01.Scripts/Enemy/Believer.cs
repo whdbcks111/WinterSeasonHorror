@@ -546,6 +546,14 @@ public class Believer : MonoBehaviour
             _fsm.CurrentState = _chaseFailState;
         }
     }
+
+    private void SearchingPlayer()
+    {
+        if (_isInSight && !_player.IsHidden && _fsm.CurrentState != _chaseState)
+        {
+            _fsm.CurrentState = _chaseState;
+        }
+    }
     
     private IEnumerator StuckCheck()
     {
