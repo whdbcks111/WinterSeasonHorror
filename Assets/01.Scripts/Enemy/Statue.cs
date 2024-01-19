@@ -55,10 +55,6 @@ public class Statue : MonoBehaviour
     }
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.V))
-        {
-            AttackOrder();
-        }
 
         if (_playerIsInRange && !Player.Instance.IsHidden)
         {

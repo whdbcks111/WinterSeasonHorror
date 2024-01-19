@@ -303,10 +303,6 @@ public class Believer : MonoBehaviour
     {
         _objScreenPoint = _camera.WorldToScreenPoint(transform.position);
         HandleState();
-        if(Input.GetKeyDown(KeyCode.Q)) {
-            _light2d.intensity += 10;
-        }
-        
         if(Player.Instance.IsHidden)
         {
             Physics2D.IgnoreLayerCollision(LayerMask.NameToLayer("Enemy"), LayerMask.NameToLayer("Player"));
@@ -325,11 +321,6 @@ public class Believer : MonoBehaviour
             _isOnGround = true;
             _anim.SetBool("IsJumping", false);
         }
-
-
-
-
-
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
@@ -519,32 +510,6 @@ public class Believer : MonoBehaviour
     private void HandleState()
     {
         _fsm.Update();
-
-        if (Input.GetKeyDown("1"))
-        {
-            Debug.Log("idle");
-            _fsm.CurrentState = _idleState;
-        }
-        if (Input.GetKeyDown("2"))
-        {
-            Debug.Log("roam");
-            _fsm.CurrentState = _roamState;
-        }
-        if (Input.GetKeyDown("3"))
-        {
-            Debug.Log("chase");
-            _fsm.CurrentState = _chaseState;
-        }
-        if (Input.GetKeyDown("4"))
-        {
-            Debug.Log("return");
-            _fsm.CurrentState = _returnState;
-        }
-        if (Input.GetKeyDown("5"))
-        {
-            Debug.Log("chasefail");
-            _fsm.CurrentState = _chaseFailState;
-        }
     }
 
     private void SearchingPlayer()
