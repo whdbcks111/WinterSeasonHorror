@@ -74,6 +74,8 @@ public class Believer : MonoBehaviour
     private Camera _camera;
     private Vector2 _objScreenPoint;
 
+    private float _originalChaseMoveSpeed;
+
     Rigidbody2D _rigid2d;
     Animator _anim;
 
@@ -99,6 +101,7 @@ public class Believer : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        _originalChaseMoveSpeed = _chaseMoveSpeed;
         _jumpable = true;
         _isOnGround = true;
         _light2d = GetComponentInChildren<Light2D>();
@@ -380,7 +383,7 @@ public class Believer : MonoBehaviour
 
 
 
-        _chaseMoveSpeed = 5;
+        _chaseMoveSpeed = _originalChaseMoveSpeed;
 
         _anim.SetBool("IsScreaming", false);
         _anim.SetBool("IsRunning", true);
