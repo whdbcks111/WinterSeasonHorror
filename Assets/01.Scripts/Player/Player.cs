@@ -317,10 +317,6 @@ public class Player : MonoBehaviour
         {
             _footStepAudioTimer = 0f;
         }
-        if(nextIsRunning != _isRunning)
-        {
-            print(nextIsRunning ? "Run" : "stop");
-        }
         _isRunning = nextIsRunning;
 
         if(_isRunning)
@@ -340,7 +336,6 @@ public class Player : MonoBehaviour
             // moving
             if(_isLeftDir != nextIsLeftDir)
             {
-                print(_runningTime);
                 StartMoveShift(_isRunning);
                 return;
             }
@@ -436,7 +431,7 @@ public class Player : MonoBehaviour
 
     public void Jump()
     {
-        if (_hideCannotMoveTimer > 0 || !IsMoveable)
+        if (_hideCannotMoveTimer > 0f || IsHidden || !IsMoveable || Stamina < 0f)
         {
             return;
         }
