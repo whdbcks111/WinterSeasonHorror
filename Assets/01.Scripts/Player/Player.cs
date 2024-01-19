@@ -130,8 +130,10 @@ public class Player : MonoBehaviour
     public bool BangMarkVisible 
     { 
         get => _bangMark.gameObject.activeSelf; 
-        set => _bangMark.gameObject.SetActive(value); 
+        set => _bangMark.gameObject.SetActive(value);
     }
+    [HideInInspector] public bool IsInBlind = false;
+    [HideInInspector] public bool IsMoveable = true;
 
     private void Awake()
     {
@@ -292,7 +294,7 @@ public class Player : MonoBehaviour
         // 방향전환중이면 _isLeftDir의 반대로 미리 이동
         CameraController.Instance.SetOffset(_camOffset * new Vector2(_isLeftDir == _isShifting ? 1 : -1, 1), _moveShiftTime);
         if (_isShifting) return;
-        if (_hideCannotMoveTimer > 0)
+        if (_hideCannotMoveTimer > 0 || !IsMoveable)
         {
             _rigid.velocity = new(0, _rigid.velocity.y);
             return;
@@ -399,7 +401,8 @@ public class Player : MonoBehaviour
         {
             _isLighting = !_isLighting;
         }
-        _handLight.gameObject.SetActive(_isLighting && LightEnerge > 0f && !_isShifting && Stamina > 0f);
+        _handLight.gameObject.SetActive(_isLighting && !IsInBlind && LightEnerge > 0f && !_isShifting && Stamina > 0f);
+        _surroundLight.gameObject.SetActive(!IsInBlind);
 
         if (Input.GetKey(LightKey))
         {
@@ -433,7 +436,11 @@ public class Player : MonoBehaviour
 
     public void Jump()
     {
-        if(IsOnGround && _jumpCount > 0)
+        if (_hideCannotMoveTimer > 0 || !IsMoveable)
+        {
+            return;
+        }
+        if (IsOnGround && _jumpCount > 0)
         {
             _isJumping = true;
             _jumpCount--;
