@@ -36,6 +36,13 @@ public class CameraController : MonoBehaviour
         _curCameraPos = transform.position;
     }
 
+    private void OnDestroy()
+    {
+        _glitchMaterial.SetFloat("_Intensity", 0);
+        _glitchMaterial.SetFloat("_Threshold", 0);
+        _glitchMaterial.SetFloat("_Offset", 0);
+    }
+
     private void LateUpdate()
     {
         Vector2 target = (Vector2)_focusTarget.position + _camOffset;

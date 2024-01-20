@@ -216,12 +216,12 @@ public class UIManager : MonoBehaviour
         return Instantiate(image, parent);
     }
 
-    public void PlayJumpScare(JumpScare jumpScare, Action onFinish = null)
+    public void PlayJumpScare(JumpScare jumpScare, bool deactiveImage = true, Action onFinish = null)
     {
-        StartCoroutine(PlayJumpScareRoutine(jumpScare, onFinish));
+        StartCoroutine(PlayJumpScareRoutine(jumpScare, deactiveImage, onFinish));
     }
 
-    IEnumerator PlayJumpScareRoutine(JumpScare jumpScare, Action onFinish = null)
+    IEnumerator PlayJumpScareRoutine(JumpScare jumpScare, bool deactiveImage = true, Action onFinish = null)
     {
         foreach (var a in jumpScare.jumpScareSounds)
         {
@@ -242,7 +242,7 @@ public class UIManager : MonoBehaviour
 
         onFinish?.Invoke();
         yield return null;
-        image.gameObject.SetActive(false);
+        if(deactiveImage) image.gameObject.SetActive(false);
     }
 
     void ImageToFitScreen(PanelUI panelUI)

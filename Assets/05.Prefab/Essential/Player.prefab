@@ -601,7 +601,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 59.253723}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &5023020000668294531
 CanvasRenderer:
@@ -624,7 +624,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.41509432, g: 0.24083303, b: 0.24083303, a: 0}
+  m_Color: {r: 0.46571732, g: 0.5314764, b: 0.5849056, a: 0}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -633,14 +633,14 @@ MonoBehaviour:
       m_Calls: []
   m_Sprite: {fileID: 21300000, guid: 9d1076f2786025041a4017656c2cd137, type: 3}
   m_Type: 1
-  m_PreserveAspect: 0
+  m_PreserveAspect: 1
   m_FillCenter: 1
   m_FillMethod: 4
   m_FillAmount: 1
   m_FillClockwise: 1
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 0.46
+  m_PixelsPerUnitMultiplier: 1
 --- !u!1 &4605255069021877253
 GameObject:
   m_ObjectHideFlags: 0
@@ -660,6 +660,7 @@ GameObject:
   - component: {fileID: 2403024944357959022}
   - component: {fileID: 3183956141710255865}
   - component: {fileID: 1007024222449373291}
+  - component: {fileID: 435362448802622036}
   m_Layer: 3
   m_Name: Player
   m_TagString: Untagged
@@ -676,7 +677,7 @@ Transform:
   m_GameObject: {fileID: 4605255069021877253}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 436.92, y: -30.233543, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 1
   m_Children:
@@ -780,9 +781,9 @@ MonoBehaviour:
   _hideCooldown: 3
   _moveSpeed: 3
   _moveShiftTime: 0.5
-  _runShiftInertia: 3
-  _runModifier: 1.6
-  _jumpForce: 7
+  _runShiftInertia: 2
+  _runModifier: 1.5
+  _jumpForce: 5
   _highJumpForce: 8.5
   _maxJumpCount: 1
   _footStepAudioSpan: 0.65
@@ -808,9 +809,11 @@ MonoBehaviour:
   _heartbeatMinVolume: 0.1
   _heartbeatMaxVolume: 4
   _breatheScreenImage: {fileID: 4291344793627711687}
-  _maxBreatheScreenAlpha: 1
+  _maxBreatheScreenAlpha: 0.5
   _breatheScreenBeatRate: 1
   _breatheScreenBeatScale: 1.5
+  IsInBlind: 0
+  IsMoveable: 1
 --- !u!114 &8797065832281766964
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -984,6 +987,19 @@ AudioReverbFilter:
   m_LFReference: 250
   m_ReflectionsDelay: 0
   m_ReverbPreset: 27
+--- !u!114 &435362448802622036
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4605255069021877253}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3c3fc2cf85b97ea4fbbe2c66c43f6a39, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  UUID: 9dc878e757ba1504290a2cb928598eae
 --- !u!1 &4941728330308158675
 GameObject:
   m_ObjectHideFlags: 0

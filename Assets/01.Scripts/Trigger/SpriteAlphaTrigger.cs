@@ -29,6 +29,7 @@ public class SpriteAlphaTrigger : BaseTrigger
             col.a = Mathf.Lerp(originalAlpha, alpha, i);
             renderer.color = col;
             await UniTask.Yield();
+            print(col.a);
         }
         col = renderer.color;
         col.a = alpha;
