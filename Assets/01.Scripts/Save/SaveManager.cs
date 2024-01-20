@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
-using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
 
 [ExecuteAlways]
@@ -34,6 +33,7 @@ public class SaveManager : MonoBehaviour
 
     private void Start()
     {
+#if UNITY_EDITOR
         _saveableObjects = Resources.FindObjectsOfTypeAll<SaveableObject>();
         foreach (var a in _saveableObjects )
         {
@@ -44,6 +44,7 @@ public class SaveManager : MonoBehaviour
             if(!temp) a.gameObject.SetActive(false);
             
         }
+#endif
     }
 
     public static PlayerData SavePlayer(Player player)

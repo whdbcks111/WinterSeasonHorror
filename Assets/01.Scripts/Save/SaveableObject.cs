@@ -1,13 +1,17 @@
 
 
-using UnityEditor;
 using UnityEngine;
 
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 [ExecuteAlways]
 public class SaveableObject : MonoBehaviour
 {
     public string UUID = null;
 
+
+#if UNITY_EDITOR
     private void Awake()
     {
         UUID ??= GUID.Generate().ToString();
@@ -23,7 +27,7 @@ public class SaveableObject : MonoBehaviour
         }
         //Debug.Log("InstanceID: " + UUID);
     }
+#endif
 
-    
 
 }
