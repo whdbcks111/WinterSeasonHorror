@@ -34,7 +34,7 @@ public class SaveManager : MonoBehaviour
     private void Start()
     {
 #if UNITY_EDITOR
-        _saveableObjects = Resources.FindObjectsOfTypeAll<SaveableObject>();
+        _saveableObjects = FindObjectsOfType<SaveableObject>(true);
         foreach (var a in _saveableObjects )
         {
             var temp = a.gameObject.activeSelf;
@@ -105,7 +105,7 @@ public class SaveManager : MonoBehaviour
     }
     public TriggerData[] SaveTriggerData()
     {
-        var triggers = FindObjectsOfType<DetectAreaTrigger>();
+        var triggers = FindObjectsOfType<DetectAreaTrigger>(true);
         var triggerList = new List<DetectAreaTrigger>();
         
         for (int i = 0; i < triggers.Length; i++)
@@ -142,7 +142,7 @@ public class SaveManager : MonoBehaviour
     }
     public void LoadTriggerData(TriggerData[] data)
     {
-        var triggers = FindObjectsOfType<DetectAreaTrigger>();
+        var triggers = FindObjectsOfType<DetectAreaTrigger>(true);
 
         foreach (var dataItem in data)
         {
@@ -221,7 +221,7 @@ public class SaveManager : MonoBehaviour
     public InteractableObjectData[] SaveInteractableObjects()
     {
         
-        var interactableObjects = FindObjectsOfType<InteractableObject>();
+        var interactableObjects = FindObjectsOfType<InteractableObject>(true);
         InteractableObjectData[] interactableObjectDatas = new InteractableObjectData[interactableObjects.Length];
         for (int i = 0; i < interactableObjects.Length; i++)
         {
