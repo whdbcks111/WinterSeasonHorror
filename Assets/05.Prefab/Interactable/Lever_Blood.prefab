@@ -81,17 +81,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isInteractable: 0
-  interactionSound: {fileID: 0}
+  isReuse: 0
+  canUse: 1
   originSprite: {fileID: 0}
   interactSprite: {fileID: 0}
   interactSound: {fileID: 0}
-  isWorking: 0
+  DeInteractSound: {fileID: 0}
+  isOn: 0
   duration: 0.15
   previousRotationZ: 45
   interactRotationZ: -45
   handleAxisTf: {fileID: 6671803657476903974}
-  blockingObjects:
-  - {fileID: 0}
   targetObjects:
   - {fileID: 0}
 --- !u!114 &2977856339562012572

@@ -193,13 +193,18 @@ public class SaveManager : MonoBehaviour
     }
     public void LoadInteractableObjects(InteractableObjectData[] data)
     {
-        var interactableObjects = Resources.FindObjectsOfTypeAll<InteractableObject>();
+        var interactableObjects = FindObjectsOfType<InteractableObject>(true);
 
         foreach (var dataItem in data)
         {
             foreach (var interactrObject in interactableObjects)
             {
-                if (interactrObject.GetComponent<SaveableObject>().UUID == dataItem.uniqueId)
+                var save = interactrObject.GetComponent<SaveableObject>();
+                if(save == null)
+                {
+                    Debug.LogError("Doesnt have Saveable object : " + interactrObject);
+                }
+                else if (save.UUID == dataItem.uniqueId)
                 {
                     
                     var position = new Vector3(dataItem.position[0], dataItem.position[1],
