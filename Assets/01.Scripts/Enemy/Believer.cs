@@ -23,7 +23,6 @@ public class Believer : MonoBehaviour
 
 
     [SerializeField] private float _threatMaxDistance;
-    public bool _isChasing;
     public bool _isInSight;
     [SerializeField] private float _searchingStopCount;
     [SerializeField] private float _roamRange;
@@ -39,14 +38,13 @@ public class Believer : MonoBehaviour
 
     [SerializeField] private float _chaseFailRoamCount;
     [SerializeField] private float _chaseFailRoamCoolTime;
-    [SerializeField] private float _cryingCycleTime;
-    [SerializeField] private List<AudioClip> _crySounds = new();
+
     [SerializeField] private AudioClip JumpScare;
     [SerializeField] private AudioClip _screamingSound;
     [SerializeField] private AudioClip _headbuttSound;
     [SerializeField] private AudioClip _footsteopSound;
-    [SerializeField][Range(0f, 1f)] private float CryVolume;
     [SerializeField][Range(0f, 1f)] private float ScreamVolume;
+
     public Vector2 InitPosition;
     private Vector3 _destination;
     private bool _IsSettedInitPosition;
@@ -84,13 +82,6 @@ public class Believer : MonoBehaviour
     public FSM _fsm = new();
     public BaseState _idleState, _roamState, _chaseState,_chaseFailState,_returnState ,_threteningHide;
 
-    [SerializeField] private bool _idlebool;
-    [SerializeField] private bool _roambool;
-    [SerializeField] private bool _chasebool;
-    [SerializeField] private bool _chasefailool;
-    [SerializeField] private bool _returnbool;
-    [SerializeField] private bool _threteningbool;
-
     Light2D _light2d;
     [SerializeField] private float _findLightIntensity;
     [SerializeField] private float _chaseLightIntensity;
@@ -110,7 +101,7 @@ public class Believer : MonoBehaviour
         _idleState = new(   
         onEnter: () =>
         {
-            _idlebool = true;
+
 
             _anim.SetBool("IsWalking", false);
             _anim.SetBool("IsRunning", false);
@@ -126,16 +117,12 @@ public class Believer : MonoBehaviour
             SearchingPlayer();
         },
         onExit: () =>{
-            _idlebool = false; /////////////////////////////
-
-
             if (_idleToRoamCo != null) StopCoroutine(_idleToRoamCo);
             _jumpable = true;
         });
         
         _returnState = new(
         onEnter: () =>{
-            _returnbool = true;
         },
         onUpdate: () =>
         {
@@ -162,13 +149,11 @@ public class Believer : MonoBehaviour
             SearchingPlayer();
         },
         onExit: () =>{
-            _returnbool = false;
         });
         
         _roamState = new(
         onEnter: () =>
         {
-            _roambool = true;
 
             float Distance = Random.Range(-_roamRange, _roamRange + 0.1f);
             if (Mathf.Abs(Distance) <= _minRoamDistance && Distance >= 0) Distance = _minRoamDistance;
@@ -186,13 +171,11 @@ public class Believer : MonoBehaviour
             SearchingPlayer();
         },
         onExit: () => {
-            _roambool = false;
         });
 
         _chaseState = new(
         onEnter: () =>
         {
-            _chasebool = true;
             _fLCo = StartCoroutine(FindLight());
             _encountco = StartCoroutine(EncountWithPlayer());
         },
@@ -234,14 +217,11 @@ public class Believer : MonoBehaviour
             if(_fLCo != null) StopCoroutine(_fLCo);
 
             _light2d.intensity = 0;
-
-            _chasebool = false;
         });
 
         _chaseFailState = new(
             onEnter: () =>
             {
-                _chasefailool = true;
 
                 _chaseFailPosition = transform.position;
                 _roamco = StartCoroutine(RoamNear());
@@ -252,12 +232,10 @@ public class Believer : MonoBehaviour
             },
             onExit: () =>
             {
-                _chasefailool = false;
                 if (_roamco != null) StopCoroutine(_roamco);
             });
         
         _threteningHide = new(onEnter: () => {
-            _threteningbool = true;
             _threatco = StartCoroutine(Threatening());
             _hLCo = StartCoroutine(HeadButtLight());
         },
@@ -281,7 +259,6 @@ public class Believer : MonoBehaviour
                 else transform.rotation = Quaternion.Euler(0, 180, 0);
             },
             onExit: () => {
-                _threteningbool = false;
                 _jumpable = true;
                 _rigid2d.constraints = RigidbodyConstraints2D.None;
                 _rigid2d.constraints = RigidbodyConstraints2D.FreezeRotation;
@@ -296,7 +273,6 @@ public class Believer : MonoBehaviour
 
         _chasable = true;
         _IsSettedInitPosition = false;
-        _isChasing = false;
         StartCoroutine(SetDirection());
         StartCoroutine(StuckCheck());
     }
@@ -304,8 +280,11 @@ public class Believer : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+
+        _fsm.Update();
+
         _objScreenPoint = _camera.WorldToScreenPoint(transform.position);
-        HandleState();
+        
         if(Player.Instance.IsHidden)
         {
             Physics2D.IgnoreLayerCollision(LayerMask.NameToLayer("Enemy"), LayerMask.NameToLayer("Player"));
@@ -329,7 +308,6 @@ public class Believer : MonoBehaviour
     private void OnCollisionEnter2D(Collision2D collision)
     {
         if (!_IsSettedInitPosition) StartCoroutine(SetInitPosition());
-        //if (collision.gameObject == wall)
     }
     private IEnumerator RoamNear()
     {
@@ -362,19 +340,12 @@ public class Believer : MonoBehaviour
         }
 
     }
-    private IEnumerator PlayCryingSound()
-    {
-        int Selecter = Random.Range(0, _crySounds.Count);
-        SoundManager.Instance.PlaySFX(_crySounds[Selecter], transform.position, CryVolume, 1);
 
-        //_audioSource.volume = 0.2f;
-        yield return new WaitForSeconds(_cryingCycleTime);
-    }
     public IEnumerator EncountWithPlayer()
     {
 
         _anim.SetBool("IsScreaming", true);
-        SoundManager.Instance.PlaySFX(JumpScare, transform.position, CryVolume, 1);
+        SoundManager.Instance.PlaySFX(JumpScare, transform.position, ScreamVolume, 1);
         SoundManager.Instance.PlaySFX(_screamingSound, Camera.main.transform.position, ScreamVolume, 1, Camera.main.transform);
         _chasable = false;
 
@@ -455,7 +426,7 @@ public class Believer : MonoBehaviour
         }
         yield return new WaitForSeconds(2);
         _anim.SetBool("IsScreaming", true);
-        SoundManager.Instance.PlaySFX(_screamingSound, transform.position, CryVolume, 1);
+        SoundManager.Instance.PlaySFX(_screamingSound, transform.position, ScreamVolume, 1);
         yield return new WaitForSeconds(1);
         _anim.SetBool("IsScreaming", false);
 
@@ -510,11 +481,6 @@ public class Believer : MonoBehaviour
 
         _rigid2d.velocity = new Vector3(_savedDir * MoveSpeed, _rigid2d.velocity.y);
     }
-    private void HandleState()
-    {
-        _fsm.Update();
-    }
-
     private void SearchingPlayer()
     {
         if (_isInSight && !Player.Instance.IsHidden && _fsm.CurrentState != _chaseState)
@@ -591,14 +557,16 @@ public class Believer : MonoBehaviour
     }
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if(collision.gameObject == Player.Instance.gameObject)
+        if(Player.Instance != null)
         {
-            _isInSight = true;
-        }
-        if (collision.gameObject == Player.Instance.gameObject && !Player.Instance.IsHidden && _fsm.CurrentState != _chaseState && _chasable && !_isChasing)
-        {
-            _isChasing = true;
-            _fsm.CurrentState = _chaseState;
+            if (collision.gameObject == Player.Instance.gameObject)
+            {
+                _isInSight = true;
+            }
+            if (collision.gameObject == Player.Instance.gameObject && !Player.Instance.IsHidden && _fsm.CurrentState != _chaseState && _chasable)
+            {
+                _fsm.CurrentState = _chaseState;
+            }
         }
     }
 
@@ -609,9 +577,12 @@ public class Believer : MonoBehaviour
     }
     private void OnTriggerExit2D(Collider2D collision)
     {
-        if(collision.gameObject == Player.Instance.gameObject)
+        if(Player.Instance != null)
         {
-            _isInSight = false;
+            if (collision.gameObject == Player.Instance.gameObject)
+            {
+                _isInSight = false;
+            }
         }
     }
 
