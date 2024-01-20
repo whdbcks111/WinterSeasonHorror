@@ -22,20 +22,17 @@ public class ChatSoundPlayer : MonoBehaviour
         if (_timer > 0f)
         {
             _timer -= Time.deltaTime;
-
-            if(_delayTimer > 0f) 
-            { 
-                _delayTimer -= Time.deltaTime;
-            }
-            else
-            {
-                _delayTimer += Delay;
-                SoundManager.Instance.PlaySFX(Clip, Player.Instance.transform.position, Volume, Pitch);
-            }
         }
-        else
+
+
+        if (_delayTimer > 0f)
         {
-            _delayTimer = 0f;
+            _delayTimer -= Time.deltaTime;
+        }
+        else if(_timer > 0f)
+        {
+            _delayTimer += Delay;
+            SoundManager.Instance.PlaySFX(Clip, Player.Instance.transform.position, Volume, Pitch);
         }
     }
 }
