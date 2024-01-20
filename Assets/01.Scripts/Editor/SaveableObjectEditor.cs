@@ -57,7 +57,10 @@ public class SaveableObjectEditor : EditorWindow
     public static void AddSavableComponent(GameObject obj)
     {
         Debug.Log("Add Saveable Object In Editor!! " + " Object Name: " +obj.name);
-        if(!obj.GetComponent<SaveableObject>())
-            obj.AddComponent<SaveableObject>();
+        if(obj.TryGetComponent<SaveableObject>(out var save))
+        {
+            save.GenerateUniqueID();
+        }
+        else obj.AddComponent<SaveableObject>();
     }
 }
