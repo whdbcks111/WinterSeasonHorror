@@ -192,11 +192,17 @@ public class Player : MonoBehaviour
 
     private void OnDeath()
     {
-        UIManager.Instance.PlayJumpScare(UIManager.Instance.jumpScare, 
+        UIManager.Instance.PlayJumpScare(UIManager.Instance.jumpScare, false,
             onFinish: () =>
             {
-                SceneManager.LoadScene("GameOverScene");
+                LoadGameOver().Forget();
             });
+    }
+
+    private async UniTask LoadGameOver()
+    {
+        await UniTask.Delay(TimeSpan.FromSeconds(2f));
+        await SceneManager.LoadSceneAsync("GameOverScene");
     }
 
     private void ReflectUpdate()
@@ -283,7 +289,8 @@ public class Player : MonoBehaviour
 
     private void StartMoveShift(bool isRunning)
     {
-        if(_runningTime > 1f) _rigid.velocity = (_isLeftDir ? 1 : -1) * _runShiftInertia * Vector3.left;
+        if(_runningTime > 1f && isRunning) 
+            _rigid.velocity = (_isLeftDir ? 1 : -1) * _runShiftInertia * Vector3.left;
         _isShifting = true;
         _moveShiftTimer = _moveShiftTime;
         _animator.SetBool(isRunning ? "IsRunShifting" : "IsWalkShifting", true);
@@ -293,7 +300,8 @@ public class Player : MonoBehaviour
     {
         _animator.SetBool("IsShifting", _isShifting);
         if (!_isShifting) return;
-        if(_moveShiftTimer > 0)
+        _rigid.velocity = new(0, _rigid.velocity.y);
+        if (_moveShiftTimer > 0)
         {
             _moveShiftTimer -= Time.deltaTime;
         }

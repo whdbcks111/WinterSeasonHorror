@@ -13,12 +13,12 @@ public abstract class DetectAreaTrigger : BaseTrigger
 
     protected abstract bool CheckCollision(Collider2D collider);
 
-    private void OnTriggerEnter2D(Collider2D collision)
+    private void OnTriggerStay2D(Collider2D collision)
     {
+        if (_isEntered) return;
         if (CheckCollision(collision))
         {
             if (EnterCount > 0 && TriggerOnce) return;
-            if (_isEntered) return;
 
             EnterCount++;
             _isEntered = true;
