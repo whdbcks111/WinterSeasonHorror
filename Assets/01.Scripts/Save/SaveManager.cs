@@ -31,20 +31,20 @@ public class SaveManager : MonoBehaviour
         Instance = this;
     }
 
-    private void Start()
+    private void LoadSaveableObjects()
     {
-#if UNITY_EDITOR
         _saveableObjects = FindObjectsOfType<SaveableObject>(true);
         foreach (var a in _saveableObjects )
         {
             var temp = a.gameObject.activeSelf;
             if(!temp) a.gameObject.SetActive(true);
+#if UNITY_EDITOR
             a.GenerateUniqueID();
+#endif
             Debug.Log("result" + " " + a.name + " " + a.UUID);
             if(!temp) a.gameObject.SetActive(false);
             
         }
-#endif
     }
 
     public static PlayerData SavePlayer(Player player)
@@ -58,7 +58,10 @@ public class SaveManager : MonoBehaviour
         var path = Application.persistentDataPath + "/GameData.save";
         var stream = new FileStream(path, FileMode.Create);
 
+        LoadSaveableObjects();
+
         var playerData = SavePlayer(Player.Instance);
+        CameraController.Instance.SetFocusImmediate(Player.Instance.transform);
         var targetData = SaveTargetObjects();
         var interactData = SaveInteractableObjects();
         var triggerData = SaveTriggerData(); // TriggerData 저장
@@ -130,6 +133,7 @@ public class SaveManager : MonoBehaviour
 
     public void LoadGameData()
     {
+        LoadSaveableObjects();
         GameData data = LoadData();
         if (data != null)
         {

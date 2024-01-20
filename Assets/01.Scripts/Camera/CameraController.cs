@@ -91,6 +91,13 @@ public class CameraController : MonoBehaviour
         _smoothTime = time;
     }
 
+    public void SetFocusImmediate(Transform focusTarget)
+    {
+        _focusTarget = focusTarget;
+        Vector2 target = (Vector2)focusTarget.position + _camOffset;
+        transform.position = target;
+    }
+
     public void SetOffset(Vector2 offset, float time = -1)
     {
         if (time < 0) time = _defaultSmoothTime;
