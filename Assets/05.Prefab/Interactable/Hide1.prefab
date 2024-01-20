@@ -122,11 +122,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isInteractable: 0
-  isReusable: 1
+  isReuse: 0
+  canUse: 1
   originSprite: {fileID: 0}
   interactSprite: {fileID: 0}
   interactSound: {fileID: 8300000, guid: dcb2842bd0770e541a711d6aa6c76a55, type: 3}
   DeInteractSound: {fileID: 8300000, guid: 447d4e3c1ef97ab4da3cbbf716f76eda, type: 3}
+  isOn: 0
 --- !u!61 &6850105022629492750
 BoxCollider2D:
   m_ObjectHideFlags: 0

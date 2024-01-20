@@ -81,7 +81,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isInteractable: 0
-  isReusable: 0
+  isReuse: 0
+  canUse: 1
   originSprite: {fileID: 0}
   interactSprite: {fileID: 0}
   interactSound: {fileID: 8300000, guid: 79992f8b5fa231f479ed0055bd74ee8c, type: 3}
