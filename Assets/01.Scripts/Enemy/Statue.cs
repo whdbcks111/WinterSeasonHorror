@@ -56,28 +56,31 @@ public class Statue : MonoBehaviour
     void Update()
     {
 
-        if (_playerIsInRange && !Player.Instance.IsHidden)
+        if(Player.Instance != null)
         {
-            if ((transform.position.x > Player.Instance.transform.position.x) == Player.Instance.IsLeftDir) //플레이어가 등지고 있음
+            if (_playerIsInRange && !Player.Instance.IsHidden)
             {
-                ActivateEye();
-                if((_currentSecond >= _maxSecond || Player.Instance.LightEnerge <= 0))
+                if ((transform.position.x > Player.Instance.transform.position.x) == Player.Instance.IsLeftDir) //플레이어가 등지고 있음
                 {
-                    if(_canOrder)
+                    ActivateEye();
+                    if ((_currentSecond >= _maxSecond || Player.Instance.LightEnerge <= 0))
                     {
-                        AttackOrder();
-                        StartCoroutine(Light());
-                    }
-                    if(_canChangeLight)
-                    {
-                        _light.intensity = Mathf.SmoothDamp(_light.intensity, _tartgetIntensity, ref _vel, _intensitySmoothTime);
-                        _light.pointLightOuterRadius = Mathf.SmoothDamp(_light.pointLightOuterRadius, _targetRaduis, ref _vel, _raduisSmoothTime);
+                        if (_canOrder)
+                        {
+                            AttackOrder();
+                            StartCoroutine(Light());
+                        }
+                        if (_canChangeLight)
+                        {
+                            _light.intensity = Mathf.SmoothDamp(_light.intensity, _tartgetIntensity, ref _vel, _intensitySmoothTime);
+                            _light.pointLightOuterRadius = Mathf.SmoothDamp(_light.pointLightOuterRadius, _targetRaduis, ref _vel, _raduisSmoothTime);
+                        }
                     }
                 }
+                else DeactivateEye();
             }
             else DeactivateEye();
         }
-        else DeactivateEye();
     }
     private void OnDrawGizmos()
     {
@@ -141,16 +144,22 @@ public class Statue : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if(collision.gameObject == Player.Instance.gameObject)
+        if(Player.Instance != null)
         {
-            _playerIsInRange = true;
+            if (collision.gameObject == Player.Instance.gameObject)
+            {
+                _playerIsInRange = true;
+            }
         }
     }
     private void OnTriggerExit2D(Collider2D collision)
     {
-        if (collision.gameObject == Player.Instance.gameObject)
+        if(Player.Instance != null)
         {
-            _playerIsInRange = false;
+            if (collision.gameObject == Player.Instance.gameObject)
+            {
+                _playerIsInRange = false;
+            }
         }
     }
 }
