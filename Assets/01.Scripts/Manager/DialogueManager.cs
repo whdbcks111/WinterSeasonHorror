@@ -10,27 +10,7 @@ using Unity.VisualScripting;
 
 public class DialougManager : MonoBehaviour
 {
-    // 1. Private static instance
-    private static DialougManager instance;
-
-    // 2. Public static property
-    public static DialougManager Instance
-    {
-        get
-        {
-            if (instance == null)
-            {
-                instance = FindObjectOfType<DialougManager>();
-                if (instance == null)
-                {
-                    GameObject obj = new GameObject();
-                    obj.name = typeof(DialougManager).Name;
-                    instance = obj.AddComponent<DialougManager>();
-                }
-            }
-            return instance;
-        }
-    }
+    public static DialougManager Instance { get; private set; }
 
     [Header("TextBoxMove")]
     public float yOffset = 0;
@@ -212,18 +192,7 @@ public class DialougManager : MonoBehaviour
     }
     private void Awake()
     {
-        if (instance == null)
-        {
-            instance = this;
-            DontDestroyOnLoad(this.gameObject); // 4. 인스턴스 유지
-        }
-        else
-        {
-            if (this != instance)
-            {
-                Destroy(this.gameObject);
-            }
-        }
+        Instance = this;
     }
 
 }
