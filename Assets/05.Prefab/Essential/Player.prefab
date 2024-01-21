@@ -149,7 +149,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1040852090784903717
 Transform:
   m_ObjectHideFlags: 0
@@ -661,6 +661,7 @@ GameObject:
   - component: {fileID: 3183956141710255865}
   - component: {fileID: 1007024222449373291}
   - component: {fileID: 435362448802622036}
+  - component: {fileID: 1944847504766199813}
   m_Layer: 3
   m_Name: Player
   m_TagString: Untagged
@@ -797,6 +798,8 @@ MonoBehaviour:
   _footStepPitchRandom: 0.03
   _jumpClip: {fileID: 8300000, guid: 0b5281096911eca4e9ecbd5a53a22172, type: 3}
   _jumpVolume: 1
+  _handlightToggleClip: {fileID: 0}
+  _handlightToggleVolume: 0
   _breatheGroup: {fileID: -4515295581559082115, guid: bf18c4d5651acc74a85007e4e524483a, type: 2}
   _breatheClip: {fileID: 8300000, guid: e88ab251d3ee668438b60959af9d9490, type: 3}
   _breathePitch: 1
@@ -1000,6 +1003,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   UUID: 9dc878e757ba1504290a2cb928598eae
+--- !u!114 &1944847504766199813
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4605255069021877253}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3c3fc2cf85b97ea4fbbe2c66c43f6a39, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  UUID: da988bd4ca62af344b8f133e27603cce
 --- !u!1 &4941728330308158675
 GameObject:
   m_ObjectHideFlags: 0

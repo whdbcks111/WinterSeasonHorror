@@ -66,14 +66,21 @@ public class Player : MonoBehaviour
     [HideInInspector] public float Stamina;
 
     [Header("효과음 할당")]
+    [Header("발걸음")]
     [SerializeField] private AudioClip _footStepClip;
     [SerializeField] private float _footStepVolume, _footStepPitch, _footStepPitchRandom;
+    [Header("점프")]
     [SerializeField] private AudioClip _jumpClip;
     [SerializeField] private float _jumpVolume;
+    [Header("손전등 버튼 소리")]
+    [SerializeField] private AudioClip _handlightToggleClip;
+    [SerializeField] private float _handlightToggleVolume;
+    [Header("숨소리")]
     [SerializeField] private AudioMixerGroup _breatheGroup;
     [SerializeField] private AudioClip _breatheClip;
     [SerializeField] private float _breathePitch = 1f, _breatheMinVolume = 0.1f, 
         _breatheMaxVolume = 2f, _breatheMinSpeed = 0.5f, _breatheMaxSpeed = 2f;
+    [Header("심장 박동")]
     [SerializeField] private AudioClip _heartbeatClip;
     [SerializeField] private float _heartbeatPitch = 1f, _heartbeatMinVolume = 0.1f, _heartbeatMaxVolume = 2f;
 
@@ -167,6 +174,7 @@ public class Player : MonoBehaviour
     {
         _animator.SetBool("IsStandingUp", true);
         IsMoveable = false;
+        IsControllable = false;
         _handLight.gameObject.SetActive(false);
 
         await UniTask.Yield();
@@ -176,6 +184,7 @@ public class Player : MonoBehaviour
 
         _animator.SetBool("IsStandingUp", false);
         IsMoveable = true;
+        IsControllable = true;
         _handLight.gameObject.SetActive(true);
     }
 
@@ -422,6 +431,7 @@ public class Player : MonoBehaviour
         if(IsControllable && Input.GetKeyUp(LightKey) && _lightKeyHoldingTimer < 1f)
         {
             _isLighting = !_isLighting;
+            SoundManager.Instance.PlaySFX(_handlightToggleClip, transform.position, _handlightToggleVolume);
         }
         _handLight.gameObject.SetActive(_isLighting && !IsInBlind && LightEnerge > 0f && !_isShifting && Stamina > 0f);
         _surroundLight.gameObject.SetActive(!IsInBlind);
